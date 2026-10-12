@@ -60,6 +60,7 @@ fun CreateAccountScreen(
     var phone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
     var acceptedTerms by remember { mutableStateOf(false) }
 
     var attempted by remember { mutableStateOf(false) }
@@ -111,6 +112,10 @@ fun CreateAccountScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+                AuthLanguageSelector(
+                    language = language,
+                    onLanguageSelected = viewModel::setLanguage
+                )
             }
 
             /* Superseded by the reference layout: form fields sit directly on the navy background.
@@ -179,6 +184,15 @@ fun CreateAccountScreen(
                         leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                         label = { Text(language.tr("Mot de passe", "Password", "كلمة المرور", "كلمة المرور")) },
                         singleLine = true,
+                        visualTransformation = if (showPassword) androidx.compose.ui.text.input.VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(onClick = { showPassword = !showPassword }) {
+                                Icon(
+                                    imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                    contentDescription = if (showPassword) language.tr("Masquer le mot de passe", "Hide password", "إخفاء كلمة المرور", "إخفاء كلمة المرور") else language.tr("Afficher le mot de passe", "Show password", "إظهار كلمة المرور", "إظهار كلمة المرور")
+                                )
+                            }
+                        },
                         isError = attempted && !pwdOk,
                         modifier = Modifier.fillMaxWidth().testTag("signup_password")
                     )
@@ -220,7 +234,7 @@ fun CreateAccountScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text(
-                            text = language.tr("Sign up", "Sign up", "Sign up", "Sign up"),
+                            text = language.tr("Créer mon compte", "Create account", "إنشاء حساب", "إنشاء حساب"),
                             fontWeight = FontWeight.ExtraBold
                         )
                     }
@@ -282,6 +296,18 @@ fun CreateAccountScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Start
                     )
+                    if (attempted && canSubmit) {
+                        Text(
+                            text = language.tr(
+                                fr = "Formulaire valide, mais la création de compte reste désactivée tant que le serveur d’authentification n’est pas configuré.",
+                                en = "Form validated, but account creation remains unavailable until the authentication backend is configured.",
+                                ar = "البيانات صحيحة، لكن إنشاء الحساب غير متاح حتى يتم إعداد خادم المصادقة.",
+                                dz = "المعلومات صحيحة، أما إنشاء الحساب ما يخدمش قبل إعداد خادم المصادقة."
+                            ),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                     if (attempted && !canSubmit) {
                         Text(
                             text = language.tr(
