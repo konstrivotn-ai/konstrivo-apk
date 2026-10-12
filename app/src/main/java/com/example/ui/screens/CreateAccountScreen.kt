@@ -251,10 +251,10 @@ fun CreateAccountScreen(
                     ) {
                         Text(
                             text = language.tr(
-                                fr = "Retour aux options du compte",
-                                en = "Back to account options",
-                                ar = "العودة إلى خيارات الحساب",
-                                dz = "ارجع لاختيارات الحساب"
+                                fr = "Déjà un compte ? Se connecter",
+                                en = "Already have an account? Sign in",
+                                ar = "لديك حساب؟ سجّل الدخول",
+                                dz = "عندك حساب؟ ادخل"
                             ),
                             fontWeight = FontWeight.Bold
                         )
