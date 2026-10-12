@@ -270,10 +270,10 @@ fun MainAppScreen(
                         }
                     }
 
-                    // Account entry point → existing Settings / Owner login area (Phase E).
-                    // Uses the existing tab navigation; no new auth system.
+                    // Account entry point opens the existing sign-in flow directly.
+                    // Registration remains reachable from the sign-in screen.
                     IconButton(
-                        onClick = { viewModel.selectTab(AppTab.SETTINGS) },
+                        onClick = { viewModel.openLoginScreen() },
                         modifier = Modifier.testTag("top_account_button")
                     ) {
                         Icon(
