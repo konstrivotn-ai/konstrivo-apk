@@ -1,0 +1,46 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# next.js build output
+.next/
+out/
+build/
+
+# local env files — never commit secrets (.env, .env.local, .env.*)
+.env*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# typescript incremental build cache / generated
+*.tsbuildinfo
+next-env.d.ts
+
+# test coverage
+coverage/
+
+# vercel
+.vercel
+
+# os junk
+.DS_Store
+Thumbs.db
+
+# packed artifacts and one-off diagnostic/troubleshooting outputs
+*.tgz
+build-output.txt
+curl-status.txt
+force-reinstall.txt
+pack-output.txt
+reinstall-output.txt
+swc-reinstall.txt
+test-output.txt
+type-check-output.txt
+verify-typecheck.txt

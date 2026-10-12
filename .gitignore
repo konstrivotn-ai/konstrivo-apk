@@ -1,0 +1,67 @@
+*.iml
+.gradle
+.kotlin
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+.env
+debug.keystore
+
+# ---------------------------------------------------------------
+# One-off diagnostics / troubleshooting artifacts (NEVER commit).
+# All rules below are anchored to the repo ROOT ("/") on purpose,
+# so they can never touch app/, web/, docs/ or gradle/ subtrees.
+# ---------------------------------------------------------------
+
+# environment & SDK inspection dumps
+/env-*.txt
+
+# ad-hoc inspection dumps (s-* state/sdk/java, x-* explorations, a-* android notes)
+/s-*.txt
+/x-*.txt
+/a-*.txt
+
+# probes, polls and scratch outputs
+/probe*.txt
+/poll.txt
+/listing.txt
+/filelist.txt
+/dir_output.txt
+/resume-check.txt
+/build-error.txt
+/swc-arch.txt
+/test_output.txt
+
+# build/test capture dumps and root-level logs (logs never belong in Git)
+/g-*.txt
+/gradle-info.txt
+/gradle-test-out.txt
+/gradle_output.log
+/test_result*.log
+/*.log
+
+# sdkloc tooling artifacts
+/.sdkloc/
+/sdkloc-body.txt
+/sdkloc-loc-body.txt
+
+# phase scratch scripts and their text captures
+/phase-b-*
+
+# ad-hoc helper scripts used during setup/troubleshooting
+/check_swc.ps1
+/javap-*.bat
+/run-*.bat
+
+# safety guard: the env template stays tracked (it contains placeholders only)
+!.env.example

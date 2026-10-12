@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand identity lives in Kotlin: ui/theme/Color.kt (single source of truth). -->
+    <!-- Android template colors (purple/teal/black/white) removed: verified unused. -->
+</resources>

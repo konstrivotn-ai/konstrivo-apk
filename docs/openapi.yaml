@@ -1,0 +1,1041 @@
+openapi: 3.1.0
+info:
+  title: KONSTRIVO Platform API
+  description: >
+    Official Platform REST API specification for the KONSTRIVO construction estimation
+    and material management platform. Serves Android Mobile (Kotlin), Web Portal (Next.js/TypeScript),
+    and Cloud Backend Services.
+  version: 1.0.0
+  contact:
+    name: KONSTRIVO Engineering
+    email: contact@konstrivo.tn
+
+servers:
+  - url: https://api.konstrivo.tn/api/v1
+    description: Production Cloud Gateway
+  - url: http://localhost:8080/api/v1
+    description: Local Development Server
+
+paths:
+  /auth/login:
+    post:
+      summary: User authentication (Future Contract)
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      summary: Refresh authentication token (Future Contract)
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Refreshed tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/logout:
+    post:
+      summary: End active session (Future Contract)
+      tags: [Authentication]
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Session terminated
+
+  /auth/me:
+    get:
+      summary: Current authenticated identity claims (Future Contract)
+      tags: [Authentication]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Authenticated user details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserClaims'
+
+  /users/me:
+    get:
+      summary: Current user profile and defaults (Future Contract)
+      tags: [Users]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User settings and profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+
+  /companies:
+    post:
+      summary: Register a new contractor company (Future Contract)
+      tags: [Companies]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+      responses:
+        '201':
+          description: Company created
+
+  /companies/{companyId}:
+    get:
+      summary: Get company profile (Future Contract)
+      tags: [Companies]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Company data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+    patch:
+      summary: Update company profile (Future Contract)
+      tags: [Companies]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+      responses:
+        '200':
+          description: Company updated
+
+  /trades:
+    get:
+      summary: List all construction trades (Domain Catalog)
+      tags: [Trades]
+      responses:
+        '200':
+          description: List of trades
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trades:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trade'
+
+  /trades/{tradeId}:
+    get:
+      summary: Get trade details (Domain Catalog)
+      tags: [Trades]
+      parameters:
+        - name: tradeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Trade metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trade'
+
+  /trades/{tradeId}/work-types:
+    get:
+      summary: List calculation work types for a trade (Domain Catalog)
+      tags: [Trades]
+      parameters:
+        - name: tradeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of work types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tradeId:
+                    type: string
+                  workTypes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkType'
+
+  /materials:
+    get:
+      summary: List construction materials (Domain Catalog - Price Excluded)
+      tags: [Materials]
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: trade
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated materials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Material'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+
+  /materials/{materialId}:
+    get:
+      summary: Get physical material specification (Domain Catalog)
+      tags: [Materials]
+      parameters:
+        - name: materialId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Material details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Material'
+
+  /materials/{materialId}/prices:
+    get:
+      summary: Get regional market prices for a specific material
+      tags: [Prices]
+      parameters:
+        - name: materialId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Material price history and current rates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  materialId:
+                    type: string
+                  prices:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MaterialPrice'
+
+  /prices:
+    get:
+      summary: Query market tariffs by country and region
+      tags: [Prices]
+      parameters:
+        - name: countryCode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: region
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Market prices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  countryCode:
+                    type: string
+                  currency:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MaterialPrice'
+
+  /markets:
+    get:
+      summary: List supported economic markets and default labor rates
+      tags: [Markets]
+      responses:
+        '200':
+          description: Market configurations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  markets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MarketContext'
+
+  /countries:
+    get:
+      summary: List supported countries
+      tags: [Markets]
+      responses:
+        '200':
+          description: List of countries
+
+  /currencies:
+    get:
+      summary: List supported currencies and exchange rates
+      tags: [Markets]
+      responses:
+        '200':
+          description: Currencies
+
+  /projects:
+    get:
+      summary: List construction projects (Future Contract)
+      tags: [Projects]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Projects list
+    post:
+      summary: Create a construction project site (Future Contract)
+      tags: [Projects]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          description: Project created
+
+  /projects/{projectId}:
+    get:
+      summary: Get project details (Future Contract)
+      tags: [Projects]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Project record
+    patch:
+      summary: Update project details (Future Contract)
+      tags: [Projects]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Project updated
+    delete:
+      summary: Delete project (Future Contract)
+      tags: [Projects]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Project deleted
+
+  /estimates:
+    get:
+      summary: List estimates / devis
+      tags: [Estimates]
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of estimates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Estimate'
+    post:
+      summary: Create and save an estimate
+      tags: [Estimates]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Estimate'
+      responses:
+        '201':
+          description: Estimate saved
+
+  /estimates/{estimateId}:
+    get:
+      summary: Get estimate by ID
+      tags: [Estimates]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: estimateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Estimate details
+    patch:
+      summary: Update estimate status / totals
+      tags: [Estimates]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: estimateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Estimate updated
+    delete:
+      summary: Delete estimate
+      tags: [Estimates]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: estimateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Estimate deleted
+
+  /calculations:
+    post:
+      summary: Server-side calculation calculation preview (Cloud Mirror)
+      tags: [Calculations]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculationRequest'
+      responses:
+        '200':
+          description: Calculation breakdown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculationResponse'
+
+  /sync/delta:
+    post:
+      summary: Offline delta synchronization between SQLite and PostgreSQL (Future Contract)
+      tags: [Sync]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncDeltaRequest'
+      responses:
+        '200':
+          description: Delta sync response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncDeltaResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    Money:
+      type: object
+      required: [amount, currency]
+      properties:
+        amount:
+          type: number
+          format: double
+          example: 1250.50
+        currency:
+          type: string
+          example: TND
+
+    PaginationMeta:
+      type: object
+      required: [page, limit, totalItems, totalPages]
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        totalItems:
+          type: integer
+          example: 45
+        totalPages:
+          type: integer
+          example: 3
+        hasNextPage:
+          type: boolean
+        hasPreviousPage:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, requestId, timestamp]
+          properties:
+            code:
+              type: string
+              example: VALIDATION_FAILED
+            message:
+              type: string
+              example: Input validation failed
+            details:
+              type: object
+            requestId:
+              type: string
+              example: req_8f1a23c09b
+            timestamp:
+              type: string
+              format: date-time
+
+    LoginRequest:
+      type: object
+      required: [provider, identifier, secret]
+      properties:
+        provider:
+          type: string
+          enum: [password, google_oauth2]
+        identifier:
+          type: string
+        secret:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [accessToken, refreshToken, tokenType, expiresIn]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          example: 3600
+
+    UserClaims:
+      type: object
+      required: [id, email, roles]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        fullName:
+          type: string
+        companyId:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        permissions:
+          type: array
+          items:
+            type: string
+
+    UserProfile:
+      type: object
+      required: [id, fullName, preferredLanguage, defaultCountryCode]
+      properties:
+        id:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        preferredLanguage:
+          type: string
+          enum: [FRENCH, ARABIC, DERJA, ENGLISH]
+        defaultCountryCode:
+          type: string
+          example: TN
+        defaultWasteMarginPercent:
+          type: number
+          example: 5.0
+        defaultLaborRate:
+          $ref: '#/components/schemas/Money'
+        companyId:
+          type: string
+
+    Company:
+      type: object
+      required: [name, countryCode, currency]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        taxId:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        countryCode:
+          type: string
+        currency:
+          type: string
+        logoUrl:
+          type: string
+
+    Trade:
+      type: object
+      required: [id, localizationKey, iconEmoji]
+      properties:
+        id:
+          type: string
+          enum: [placo, peinture, maconnerie, crepissage, carrelage, menuiserie]
+        localizationKey:
+          type: string
+        iconEmoji:
+          type: string
+        workTypeCount:
+          type: integer
+        supportedUnitSystems:
+          type: array
+          items:
+            type: string
+
+    WorkType:
+      type: object
+      required: [id, localizationKey, defaultUnit]
+      properties:
+        id:
+          type: string
+        localizationKey:
+          type: string
+        defaultUnit:
+          type: string
+        requiredInputs:
+          type: array
+          items:
+            type: string
+        optionalInputs:
+          type: array
+          items:
+            type: string
+
+    Material:
+      type: object
+      required: [id, category, standardUnit, localizationKey, compatibleTrades, isActive]
+      properties:
+        id:
+          type: string
+          example: plaque_ba13_standard
+        category:
+          type: string
+          enum: [placo, ossature, visserie, enduits, dalles, isolation, peinture, maconnerie, crepissage, carrelage, bois_alu, plomberie, electricite, etancheite, outillage, autre]
+        standardUnit:
+          type: string
+          enum: [piece, m2, ml, m3, kg, g, liter, bag_25kg, bag_50kg, bag_5kg, box_1000, box_500, box_200, box_7_2m2, bucket_15l, bucket_20l, bucket_5kg, roll_90m, roll_50m, roll_30m, roll_15m2, roll_10m, cartridge, aerosol_750ml, custom]
+        localizationKey:
+          type: string
+        brandInfo:
+          type: string
+        technicalSpec:
+          type: string
+        compatibleTrades:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+
+    MaterialPrice:
+      type: object
+      required: [id, materialId, countryCode, unit, defaultPrice, currentPrice, priceSource]
+      properties:
+        id:
+          type: string
+          example: TN_plaque_ba13_standard
+        materialId:
+          type: string
+          example: plaque_ba13_standard
+        countryCode:
+          type: string
+          example: TN
+        region:
+          type: string
+          example: Grand Tunis
+        unit:
+          type: string
+          example: piece
+        defaultPrice:
+          $ref: '#/components/schemas/Money'
+        currentPrice:
+          $ref: '#/components/schemas/Money'
+        priceSource:
+          type: string
+          enum: [official_btp, market_2026, supplier, contractor_custom, imported, api_sync, user_override]
+        supplierName:
+          type: string
+        effectiveFrom:
+          type: string
+          format: date-time
+        effectiveTo:
+          type: string
+          format: date-time
+          nullable: true
+        observedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [ACTIVE, ARCHIVED]
+
+    MarketContext:
+      type: object
+      required: [countryCode, countryName, currencyCode, currencySymbol, defaultLaborRatePerM2, defaultWasteMarginPercent]
+      properties:
+        countryCode:
+          type: string
+        countryName:
+          type: string
+        currencyCode:
+          type: string
+        currencySymbol:
+          type: string
+        defaultLaborRatePerM2:
+          $ref: '#/components/schemas/Money'
+        defaultWasteMarginPercent:
+          type: number
+        unitSystem:
+          type: string
+          default: METRIC
+        hasActiveMarketData:
+          type: boolean
+
+    Project:
+      type: object
+      required: [title, status, createdAt]
+      properties:
+        id:
+          type: string
+        companyId:
+          type: string
+        title:
+          type: string
+        clientName:
+          type: string
+        clientPhone:
+          type: string
+        location:
+          type: string
+        status:
+          type: string
+          enum: [PLANNED, IN_PROGRESS, COMPLETED, ARCHIVED]
+        estimateCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    EstimateItem:
+      type: object
+      required: [materialId, quantity, unit, unitPrice, totalPrice]
+      properties:
+        materialId:
+          type: string
+        quantity:
+          type: number
+        unit:
+          type: string
+        unitPrice:
+          $ref: '#/components/schemas/Money'
+        totalPrice:
+          $ref: '#/components/schemas/Money'
+
+    Estimate:
+      type: object
+      required: [clientName, tradeId, workTypeId, countryCode, currency, dimensions, items, financialSummary, status]
+      properties:
+        id:
+          type: string
+        projectId:
+          type: string
+          nullable: true
+        clientName:
+          type: string
+        clientPhone:
+          type: string
+        tradeId:
+          type: string
+        workTypeId:
+          type: string
+        countryCode:
+          type: string
+        currency:
+          type: string
+        dimensions:
+          type: object
+          properties:
+            area:
+              type: number
+            perimeter:
+              type: number
+            wasteMarginPercent:
+              type: number
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EstimateItem'
+        financialSummary:
+          type: object
+          properties:
+            materialCost:
+              $ref: '#/components/schemas/Money'
+            laborCost:
+              $ref: '#/components/schemas/Money'
+            taxAmount:
+              $ref: '#/components/schemas/Money'
+            grandTotal:
+              $ref: '#/components/schemas/Money'
+        status:
+          type: string
+          enum: [DRAFT, SENT, APPROVED, REJECTED]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CalculationRequest:
+      type: object
+      required: [tradeId, workTypeId, countryCode, inputs]
+      properties:
+        tradeId:
+          type: string
+        workTypeId:
+          type: string
+        countryCode:
+          type: string
+        inputs:
+          type: object
+          properties:
+            area:
+              type: number
+            perimeter:
+              type: number
+            wasteMarginPercent:
+              type: number
+            customLaborRate:
+              type: number
+
+    CalculationResponse:
+      type: object
+      required: [tradeId, workTypeId, countryCode, currency, inputs, materials, totals]
+      properties:
+        tradeId:
+          type: string
+        workTypeId:
+          type: string
+        countryCode:
+          type: string
+        currency:
+          type: string
+        inputs:
+          type: object
+        materials:
+          type: array
+          items:
+            type: object
+        totals:
+          type: object
+          properties:
+            materialCost:
+              $ref: '#/components/schemas/Money'
+            laborCost:
+              $ref: '#/components/schemas/Money'
+            grandTotal:
+              $ref: '#/components/schemas/Money'
+
+    SyncDeltaRequest:
+      type: object
+      required: [clientDeviceId, lastSyncedTimestamp, mutations]
+      properties:
+        clientDeviceId:
+          type: string
+        lastSyncedTimestamp:
+          type: string
+          format: date-time
+        mutations:
+          type: array
+          items:
+            type: object
+            required: [entityType, entityId, action, clientUpdatedAt, version, payload]
+            properties:
+              entityType:
+                type: string
+                enum: [PRICE_OVERRIDE, ESTIMATE, USER_SETTINGS, PROJECT]
+              entityId:
+                type: string
+              action:
+                type: string
+                enum: [CREATE, UPSERT, DELETE]
+              clientUpdatedAt:
+                type: string
+                format: date-time
+              version:
+                type: integer
+              payload:
+                type: object
+
+    SyncDeltaResponse:
+      type: object
+      required: [serverTimestamp, appliedCount, conflicts, serverChanges]
+      properties:
+        serverTimestamp:
+          type: string
+          format: date-time
+        appliedCount:
+          type: integer
+        conflicts:
+          type: array
+          items:
+            type: object
+        serverChanges:
+          type: array
+          items:
+            type: object
