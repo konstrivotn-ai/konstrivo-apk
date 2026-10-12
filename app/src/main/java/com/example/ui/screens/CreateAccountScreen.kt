@@ -262,67 +262,33 @@ fun CreateAccountScreen(
             }
             */
 
-            // Clear honest messaging about backend status.
-            Card(
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
+            // Keep the reference layout clean; explain the backend limitation only
+            // after the user attempts to submit the form.
+            if (attempted) {
+                Text(
+                    text = if (!canSubmit) {
+                        language.tr(
+                            fr = "Vérifiez les champs obligatoires et acceptez les conditions.",
+                            en = "Check the required fields and accept the terms.",
+                            ar = "تحقّق من الحقول المطلوبة ووافق على الشروط.",
+                            dz = "ثبت الخانات المطلوبة ووافق على الشروط."
+                        )
+                    } else {
+                        language.tr(
+                            fr = "Le formulaire est valide, mais l’inscription en ligne n’est pas encore configurée sur cette version.",
+                            en = "The form is valid, but online sign-up is not configured in this build yet.",
+                            ar = "البيانات صحيحة، لكن التسجيل عبر الإنترنت غير مهيّأ في هذا الإصدار بعد.",
+                            dz = "المعلومات صحيحة، أما التسجيل عبر الإنترنت مازال موش مهيّأ في النسخة هاذي."
+                        )
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (canSubmit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Icon(Icons.Default.Info, contentDescription = null, tint = KonstrivoGold)
-                        Text(
-                            text = language.tr(
-                                fr = "Inscription en ligne: configuration requise",
-                                en = "Online sign-up: configuration required",
-                                ar = "التسجيل عبر الإنترنت: يحتاج إعداد",
-                                dz = "التسجيل عبر الإنترنت: يحتاج إعداد"
-                            ),
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
-                    Text(
-                        text = language.tr(
-                            fr = "Cette version est offline-first. Le projet ne contient pas encore les identifiants Supabase/API nécessaires pour créer un vrai compte cloud. Vos paramètres restent utilisables localement.",
-                            en = "This build is offline-first. The project ZIP does not include the Supabase/API configuration needed to create a real cloud account yet. Local usage remains available.",
-                            ar = "هذا الإصدار يعمل بدون إنترنت. المشروع لا يحتوي بعد على إعدادات Supabase/API اللازمة لإنشاء حساب حقيقي على السحابة. الاستخدام المحلي متاح.",
-                            dz = "هذا الإصدار يخدم بلا إنترنت. مازال ماكانش إعداد Supabase/API باش يتعمل compte cloud. الاستعمال المحلي موجود."
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Start
-                    )
-                    if (attempted && canSubmit) {
-                        Text(
-                            text = language.tr(
-                                fr = "Formulaire valide, mais la création de compte reste désactivée tant que le serveur d’authentification n’est pas configuré.",
-                                en = "Form validated, but account creation remains unavailable until the authentication backend is configured.",
-                                ar = "البيانات صحيحة، لكن إنشاء الحساب غير متاح حتى يتم إعداد خادم المصادقة.",
-                                dz = "المعلومات صحيحة، أما إنشاء الحساب ما يخدمش قبل إعداد خادم المصادقة."
-                            ),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                    if (attempted && !canSubmit) {
-                        Text(
-                            text = language.tr(
-                                fr = "Vérifiez vos informations (nom, entreprise, téléphone, email, mot de passe, conditions).",
-                                en = "Please verify your information (name, company, phone, email, password, terms).",
-                                ar = "يرجى التحقق من البيانات (الاسم، الشركة، الهاتف، البريد، كلمة المرور، الشروط).",
-                                dz = "ثبت معلوماتك (الاسم، الشركة، الهاتف، الإيميل، كلمة السر، الشروط)."
-                            ),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
+                        .padding(top = 4.dp)
+                        .testTag("signup_status")
+                )
             }
         }
     }
