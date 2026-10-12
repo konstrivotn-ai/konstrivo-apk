@@ -138,13 +138,13 @@ fun UserLoginScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = language.tr("مرحبًا بعودتك", "Welcome back", "مرحبًا بعودتك", "عسلامة من جديد"),
+                    text = language.tr("Ravi de vous revoir", "Welcome back", "مرحبًا بعودتك", "عسلامة من جديد"),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = language.tr(
-                        "سجّل الدخول إلى حسابك KONSTRIVO",
+                        "Connectez-vous à votre compte KONSTRIVO",
                         "Sign in to your KONSTRIVO account",
                         "سجّل الدخول إلى حسابك KONSTRIVO",
                         "ادخل لحسابك KONSTRIVO"
