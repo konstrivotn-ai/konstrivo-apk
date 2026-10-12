@@ -40,6 +40,7 @@ fun ProfileScreen(
     onBack: () -> Unit,
     onUpgrade: () -> Unit,
     onCreateAccount: () -> Unit,
+    onSignIn: () -> Unit,
     onAdminAccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -74,12 +75,19 @@ fun ProfileScreen(
                             color = Color.White.copy(alpha = 0.82f)
                         )
                         Button(
-                            onClick = onCreateAccount,
+                            onClick = onSignIn,
                             colors = ButtonDefaults.buttonColors(containerColor = KonstrivoGold, contentColor = KonstrivoNavy),
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(language.tr("Créer un compte", "Create account", "إنشاء حساب", "إنشاء حساب"))
+                            Text(language.tr("Se connecter", "Sign in", "تسجيل الدخول", "ادخل لحسابك"))
+                        }
+                        androidx.compose.material3.OutlinedButton(
+                            onClick = onCreateAccount,
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(language.tr("Créer un compte", "Create account", "إنشاء حساب", "اعمل حساب"))
                         }
                         androidx.compose.material3.OutlinedButton(
                             onClick = onAdminAccess,
