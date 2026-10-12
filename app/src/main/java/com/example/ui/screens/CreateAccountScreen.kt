@@ -225,7 +225,7 @@ fun CreateAccountScreen(
                     Button(
                         onClick = {
                             attempted = true
-                            // No backend in this ZIP -> show the explanation card below.
+                            // The form stays local until a real authentication backend is configured.
                         },
                         enabled = true,
                         shape = RoundedCornerShape(12.dp),
@@ -249,10 +249,10 @@ fun CreateAccountScreen(
                     ) {
                         Text(
                             text = language.tr(
-                                fr = "Vous avez déjà un compte ? Se connecter",
-                                en = "Already have an account? Sign in",
-                                ar = "عندك حساب؟ تسجيل الدخول",
-                                dz = "عندك compte؟ تسجيل الدخول"
+                                fr = "Retour aux options du compte",
+                                en = "Back to account options",
+                                ar = "العودة إلى خيارات الحساب",
+                                dz = "ارجع لاختيارات الحساب"
                             ),
                             fontWeight = FontWeight.Bold
                         )
