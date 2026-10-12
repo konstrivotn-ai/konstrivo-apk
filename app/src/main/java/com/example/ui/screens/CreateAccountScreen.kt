@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.data.model.AppLanguage
+import com.example.ui.components.designsystem.KonstrivoBrandMark
 import com.example.ui.components.designsystem.tr
 import com.example.ui.theme.KonstrivoGold
 import com.example.ui.viewmodel.MainViewModel
