@@ -1,16 +1,17 @@
-# KONSTRIVO PRO — Collage implementation checklist (image.jpg)
+# KONSTRIVO PRO — Collage implementation checklist
 
-This checklist is derived from `image.jpg` and the generated crops under `docs/ref_*.png`.
+This checklist is derived from `DESIGN_REFERENCES/app_design.png` and the committed crops under `docs/ref_*.png`.
 
 ## Top row
 1. ref_top_01 — Splash
    - Blueprint background lines
    - Centered brand mark + "KONSTRIVO PRO" + subtitle
-2. ref_top_02 — Login
+2. ref_top_02 — Customer Login
    - Brand mark + title
    - Email + password fields
    - Primary "Log in" button
-   - Links: forgot password (if supported) + create account
+   - Link to create account
+   - Keep customer sign-in separate from the owner/admin login
 3. ref_top_03 — Create Account
    - Fields: Nom, Prénom, Entreprise, Téléphone, Email, Mot de passe
    - Primary "Sign up" button
@@ -50,6 +51,7 @@ This checklist is derived from `image.jpg` and the generated crops under `docs/r
 ## Verification notes
 - The GitHub Actions workflow runs `:app:testDebugUnitTest` and `:app:assembleDebug`, then uploads `app-debug.apk` as a short-lived workflow artifact.
 - A green CI build confirms compilation and unit tests only; it does not prove pixel-level visual matching.
+- Customer registration and sign-in screens are UI-only until a real authentication provider is configured; do not report account creation/login as working online yet.
 - Visual verification still requires installing the APK on an Android device/emulator and comparing screenshots screen-by-screen against the `ref_top_*.png` and `ref_bot_*.png` crops.
 - Keep this checklist as the acceptance list; do not mark visual items complete based on compilation alone.
 
