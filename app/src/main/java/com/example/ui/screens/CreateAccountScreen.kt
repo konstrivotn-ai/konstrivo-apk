@@ -97,6 +97,7 @@ fun CreateAccountScreen(
                 IconButton(onClick = onBack, modifier = Modifier.testTag("btn_create_back")) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                 }
+                KonstrivoBrandMark(size = 34.dp)
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = language.tr("Créer un compte", "Create account", "إنشاء حساب", "إنشاء حساب"),
