@@ -35,11 +35,70 @@ import com.example.ui.viewmodel.AppTab
 import com.example.ui.viewmodel.MainViewModel
 
 @Composable
-fun ProfileScreen(viewModel: MainViewModel, onBack: () -> Unit, onUpgrade: () -> Unit, modifier: Modifier = Modifier) {
+fun ProfileScreen(
+    viewModel: MainViewModel,
+    onBack: () -> Unit,
+    onUpgrade: () -> Unit,
+    onCreateAccount: () -> Unit,
+    onSignIn: () -> Unit,
+    onAdminAccess: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val language by viewModel.selectedLanguage.collectAsState()
     val isAdmin by viewModel.isAdmin.collectAsState()
     BoardScaffold(title = language.tr("Profile / Mon Compte", "Profile / My Account", "الحساب", "الحساب"), tag = "profile_screen", onBack = onBack) {
         LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            item {
+                Card(
+                    shape = RoundedCornerShape(KonstrivoRadius.Card),
+                    colors = CardDefaults.cardColors(containerColor = KonstrivoNavy),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        Modifier.fillMaxWidth().padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            language.tr("Compte KONSTRIVO", "KONSTRIVO account", "حساب KONSTRIVO", "حساب KONSTRIVO"),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = KonstrivoGold
+                        )
+                        Text(
+                            language.tr(
+                                "Créez votre profil. La connexion et l’inscription en ligne nécessitent encore la configuration du service d’authentification.",
+                                "Create your profile. Online sign-in and registration still require the authentication service to be configured.",
+                                "أنشئ ملفك. تسجيل الدخول وإنشاء الحساب عبر الإنترنت يستوجبان إعداد خدمة المصادقة أولاً.",
+                                "أنشئ ملفك. الدخول والتسجيل عبر الإنترنت يستحقّوا إعداد خدمة المصادقة أوّل."
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.82f)
+                        )
+                        Button(
+                            onClick = onSignIn,
+                            colors = ButtonDefaults.buttonColors(containerColor = KonstrivoGold, contentColor = KonstrivoNavy),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(language.tr("Se connecter", "Sign in", "تسجيل الدخول", "ادخل لحسابك"))
+                        }
+                        androidx.compose.material3.OutlinedButton(
+                            onClick = onCreateAccount,
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(language.tr("Créer un compte", "Create account", "إنشاء حساب", "اعمل حساب"))
+                        }
+                        androidx.compose.material3.OutlinedButton(
+                            onClick = onAdminAccess,
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(language.tr("Accès administrateur", "Administrator access", "دخول الإدارة", "دخول الإدارة"))
+                        }
+                    }
+                }
+            }
             item {
                 Card(shape = RoundedCornerShape(KonstrivoRadius.Card),
                     colors = CardDefaults.cardColors(containerColor = KonstrivoNavy),

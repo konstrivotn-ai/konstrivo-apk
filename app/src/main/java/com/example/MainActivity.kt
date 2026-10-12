@@ -81,6 +81,7 @@ fun MainAppScreen(
 
     val currentYear = remember { java.util.Calendar.getInstance().get(java.util.Calendar.YEAR) }
     var showLangMenu by remember { mutableStateOf(false) }
+    var showUserLogin by remember { mutableStateOf(false) }
 
     // PHASE 1 — RTL: Arabic & Derja render right-to-left; French & English stay LTR.
     // Applied once at the app root so every screen, bar, list and card inherits it.
@@ -96,6 +97,23 @@ fun MainAppScreen(
             language = language,
             onFinished = { viewModel.dismissSplash() }
         )
+    } else if (showUserLogin) {
+        androidx.activity.compose.BackHandler {
+            showUserLogin = false
+            viewModel.openProfile()
+        }
+        UserLoginScreen(
+            language = language,
+            onLanguageSelected = { viewModel.setLanguage(it) },
+            onBack = {
+                showUserLogin = false
+                viewModel.openProfile()
+            },
+            onCreateAccount = {
+                showUserLogin = false
+                viewModel.openCreateAccountScreen()
+            }
+        )
     } else if (showLogin) {
         androidx.activity.compose.BackHandler {
             viewModel.closeLoginScreen()
@@ -107,10 +125,6 @@ fun MainAppScreen(
                 viewModel.closeLoginScreen()
                 viewModel.openAdminDashboard()
             },
-            onCreateAccount = {
-                viewModel.closeLoginScreen()
-                viewModel.openCreateAccountScreen()
-            }
         )
     } else if (showCreateAccount) {
         androidx.activity.compose.BackHandler {
@@ -121,7 +135,7 @@ fun MainAppScreen(
             onBack = { viewModel.closeCreateAccountScreen() },
             onSignIn = {
                 viewModel.closeCreateAccountScreen()
-                viewModel.openLoginScreen()
+                showUserLogin = true
             }
         )
     } else if (showMaterialsCatalog) {
@@ -158,6 +172,9 @@ fun MainAppScreen(
             viewModel = viewModel,
             onBack = { viewModel.closeProfile() },
             onUpgrade = { viewModel.closeProfile(); viewModel.openSubscription() },
+            onCreateAccount = { viewModel.closeProfile(); viewModel.openCreateAccountScreen() },
+            onSignIn = { viewModel.closeProfile(); showUserLogin = true },
+            onAdminAccess = { viewModel.closeProfile(); viewModel.openLoginScreen() },
         )
     } else if (showSubscription) {
         androidx.activity.compose.BackHandler { viewModel.closeSubscription() }
@@ -270,10 +287,10 @@ fun MainAppScreen(
                         }
                     }
 
-                    // Account entry point → existing Settings / Owner login area (Phase E).
-                    // Uses the existing tab navigation; no new auth system.
+                    // Account entry point opens the account hub; admin authentication
+                    // remains a separate, explicit action inside the profile screen.
                     IconButton(
-                        onClick = { viewModel.selectTab(AppTab.SETTINGS) },
+                        onClick = { viewModel.openProfile() },
                         modifier = Modifier.testTag("top_account_button")
                     ) {
                         Icon(

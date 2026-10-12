@@ -15,6 +15,8 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.data.model.AppLanguage
+import com.example.ui.components.designsystem.KonstrivoBrandMark
 import com.example.ui.components.designsystem.tr
 import com.example.ui.theme.KonstrivoGold
 import com.example.ui.viewmodel.MainViewModel
@@ -60,6 +63,7 @@ fun CreateAccountScreen(
     var phone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
     var acceptedTerms by remember { mutableStateOf(false) }
 
     var attempted by remember { mutableStateOf(false) }
@@ -94,6 +98,7 @@ fun CreateAccountScreen(
                 IconButton(onClick = onBack, modifier = Modifier.testTag("btn_create_back")) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                 }
+                KonstrivoBrandMark(size = 34.dp)
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = language.tr("Créer un compte", "Create account", "إنشاء حساب", "إنشاء حساب"),
@@ -111,6 +116,10 @@ fun CreateAccountScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+                AuthLanguageSelector(
+                    language = language,
+                    onLanguageSelected = viewModel::setLanguage
+                )
             }
 
             /* Superseded by the reference layout: form fields sit directly on the navy background.
@@ -179,6 +188,15 @@ fun CreateAccountScreen(
                         leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                         label = { Text(language.tr("Mot de passe", "Password", "كلمة المرور", "كلمة المرور")) },
                         singleLine = true,
+                        visualTransformation = if (showPassword) androidx.compose.ui.text.input.VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                        trailingIcon = {
+                            IconButton(onClick = { showPassword = !showPassword }) {
+                                Icon(
+                                    imageVector = if (showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                    contentDescription = if (showPassword) language.tr("Masquer le mot de passe", "Hide password", "إخفاء كلمة المرور", "إخفاء كلمة المرور") else language.tr("Afficher le mot de passe", "Show password", "إظهار كلمة المرور", "إظهار كلمة المرور")
+                                )
+                            }
+                        },
                         isError = attempted && !pwdOk,
                         modifier = Modifier.fillMaxWidth().testTag("signup_password")
                     )
@@ -209,7 +227,7 @@ fun CreateAccountScreen(
                     Button(
                         onClick = {
                             attempted = true
-                            // No backend in this ZIP -> show the explanation card below.
+                            // The form stays local until a real authentication backend is configured.
                         },
                         enabled = true,
                         shape = RoundedCornerShape(12.dp),
@@ -220,7 +238,7 @@ fun CreateAccountScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Text(
-                            text = language.tr("Sign up", "Sign up", "Sign up", "Sign up"),
+                            text = language.tr("Créer mon compte", "Create account", "إنشاء حساب", "إنشاء حساب"),
                             fontWeight = FontWeight.ExtraBold
                         )
                     }
@@ -233,10 +251,10 @@ fun CreateAccountScreen(
                     ) {
                         Text(
                             text = language.tr(
-                                fr = "Vous avez déjà un compte ? Se connecter",
-                                en = "Already have an account? Sign in",
-                                ar = "عندك حساب؟ تسجيل الدخول",
-                                dz = "عندك compte؟ تسجيل الدخول"
+                                fr = "Retour aux options du compte",
+                                en = "Back to account options",
+                                ar = "العودة إلى خيارات الحساب",
+                                dz = "ارجع لاختيارات الحساب"
                             ),
                             fontWeight = FontWeight.Bold
                         )
@@ -246,55 +264,33 @@ fun CreateAccountScreen(
             }
             */
 
-            // Clear honest messaging about backend status.
-            Card(
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
+            // Keep the reference layout clean; explain the backend limitation only
+            // after the user attempts to submit the form.
+            if (attempted) {
+                Text(
+                    text = if (!canSubmit) {
+                        language.tr(
+                            fr = "Vérifiez les champs obligatoires et acceptez les conditions.",
+                            en = "Check the required fields and accept the terms.",
+                            ar = "تحقّق من الحقول المطلوبة ووافق على الشروط.",
+                            dz = "ثبت الخانات المطلوبة ووافق على الشروط."
+                        )
+                    } else {
+                        language.tr(
+                            fr = "Le formulaire est valide, mais l’inscription en ligne n’est pas encore configurée sur cette version.",
+                            en = "The form is valid, but online sign-up is not configured in this build yet.",
+                            ar = "البيانات صحيحة، لكن التسجيل عبر الإنترنت غير مهيّأ في هذا الإصدار بعد.",
+                            dz = "المعلومات صحيحة، أما التسجيل عبر الإنترنت مازال موش مهيّأ في النسخة هاذي."
+                        )
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (canSubmit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Icon(Icons.Default.Info, contentDescription = null, tint = KonstrivoGold)
-                        Text(
-                            text = language.tr(
-                                fr = "Inscription en ligne: configuration requise",
-                                en = "Online sign-up: configuration required",
-                                ar = "التسجيل عبر الإنترنت: يحتاج إعداد",
-                                dz = "التسجيل عبر الإنترنت: يحتاج إعداد"
-                            ),
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
-                    Text(
-                        text = language.tr(
-                            fr = "Cette version est offline-first. Le projet ne contient pas encore les identifiants Supabase/API nécessaires pour créer un vrai compte cloud. Vos paramètres restent utilisables localement.",
-                            en = "This build is offline-first. The project ZIP does not include the Supabase/API configuration needed to create a real cloud account yet. Local usage remains available.",
-                            ar = "هذا الإصدار يعمل بدون إنترنت. المشروع لا يحتوي بعد على إعدادات Supabase/API اللازمة لإنشاء حساب حقيقي على السحابة. الاستخدام المحلي متاح.",
-                            dz = "هذا الإصدار يخدم بلا إنترنت. مازال ماكانش إعداد Supabase/API باش يتعمل compte cloud. الاستعمال المحلي موجود."
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Start
-                    )
-                    if (attempted && !canSubmit) {
-                        Text(
-                            text = language.tr(
-                                fr = "Vérifiez vos informations (nom, entreprise, téléphone, email, mot de passe, conditions).",
-                                en = "Please verify your information (name, company, phone, email, password, terms).",
-                                ar = "يرجى التحقق من البيانات (الاسم، الشركة، الهاتف، البريد، كلمة المرور، الشروط).",
-                                dz = "ثبت معلوماتك (الاسم، الشركة، الهاتف، الإيميل، كلمة السر، الشروط)."
-                            ),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                }
+                        .padding(top = 4.dp)
+                        .testTag("signup_status")
+                )
             }
         }
     }

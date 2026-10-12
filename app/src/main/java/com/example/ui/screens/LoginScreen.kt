@@ -74,14 +74,13 @@ import com.example.ui.components.designsystem.tr
  * (PBKDF2 / BuildConfig / fail-closed). No auth architecture change.
  *
  * On success [onLoginSuccess] is invoked, which the host screen wires to open the
- * existing AdminDashboard. No Register / Forgot-password / Google / Firebase / OTP.
+ * existing AdminDashboard. This is administrator-only; customer registration lives in the account hub.
  */
 @Composable
 fun LoginScreen(
     viewModel: MainViewModel,
     onBack: () -> Unit,
     onLoginSuccess: () -> Unit,
-    onCreateAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val language by viewModel.selectedLanguage.collectAsState()
@@ -157,6 +156,11 @@ Surface(
                             )
                         }
                     }
+                    AuthLanguageSelector(
+                        language = language,
+                        onLanguageSelected = viewModel::setLanguage,
+                        modifier = Modifier.align(Alignment.CenterEnd)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(28.dp))
@@ -318,36 +322,16 @@ Surface(
                             }
                         }
 
-                        OutlinedButton(
-                            onClick = onCreateAccount,
-                            shape = RoundedCornerShape(12.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, KonstrivoGold.copy(alpha = 0.65f)),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(52.dp)
-                                .testTag("btn_open_create_account")
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.PersonAdd,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = language.tr("Créer un compte", "Create account", "إنشاء حساب", "إنشاء حساب"),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
                     }
 
                 Spacer(modifier = Modifier.height(28.dp))
 
                 Text(
                     text = language.tr(
-                        fr = "Authentification locale sécurisée • Données jamais transmises",
-                        en = "Secure local authentication • Your data never leaves this device",
-                        ar = "مصادقة محلية آمنة • البيانات لا تُرسل أبداً",
-                        dz = "توثيق محلي مضمون • المعطيات ما تُخرجش من التيليفون"
+                        fr = "Accès réservé à l’administration",
+                        en = "Administrator access only",
+                        ar = "الدخول مخصّص للإدارة فقط",
+                        dz = "الدخول هذا مخصّص للإدارة برك"
                     ),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

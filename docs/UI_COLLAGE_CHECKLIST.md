@@ -48,6 +48,8 @@ This checklist is derived from `image.jpg` and the generated crops under `docs/r
 8. ref_bot_08 — Materials / Catalog
 
 ## Verification notes
-- Build & screenshot verification is blocked in this environment because Gradle cannot download the wrapper distribution.
-- Local Windows build is required to produce APK and real screenshots.
+- The GitHub Actions workflow runs `:app:testDebugUnitTest` and `:app:assembleDebug`, then uploads `app-debug.apk` as a short-lived workflow artifact.
+- A green CI build confirms compilation and unit tests only; it does not prove pixel-level visual matching.
+- Visual verification still requires installing the APK on an Android device/emulator and comparing screenshots screen-by-screen against the `ref_top_*.png` and `ref_bot_*.png` crops.
+- Keep this checklist as the acceptance list; do not mark visual items complete based on compilation alone.
 
