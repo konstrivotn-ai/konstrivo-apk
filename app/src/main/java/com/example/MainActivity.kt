@@ -107,10 +107,6 @@ fun MainAppScreen(
                 viewModel.closeLoginScreen()
                 viewModel.openAdminDashboard()
             },
-            onCreateAccount = {
-                viewModel.closeLoginScreen()
-                viewModel.openCreateAccountScreen()
-            }
         )
     } else if (showCreateAccount) {
         androidx.activity.compose.BackHandler {
@@ -121,7 +117,7 @@ fun MainAppScreen(
             onBack = { viewModel.closeCreateAccountScreen() },
             onSignIn = {
                 viewModel.closeCreateAccountScreen()
-                viewModel.openLoginScreen()
+                viewModel.openProfile()
             }
         )
     } else if (showMaterialsCatalog) {
@@ -158,6 +154,8 @@ fun MainAppScreen(
             viewModel = viewModel,
             onBack = { viewModel.closeProfile() },
             onUpgrade = { viewModel.closeProfile(); viewModel.openSubscription() },
+            onCreateAccount = { viewModel.closeProfile(); viewModel.openCreateAccountScreen() },
+            onAdminAccess = { viewModel.closeProfile(); viewModel.openLoginScreen() },
         )
     } else if (showSubscription) {
         androidx.activity.compose.BackHandler { viewModel.closeSubscription() }
@@ -270,10 +268,10 @@ fun MainAppScreen(
                         }
                     }
 
-                    // Account entry point opens the existing sign-in flow directly.
-                    // Registration remains reachable from the sign-in screen.
+                    // Account entry point opens the account hub; admin authentication
+                    // remains a separate, explicit action inside the profile screen.
                     IconButton(
-                        onClick = { viewModel.openLoginScreen() },
+                        onClick = { viewModel.openProfile() },
                         modifier = Modifier.testTag("top_account_button")
                     ) {
                         Icon(
