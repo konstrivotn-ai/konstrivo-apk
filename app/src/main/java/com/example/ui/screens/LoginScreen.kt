@@ -157,6 +157,11 @@ Surface(
                             )
                         }
                     }
+                    AuthLanguageSelector(
+                        language = language,
+                        onLanguageSelected = viewModel::setLanguage,
+                        modifier = Modifier.align(Alignment.CenterEnd)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(28.dp))
