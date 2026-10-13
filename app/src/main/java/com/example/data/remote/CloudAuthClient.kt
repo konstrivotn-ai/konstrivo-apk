@@ -17,7 +17,7 @@ object CloudAuthClient {
     private const val REFRESH_TOKEN = "refresh_token"
     private const val API_BASE = "https://konstrivo.konstrivo.blitz.cloud/api/v1/"
 
-    data class Session(val accessToken: String, val refreshToken: String, val fullName: String, val email: String)
+    data class Session(val accessToken: String, val refreshToken: String, val fullName: String, val email: String, val role: String)
 
     fun login(context: Context, email: String, password: String): Result<Session> =
         requestAuth(context, "auth/login", JSONObject().put("email", email.trim()).put("password", password))
@@ -82,7 +82,7 @@ object CloudAuthClient {
                 .putString(ACCESS_TOKEN, access)
                 .putString(REFRESH_TOKEN, refresh)
                 .apply()
-            Session(access, refresh, user.optString("fullName"), user.optString("email"))
+            Session(access, refresh, user.optString("fullName"), user.optString("email"), user.optString("role", "artisan"))
         } finally {
             connection.disconnect()
         }
