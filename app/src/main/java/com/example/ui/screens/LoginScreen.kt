@@ -95,6 +95,11 @@ fun LoginScreen(
     var loading by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    var showForgotDialog by remember { mutableStateOf(false) }
+    var resetEmail by remember { mutableStateOf("") }
+    var resetLoading by remember { mutableStateOf(false) }
+    var resetMessage by remember { mutableStateOf("") }
+    var resetError by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -297,6 +302,21 @@ Surface(
                                 modifier = Modifier.testTag("login_error")
                             )
                         }
+                        androidx.compose.material3.TextButton(
+                            onClick = {
+                                resetEmail = email.trim()
+                                resetMessage = ""
+                                resetError = false
+                                showForgotDialog = true
+                            },
+                            modifier = Modifier.align(Alignment.End).testTag("btn_forgot_password")
+                        ) {
+                            Text(
+                                language.tr("Mot de passe oublié ?", "Forgot password?", "نسيت كلمة المرور؟", "نسيت كلمة السر؟"),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
                         Button(
                             onClick = { submit() },
                             enabled = !loading,
@@ -367,6 +387,74 @@ Surface(
                 )
             }
         }
+    }
+
+    if (showForgotDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { if (!resetLoading) showForgotDialog = false },
+            title = {
+                Text(language.tr("Réinitialiser le mot de passe", "Reset password", "إعادة تعيين كلمة المرور", "بدّل كلمة السر"))
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(language.tr(
+                        "Saisissez votre email. Si le compte existe, un lien de réinitialisation sera envoyé.",
+                        "Enter your email. If the account exists, a reset link will be sent.",
+                        "اكتب البريد الإلكتروني. إذا الحساب موجود، توصلك رسالة فيها رابط التغيير.",
+                        "اكتب الإيميل. كان الحساب موجود، توصلك رسالة فيها رابط تبديل كلمة السر."
+                    ))
+                    OutlinedTextField(
+                        value = resetEmail,
+                        onValueChange = { resetEmail = it },
+                        singleLine = true,
+                        label = { Text("Email") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Done),
+                        modifier = Modifier.fillMaxWidth().testTag("forgot_password_email")
+                    )
+                    if (resetMessage.isNotBlank()) {
+                        Text(
+                            resetMessage,
+                            color = if (resetError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    enabled = !resetLoading && resetEmail.contains("@"),
+                    onClick = {
+                        resetLoading = true
+                        resetMessage = ""
+                        scope.launch {
+                            val result = withContext(Dispatchers.IO) { CloudAuthClient.requestPasswordReset(resetEmail) }
+                            resetLoading = false
+                            result.onSuccess {
+                                resetError = false
+                                resetMessage = language.tr(
+                                    "Si cette adresse existe, un lien sera envoyé.",
+                                    "If this address exists, a reset link will be sent.",
+                                    "إذا البريد موجود، باش يتبعثلك رابط.",
+                                    "كان الإيميل موجود، باش يوصلك رابط."
+                                )
+                            }.onFailure {
+                                resetError = true
+                                resetMessage = it.message ?: language.tr("Échec de la demande.", "Request failed.", "فشل الطلب.", "الطلب ما نجحش.")
+                            }
+                        }
+                    }
+                ) {
+                    if (resetLoading) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                    else Text(language.tr("Envoyer", "Send", "إرسال", "ابعث"))
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = { showForgotDialog = false },
+                    enabled = !resetLoading
+                ) { Text(language.tr("Fermer", "Close", "إغلاق", "سكر")) }
+            }
+        )
     }
 }
 /**
