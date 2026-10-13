@@ -41,6 +41,31 @@ object CloudAuthClient {
             .put("role", "artisan")
     )
 
+    /** Requests the website API to send a password-reset email. The API deliberately returns a generic response. */
+    fun requestPasswordReset(email: String): Result<Unit> = runCatching {
+        val connection = (URL(API_BASE + "auth/forgot").openConnection() as HttpURLConnection).apply {
+            requestMethod = "POST"
+            connectTimeout = 12000
+            readTimeout = 12000
+            doOutput = true
+            setRequestProperty("Accept", "application/json")
+            setRequestProperty("Content-Type", "application/json; charset=utf-8")
+        }
+        try {
+            val payload = JSONObject().put("email", email.trim())
+            connection.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+            val status = connection.responseCode
+            val stream = if (status in 200..299) connection.inputStream else connection.errorStream
+            val response = stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty()
+            if (status !in 200..299) {
+                val json = try { JSONObject(response) } catch (_: Exception) { JSONObject() }
+                throw IllegalStateException(json.optString("message").ifBlank { "Unable to request password reset. Please try again." })
+            }
+        } finally {
+            connection.disconnect()
+        }
+    }
+
     fun accessToken(context: Context): String? =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(ACCESS_TOKEN, null)
 
