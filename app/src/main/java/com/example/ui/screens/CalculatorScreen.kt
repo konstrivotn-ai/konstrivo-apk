@@ -88,6 +88,81 @@ fun CalculatorScreen(
         contentPadding = PaddingValues(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+        // Professional calculator heading: establishes hierarchy before the workflow controls.
+        // Presentation-only; calculation state and formulas remain owned by the existing ViewModel.
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 2.dp)
+                    .testTag("calculator_header"),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = KonstrivoNavy),
+                border = androidx.compose.foundation.BorderStroke(1.dp, KonstrivoGold.copy(alpha = 0.45f))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 18.dp, vertical = 18.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(15.dp),
+                        color = KonstrivoGold.copy(alpha = 0.16f),
+                        modifier = Modifier.size(54.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.Calculate,
+                                contentDescription = null,
+                                tint = KonstrivoGold,
+                                modifier = Modifier.size(29.dp)
+                            )
+                        }
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        Text(
+                            text = language.tr(
+                                "Calculateur de chantier",
+                                "Construction calculator",
+                                "حاسبة الأشغال",
+                                "حاسبة الشانطي"
+                            ),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Text(
+                            text = language.tr(
+                                "Choisissez le métier, saisissez les mesures et vérifiez le métré.",
+                                "Choose a trade, enter measurements, then review your estimate.",
+                                "اختار الخدمة، دخّل المقاسات وبعد راجع حساب الكميات.",
+                                "اختار الصنعة، دخّل القياسات وبعد راجع المترية."
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.82f)
+                        )
+                        Surface(
+                            shape = RoundedCornerShape(50.dp),
+                            color = KonstrivoGold.copy(alpha = 0.14f)
+                        ) {
+                            Text(
+                                text = selectedTrade.name.replace('_', ' '),
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = KonstrivoGold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
         // === SPEC #17 — Visual step progress bar (engineering estimation pipeline) ===
         // Purely presentational; derives the active step from live state only. Never mutates
         // calculation logic, callbacks, or existing testTags.
