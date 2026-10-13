@@ -134,7 +134,7 @@ fun CalculatorScreen(
                             ),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = Color.White
                         )
                         Text(
                             text = language.tr(
@@ -144,7 +144,7 @@ fun CalculatorScreen(
                                 "اختار الصنعة، دخّل القياسات وبعد راجع المترية."
                             ),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.82f)
+                            color = Color.White.copy(alpha = 0.82f)
                         )
                         Surface(
                             shape = RoundedCornerShape(50.dp),
