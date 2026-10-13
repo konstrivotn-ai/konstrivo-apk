@@ -39,11 +39,9 @@ Layered, **Offline-First**:
 
 ## Backend / API Status
 
-> ⚠️ **No backend is connected yet.** The REST API is **documented only** (contract-first):
-> - `docs/API_CONTRACT.md` — contract + review notes
-> - `docs/openapi.yaml` — OpenAPI specification
+> **Current integration status (verified from source):** Android login and account registration call the website Express API at `/api/v1/auth/login` and `/api/v1/auth/register`; access and refresh tokens are saved in Android SharedPreferences. The Android calculator, local material/price catalog, estimates, and settings still use Room/local repositories and are not yet a fully synchronized cross-device catalog. The API contract remains documented in `docs/API_CONTRACT.md` and `docs/openapi.yaml`.
 >
-> The Web client currently computes locally; Android is fully offline via Room. Future server integration should implement the documented contract.
+> Password recovery is available through the website API endpoint `POST /api/v1/auth/forgot`; the Android login screen now exposes a localized “Forgot password?” flow. Google OAuth and profile/project photo uploads are not implemented by this Android client yet and require configured OAuth/Storage support rather than UI-only buttons.
 
 ## Run Android
 
