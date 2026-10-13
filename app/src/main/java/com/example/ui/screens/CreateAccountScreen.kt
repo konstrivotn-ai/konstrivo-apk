@@ -28,6 +28,10 @@ import com.example.data.model.AppLanguage
 import com.example.ui.components.designsystem.tr
 import com.example.ui.theme.KonstrivoGold
 import com.example.ui.viewmodel.MainViewModel
+import com.example.data.remote.SiteAuthApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Create account screen shown in reference images.
@@ -63,12 +67,16 @@ fun CreateAccountScreen(
     var acceptedTerms by remember { mutableStateOf(false) }
 
     var attempted by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
+    var statusMessage by remember { mutableStateOf<String?>(null) }
+    var statusIsError by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     val nameOk = firstName.trim().length >= 2 && lastName.trim().length >= 2
     val phoneOk = phone.trim().length >= 6
     val companyOk = company.trim().length >= 2
     val emailOk = email.trim().contains('@') && email.trim().contains('.')
-    val pwdOk = password.length >= 6
+    val pwdOk = password.length >= 8
     val termsOk = acceptedTerms
 
     val canSubmit = nameOk && phoneOk && companyOk && emailOk && pwdOk && termsOk
@@ -209,9 +217,22 @@ fun CreateAccountScreen(
                     Button(
                         onClick = {
                             attempted = true
-                            // No backend in this ZIP -> show the explanation card below.
+                            statusMessage = null
+                            if (canSubmit && !loading) {
+                                scope.launch {
+                                    loading = true
+                                    val fullName = (firstName.trim() + " " + lastName.trim()).trim()
+                                    val result = withContext(Dispatchers.IO) {
+                                        SiteAuthApi.register(fullName, email.trim(), password, phone.trim(), company.trim())
+                                    }
+                                    loading = false
+                                    statusIsError = !result.success
+                                    statusMessage = if (result.success) "Account created. Please sign in." else result.message
+                                    if (result.success) onSignIn()
+                                }
+                            }
                         },
-                        enabled = true,
+                        enabled = canSubmit && !loading,
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -219,10 +240,14 @@ fun CreateAccountScreen(
                             .testTag("btn_signup_submit"),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Text(
-                            text = language.tr("Sign up", "Sign up", "Sign up", "Sign up"),
-                            fontWeight = FontWeight.ExtraBold
-                        )
+                        if (loading) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                        } else {
+                            Text(
+                                text = language.tr("Créer mon compte", "Create account", "إنشاء حساب", "إنشاء حساب"),
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        }
                     }
 
                     TextButton(
@@ -246,56 +271,16 @@ fun CreateAccountScreen(
             }
             */
 
-            // Clear honest messaging about backend status.
-            Card(
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+            statusMessage?.let { message ->
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = if (statusIsError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Icon(Icons.Default.Info, contentDescription = null, tint = KonstrivoGold)
-                        Text(
-                            text = language.tr(
-                                fr = "Inscription en ligne: configuration requise",
-                                en = "Online sign-up: configuration required",
-                                ar = "التسجيل عبر الإنترنت: يحتاج إعداد",
-                                dz = "التسجيل عبر الإنترنت: يحتاج إعداد"
-                            ),
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                    }
-                    Text(
-                        text = language.tr(
-                            fr = "Cette version est offline-first. Le projet ne contient pas encore les identifiants Supabase/API nécessaires pour créer un vrai compte cloud. Vos paramètres restent utilisables localement.",
-                            en = "This build is offline-first. The project ZIP does not include the Supabase/API configuration needed to create a real cloud account yet. Local usage remains available.",
-                            ar = "هذا الإصدار يعمل بدون إنترنت. المشروع لا يحتوي بعد على إعدادات Supabase/API اللازمة لإنشاء حساب حقيقي على السحابة. الاستخدام المحلي متاح.",
-                            dz = "هذا الإصدار يخدم بلا إنترنت. مازال ماكانش إعداد Supabase/API باش يتعمل compte cloud. الاستعمال المحلي موجود."
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Start
-                    )
-                    if (attempted && !canSubmit) {
-                        Text(
-                            text = language.tr(
-                                fr = "Vérifiez vos informations (nom, entreprise, téléphone, email, mot de passe, conditions).",
-                                en = "Please verify your information (name, company, phone, email, password, terms).",
-                                ar = "يرجى التحقق من البيانات (الاسم، الشركة، الهاتف، البريد، كلمة المرور، الشروط).",
-                                dz = "ثبت معلوماتك (الاسم، الشركة، الهاتف، الإيميل، كلمة السر، الشروط)."
-                            ),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
+                    Text(text = message, modifier = Modifier.padding(16.dp), color = if (statusIsError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
+
         }
     }
 }
