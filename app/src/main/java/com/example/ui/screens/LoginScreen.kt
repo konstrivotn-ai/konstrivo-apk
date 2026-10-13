@@ -376,10 +376,10 @@ Surface(
 
                 Text(
                     text = language.tr(
-                        fr = "Authentification locale sécurisée • Données jamais transmises",
-                        en = "Secure local authentication • Your data never leaves this device",
-                        ar = "مصادقة محلية آمنة • البيانات لا تُرسل أبداً",
-                        dz = "توثيق محلي مضمون • المعطيات ما تُخرجش من التيليفون"
+                        fr = "Connexion sécurisée • Compte synchronisé avec le service web",
+                        en = "Secure sign-in • Account connected to the web service",
+                        ar = "تسجيل دخول آمن • الحساب مربوط بخدمة الموقع",
+                        dz = "دخول آمن • الحساب مربوط بخدمة الموقع"
                     ),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
