@@ -107,6 +107,7 @@ fun MainAppScreen(
                 viewModel.closeLoginScreen()
                 viewModel.openAdminDashboard()
             },
+            onUserLoginSuccess = { viewModel.closeLoginScreen() },
             onCreateAccount = {
                 viewModel.closeLoginScreen()
                 viewModel.openCreateAccountScreen()
