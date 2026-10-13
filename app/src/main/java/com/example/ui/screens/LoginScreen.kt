@@ -62,6 +62,7 @@ import com.example.ui.theme.KonstrivoDarkNavy
 import com.example.ui.theme.KonstrivoGold
 import com.example.ui.theme.KonstrivoNavy
 import com.example.ui.viewmodel.MainViewModel
+import com.example.data.remote.SiteAuthApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -82,6 +83,7 @@ fun LoginScreen(
     onBack: () -> Unit,
     onLoginSuccess: () -> Unit,
     onCreateAccount: () -> Unit,
+    onUserLoginSuccess: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val language by viewModel.selectedLanguage.collectAsState()
@@ -98,15 +100,13 @@ fun LoginScreen(
         scope.launch {
             loading = true
             showError = false
-            val ok = withContext(Dispatchers.Default) {
-                // Identical auth path to the former inline Settings form. Fail-closed.
-                viewModel.loginAdmin(email.trim(), password)
-            }
+            val userOk = withContext(Dispatchers.IO) { SiteAuthApi.login(email.trim(), password) }
+            val adminOk = if (!userOk) withContext(Dispatchers.Default) { viewModel.loginAdmin(email.trim(), password) } else false
             loading = false
-            if (ok) {
-                onLoginSuccess()
-            } else {
-                showError = true
+            when {
+                userOk -> onUserLoginSuccess()
+                adminOk -> onLoginSuccess()
+                else -> showError = true
             }
         }
     }
