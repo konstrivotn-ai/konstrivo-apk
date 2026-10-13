@@ -66,10 +66,34 @@ fun MainAppScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    // Restore/rotate the shared website session without blocking the UI thread.
+    // Restore the shared website session and APPLY it to the logged-in UI state.
+    //  - Successful refresh → validate identity + role with GET /users/me, so
+    //    admin access is granted only on backend confirmation.
+    //  - 401/403 (expired or revoked) → session cleared, UI stays signed out.
+    //  - Transient network failure → the saved session is KEPT and the UI
+    //    enters the signed-in state in "unverified" mode (offline-friendly).
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            CloudAuthClient.restoreSession(context.applicationContext)
+        val appContext = context.applicationContext
+        viewModel.beginCloudSessionRestore()
+        val restored = withContext(Dispatchers.IO) { CloudAuthClient.restoreSession(appContext) }
+        restored.onSuccess { session ->
+            if (session == null) {
+                viewModel.applyCloudSession(null, verified = false)
+            } else {
+                val me = withContext(Dispatchers.IO) { CloudAuthClient.fetchMe(appContext) }
+                val validated = me.getOrNull()
+                when {
+                    validated != null -> viewModel.applyCloudSession(validated, verified = true)
+                    CloudAuthClient.currentSession(appContext) != null ->
+                        // Network hiccup while validating — keep the session.
+                        viewModel.applyCloudSession(session, verified = false)
+                    else -> viewModel.applyCloudSession(null, verified = false)
+                }
+            }
+        }.onFailure {
+            // Transient failure — never destroy a valid saved session.
+            val saved = CloudAuthClient.currentSession(appContext)
+            viewModel.applyCloudSession(saved, verified = false)
         }
     }
 
@@ -93,6 +117,7 @@ fun MainAppScreen(
 
     val currentYear = remember { java.util.Calendar.getInstance().get(java.util.Calendar.YEAR) }
     var showLangMenu by remember { mutableStateOf(false) }
+    var showUserLogin by remember { mutableStateOf(false) }
 
     // PHASE 1 — RTL: Arabic & Derja render right-to-left; French & English stay LTR.
     // Applied once at the app root so every screen, bar, list and card inherits it.
@@ -119,9 +144,10 @@ fun MainAppScreen(
                 viewModel.closeLoginScreen()
                 viewModel.openAdminDashboard()
             },
-            onCloudLoginSuccess = { role ->
+            onCloudLoginSuccess = { session ->
                 viewModel.closeLoginScreen()
-                if (role.equals("admin", ignoreCase = true)) {
+                viewModel.applyCloudSession(session, verified = true)
+                if (session.role.equals("admin", ignoreCase = true)) {
                     viewModel.openAdminDashboard()
                 } else {
                     viewModel.selectTab(AppTab.HOME)
@@ -130,6 +156,28 @@ fun MainAppScreen(
             onCreateAccount = {
                 viewModel.closeLoginScreen()
                 viewModel.openCreateAccountScreen()
+            }
+        )
+    } else if (showUserLogin) {
+        androidx.activity.compose.BackHandler {
+            showUserLogin = false
+            viewModel.openProfile()
+        }
+        UserLoginScreen(
+            language = language,
+            onLanguageSelected = { viewModel.setLanguage(it) },
+            onBack = {
+                showUserLogin = false
+                viewModel.openProfile()
+            },
+            onCreateAccount = {
+                showUserLogin = false
+                viewModel.openCreateAccountScreen()
+            },
+            onSignInSuccess = { session ->
+                showUserLogin = false
+                viewModel.applyCloudSession(session, verified = true)
+                viewModel.selectTab(AppTab.HOME)
             }
         )
     } else if (showCreateAccount) {
@@ -141,7 +189,7 @@ fun MainAppScreen(
             onBack = { viewModel.closeCreateAccountScreen() },
             onSignIn = {
                 viewModel.closeCreateAccountScreen()
-                viewModel.openLoginScreen()
+                showUserLogin = true
             }
         )
     } else if (showMaterialsCatalog) {
@@ -178,6 +226,9 @@ fun MainAppScreen(
             viewModel = viewModel,
             onBack = { viewModel.closeProfile() },
             onUpgrade = { viewModel.closeProfile(); viewModel.openSubscription() },
+            onCreateAccount = { viewModel.closeProfile(); viewModel.openCreateAccountScreen() },
+            onSignIn = { viewModel.closeProfile(); showUserLogin = true },
+            onAdminAccess = { viewModel.closeProfile(); viewModel.openAdminDashboard() },
         )
     } else if (showSubscription) {
         androidx.activity.compose.BackHandler { viewModel.closeSubscription() }
@@ -290,10 +341,10 @@ fun MainAppScreen(
                         }
                     }
 
-                    // Account entry point → existing Settings / Owner login area (Phase E).
-                    // Uses the existing tab navigation; no new auth system.
+                    // Account entry point opens the account hub; admin authentication
+                    // remains a separate, explicit action inside the profile screen.
                     IconButton(
-                        onClick = { viewModel.selectTab(AppTab.SETTINGS) },
+                        onClick = { viewModel.openProfile() },
                         modifier = Modifier.testTag("top_account_button")
                     ) {
                         Icon(

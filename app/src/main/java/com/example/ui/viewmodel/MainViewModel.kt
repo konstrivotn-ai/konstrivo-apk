@@ -175,6 +175,48 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun logoutAdmin() {
         _isAdmin.value = false
+        adminFromCloudSession = false
+    }
+
+    // ── Cloud account session (shared website /api/v1 identity) ───────────────
+    // Single source of truth for the logged-in customer UI. The session is
+    // restored at startup, and the role used for admin routing is always the
+    // one validated by the backend (GET /users/me) — never the locally stored
+    // preference value alone.
+    data class CloudAuthUiState(
+        val isRestoring: Boolean = true,
+        val session: com.example.data.remote.CloudAuthClient.Session? = null,
+        val isVerified: Boolean = false,
+    )
+
+    private val _cloudAuthState = MutableStateFlow(CloudAuthUiState())
+    val cloudAuthState: StateFlow<CloudAuthUiState> = _cloudAuthState.asStateFlow()
+
+    // Tracks whether admin mode currently comes from a server-validated cloud
+    // role, so signing out of the cloud account never clears a local PBKDF2
+    // admin login (and vice versa).
+    private var adminFromCloudSession = false
+
+    fun beginCloudSessionRestore() {
+        _cloudAuthState.value = CloudAuthUiState(isRestoring = true)
+    }
+
+    /** Apply a cloud session (restored at startup or obtained by login) to the UI state. */
+    fun applyCloudSession(session: com.example.data.remote.CloudAuthClient.Session?, verified: Boolean) {
+        _cloudAuthState.value = CloudAuthUiState(isRestoring = false, session = session, isVerified = verified)
+        if (session != null && verified && session.role.equals("admin", ignoreCase = true)) {
+            adminFromCloudSession = true
+            _isAdmin.value = true
+        } else if (session == null && adminFromCloudSession) {
+            adminFromCloudSession = false
+            _isAdmin.value = false
+        }
+    }
+
+    /** Sign out of the shared website account on this device only. */
+    fun signOutCloudSession(context: Context) {
+        com.example.data.remote.CloudAuthClient.logout(context)
+        applyCloudSession(null, verified = false)
     }
 
     // STEP 2: full-screen overlay navigation (state-based, mirroring the existing

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -32,22 +33,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.data.model.AppLanguage
+import com.example.data.remote.CloudAuthClient
 import com.example.ui.components.designsystem.KonstrivoBrandMark
 import com.example.ui.components.designsystem.tr
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
- * Customer-facing sign-in screen. Kept separate from LoginScreen, which is
- * exclusively for owner/admin access. Online customer authentication is not
- * enabled until the project's auth provider is configured.
+ * Customer-facing sign-in screen, connected to the website's shared
+ * `/api/v1/auth` account system (same accounts as the website). Kept separate
+ * from LoginScreen, which remains the owner/admin gate (local PBKDF2 + cloud
+ * admin). Login success is reported through [onSignInSuccess] with the
+ * server-issued session so the caller can apply it to the app state.
  */
 @Composable
 fun UserLoginScreen(
@@ -55,11 +64,17 @@ fun UserLoginScreen(
     onLanguageSelected: (AppLanguage) -> Unit,
     onBack: () -> Unit,
     onCreateAccount: () -> Unit,
+    onSignInSuccess: (CloudAuthClient.Session) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var attempted by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var showForgotDialog by remember { mutableStateOf(false) }
     var languageMenuExpanded by remember { mutableStateOf(false) }
 
     Column(
@@ -166,31 +181,65 @@ fun UserLoginScreen(
                     singleLine = true
                 )
                 Button(
-                    onClick = { attempted = true },
+                    onClick = {
+                        if (email.isBlank() || password.isBlank()) {
+                            attempted = true
+                            errorMessage = ""
+                        } else {
+                            attempted = false
+                            errorMessage = ""
+                            loading = true
+                            scope.launch {
+                                val result = withContext(Dispatchers.IO) {
+                                    CloudAuthClient.login(context, email.trim(), password)
+                                }
+                                loading = false
+                                result
+                                    .onSuccess { session -> onSignInSuccess(session) }
+                                    .onFailure { err ->
+                                        errorMessage = err.message
+                                            ?: "Unable to sign in. Check your connection and try again."
+                                    }
+                            }
+                        }
+                    },
+                    enabled = !loading,
                     modifier = Modifier.fillMaxWidth().height(52.dp).testTag("btn_user_login")
                 ) {
-                    Text(language.tr("تسجيل الدخول", "Sign in", "تسجيل الدخول", "ادخل"))
+                    if (loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(language.tr("تسجيل الدخول", "Sign in", "تسجيل الدخول", "ادخل"))
+                    }
                 }
-                if (attempted) {
+                if (attempted && (email.isBlank() || password.isBlank())) {
                     Text(
-                        text = if (email.isBlank() || password.isBlank()) {
-                            language.tr(
-                                "يرجى إدخال البريد الإلكتروني وكلمة المرور.",
-                                "Enter your email and password.",
-                                "يرجى إدخال البريد الإلكتروني وكلمة المرور.",
-                                "عمّر الإيميل وكلمة السر."
-                            )
-                        } else {
-                            language.tr(
-                                "تسجيل الدخول عبر الإنترنت غير مفعّل بعد. يلزم إعداد خدمة المصادقة.",
-                                "Online sign-in is not enabled yet. The authentication provider must be configured.",
-                                "تسجيل الدخول عبر الإنترنت غير مفعّل بعد. يلزم إعداد خدمة المصادقة.",
-                                "الدخول بالإنترنت مازال موش مفعّل، يلزم إعداد خدمة الحسابات."
-                            )
-                        },
+                        text = language.tr(
+                            "يرجى إدخال البريد الإلكتروني وكلمة المرور.",
+                            "Enter your email and password.",
+                            "يرجى إدخال البريد الإلكتروني وكلمة المرور.",
+                            "عمّر الإيميل وكلمة السر."
+                        ),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall
                     )
+                }
+                if (errorMessage.isNotBlank()) {
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                TextButton(
+                    onClick = { showForgotDialog = true },
+                    modifier = Modifier.fillMaxWidth().testTag("btn_user_forgot_password")
+                ) {
+                    Text(language.tr("نسيت كلمة المرور؟", "Forgot password?", "نسيت كلمة المرور؟", "تسيت كلمة السر؟"))
                 }
                 Spacer(modifier = Modifier.height(2.dp))
                 TextButton(
@@ -201,5 +250,81 @@ fun UserLoginScreen(
                 }
             }
         }
+    }
+
+    if (showForgotDialog) {
+        var resetEmail by remember { mutableStateOf(email) }
+        var resetLoading by remember { mutableStateOf(false) }
+        var resetMessage by remember { mutableStateOf("") }
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { if (!resetLoading) showForgotDialog = false },
+            title = {
+                Text(language.tr("استعادة كلمة المرور", "Password recovery", "استعادة كلمة المرور", "استرجاع كلمة السر"))
+            },
+            text = {
+                androidx.compose.foundation.layout.Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        language.tr(
+                            "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين.",
+                            "Enter your email and we will send a reset link.",
+                            "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين.",
+                            "عمّر إيميلك ونبعثلك رابط الاسترجاع."
+                        ),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    OutlinedTextField(
+                        value = resetEmail,
+                        onValueChange = { resetEmail = it; resetMessage = "" },
+                        label = { Text(language.tr("البريد الإلكتروني", "Email", "البريد الإلكتروني", "الإيميل")) },
+                        singleLine = true,
+                        enabled = !resetLoading
+                    )
+                    if (resetMessage.isNotBlank()) {
+                        Text(
+                            resetMessage,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        resetLoading = true
+                        resetMessage = ""
+                        scope.launch {
+                            val result = withContext(Dispatchers.IO) {
+                                CloudAuthClient.requestPasswordReset(resetEmail)
+                            }
+                            resetLoading = false
+                            result.onSuccess {
+                                resetMessage = language.tr(
+                                    "إذا كان البريد مسجّلًا، فسيصلك رابط إعادة التعيين.",
+                                    "If the email is registered, a reset link will be sent.",
+                                    "إذا كان البريد مسجّلًا، فسيصلك رابط إعادة التعيين.",
+                                    "إلا كان الإيميل مسجّل، باش يجيك رابط الاسترجاع."
+                                )
+                            }.onFailure { err ->
+                                resetMessage = err.message
+                                    ?: "Unable to request a reset link. Please try again."
+                            }
+                        }
+                    },
+                    enabled = !resetLoading
+                ) {
+                    if (resetLoading) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                    else Text(language.tr("Envoyer", "Send", "إرسال", "ابعث"))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showForgotDialog = false },
+                    enabled = !resetLoading
+                ) { Text(language.tr("Fermer", "Close", "إغلاق", "سكر")) }
+            }
+        )
     }
 }

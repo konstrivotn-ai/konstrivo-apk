@@ -83,7 +83,7 @@ fun LoginScreen(
     viewModel: MainViewModel,
     onBack: () -> Unit,
     onLoginSuccess: () -> Unit,
-    onCloudLoginSuccess: (String) -> Unit,
+    onCloudLoginSuccess: (com.example.data.remote.CloudAuthClient.Session) -> Unit,
     onCreateAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -117,7 +117,7 @@ fun LoginScreen(
             }
             val result = withContext(Dispatchers.IO) { CloudAuthClient.login(context, email, password) }
             loading = false
-            result.onSuccess { session -> onCloudLoginSuccess(session.role) }.onFailure {
+            result.onSuccess { session -> onCloudLoginSuccess(session) }.onFailure {
                 errorMessage = it.message ?: "Unable to sign in. Check your connection and try again."
                 showError = true
             }

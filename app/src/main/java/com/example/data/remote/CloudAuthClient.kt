@@ -65,6 +65,54 @@ object CloudAuthClient {
     fun accessToken(context: Context): String? =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(ACCESS_TOKEN, null)
 
+    /**
+     * Fetch the authoritative account identity from the backend
+     * (`GET /users/me`) using the saved access token.
+     *
+     * Security: the returned role always comes from the SERVER — the role
+     * stored in SharedPreferences is never treated as proof of privileges.
+     * On 401 the session is refreshed once and the call retried; if the
+     * refresh is rejected (expired/revoked) the local session is cleared.
+     * Returns null when there is no saved session or it was rejected.
+     */
+    fun fetchMe(context: Context): Result<Session?> = runCatching {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        var access = prefs.getString(ACCESS_TOKEN, null)?.takeIf { it.isNotBlank() } ?: return@runCatching null
+        var result = authorizedGet("users/me", access)
+        if (result.first == 401) {
+            val refreshed = restoreSession(context)
+            if (refreshed.isFailure) return@runCatching null
+            access = prefs.getString(ACCESS_TOKEN, null)?.takeIf { it.isNotBlank() } ?: return@runCatching null
+            result = authorizedGet("users/me", access)
+        }
+        val (status, body) = result
+        if (status == 401 || status == 403) {
+            logout(context)
+            return@runCatching null
+        }
+        if (status !in 200..299) throw IllegalStateException("Unable to verify the account session ($status).")
+        val json = try { JSONObject(body) } catch (_: Exception) { JSONObject() }
+        val user = json.optJSONObject("user") ?: JSONObject()
+        val fullName = user.optString("fullName").ifBlank { prefs.getString(FULL_NAME, "").orEmpty() }
+        val email = user.optString("email").ifBlank { prefs.getString(EMAIL, "").orEmpty() }
+        val role = user.optString("role").ifBlank { prefs.getString(ROLE, "artisan") ?: "artisan" }
+        prefs.edit().putString(FULL_NAME, fullName).putString(EMAIL, email).putString(ROLE, role).apply()
+        Session(
+            prefs.getString(ACCESS_TOKEN, "").orEmpty(),
+            prefs.getString(REFRESH_TOKEN, "").orEmpty(),
+            fullName, email, role
+        )
+    }
+
+    private fun authorizedGet(path: String, accessToken: String): Pair<Int, String> {
+        val connection = openJsonGet(path)
+        try {
+            connection.setRequestProperty("Authorization", "Bearer $accessToken")
+            val status = connection.responseCode
+            return status to readResponse(connection, status)
+        } finally { connection.disconnect() }
+    }
+
     fun currentSession(context: Context): Session? {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val access = prefs.getString(ACCESS_TOKEN, null)?.takeIf { it.isNotBlank() } ?: return null
@@ -112,6 +160,14 @@ object CloudAuthClient {
             doOutput = true
             setRequestProperty("Accept", "application/json")
             setRequestProperty("Content-Type", "application/json; charset=utf-8")
+        }
+
+    private fun openJsonGet(path: String): HttpURLConnection =
+        (URL(API_BASE + path).openConnection() as HttpURLConnection).apply {
+            requestMethod = "GET"
+            connectTimeout = 12000
+            readTimeout = 12000
+            setRequestProperty("Accept", "application/json")
         }
 
     private fun readResponse(connection: HttpURLConnection, status: Int): String {
