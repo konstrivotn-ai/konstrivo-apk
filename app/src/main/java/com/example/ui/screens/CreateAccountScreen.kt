@@ -19,29 +19,24 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.data.remote.CloudAuthClient
 import com.example.data.model.AppLanguage
 import com.example.ui.components.designsystem.tr
 import com.example.ui.theme.KonstrivoGold
 import com.example.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
- * Create account screen shown in reference images.
- *
- * IMPORTANT: The current project ZIP does not include a real backend auth
- * integration (Supabase SDK not present; API contract marked "Future Contract").
- *
- * Therefore this screen:
- *  - Implements the full UI/UX + validation
- *  - Does NOT pretend to register a cloud account
- *  - Preserves offline-first behavior (settings stored locally)
- *
- * When Supabase/API credentials are later added, this screen can be wired to
- * the real auth flow without changing the UI contract.
+ * Creates accounts through the website's existing Express API. Local calculator
+ * and Room data remain available offline; cloud account creation requires internet.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +47,10 @@ fun CreateAccountScreen(
     modifier: Modifier = Modifier
 ) {
     val language by viewModel.selectedLanguage.collectAsState()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var loading by remember { mutableStateOf(false) }
+    var submitError by remember { mutableStateOf("") }
 
     // Match ref_top_03 fields
     var firstName by remember { mutableStateOf("") }
@@ -68,7 +67,7 @@ fun CreateAccountScreen(
     val phoneOk = phone.trim().length >= 6
     val companyOk = company.trim().length >= 2
     val emailOk = email.trim().contains('@') && email.trim().contains('.')
-    val pwdOk = password.length >= 6
+    val pwdOk = password.length >= 8
     val termsOk = acceptedTerms
 
     val canSubmit = nameOk && phoneOk && companyOk && emailOk && pwdOk && termsOk
@@ -209,9 +208,28 @@ fun CreateAccountScreen(
                     Button(
                         onClick = {
                             attempted = true
-                            // No backend in this ZIP -> show the explanation card below.
+                            submitError = ""
+                            if (canSubmit && !loading) {
+                                scope.launch {
+                                    loading = true
+                                    val result = withContext(Dispatchers.IO) {
+                                        CloudAuthClient.register(
+                                            context = context,
+                                            fullName = "${firstName.trim()} ${lastName.trim()}",
+                                            email = email,
+                                            password = password,
+                                            phone = phone,
+                                            companyName = company
+                                        )
+                                    }
+                                    loading = false
+                                    result.onSuccess { onSignIn() }.onFailure {
+                                        submitError = it.message ?: "Unable to create account. Check your connection and try again."
+                                    }
+                                }
+                            }
                         },
-                        enabled = true,
+                        enabled = canSubmit && !loading,
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -219,10 +237,14 @@ fun CreateAccountScreen(
                             .testTag("btn_signup_submit"),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Text(
-                            text = language.tr("Sign up", "Sign up", "Sign up", "Sign up"),
-                            fontWeight = FontWeight.ExtraBold
-                        )
+                        if (loading) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                        } else {
+                            Text(
+                                text = language.tr("Créer mon compte", "Create account", "إنشاء حساب", "إنشاء حساب"),
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        }
                     }
 
                     TextButton(
@@ -246,7 +268,11 @@ fun CreateAccountScreen(
             }
             */
 
-            // Clear honest messaging about backend status.
+            if (submitError.isNotBlank()) {
+                Text(submitError, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
+
+            // Explain online accounts while preserving offline use.
             Card(
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
@@ -262,10 +288,10 @@ fun CreateAccountScreen(
                         Icon(Icons.Default.Info, contentDescription = null, tint = KonstrivoGold)
                         Text(
                             text = language.tr(
-                                fr = "Inscription en ligne: configuration requise",
-                                en = "Online sign-up: configuration required",
-                                ar = "التسجيل عبر الإنترنت: يحتاج إعداد",
-                                dz = "التسجيل عبر الإنترنت: يحتاج إعداد"
+                                fr = "Compte KONSTRIVO en ligne",
+                                en = "KONSTRIVO online account",
+                                ar = "حساب KONSTRIVO على الإنترنت",
+                                dz = "حساب KONSTRIVO على الإنترنت"
                             ),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.ExtraBold
@@ -273,10 +299,10 @@ fun CreateAccountScreen(
                     }
                     Text(
                         text = language.tr(
-                            fr = "Cette version est offline-first. Le projet ne contient pas encore les identifiants Supabase/API nécessaires pour créer un vrai compte cloud. Vos paramètres restent utilisables localement.",
-                            en = "This build is offline-first. The project ZIP does not include the Supabase/API configuration needed to create a real cloud account yet. Local usage remains available.",
-                            ar = "هذا الإصدار يعمل بدون إنترنت. المشروع لا يحتوي بعد على إعدادات Supabase/API اللازمة لإنشاء حساب حقيقي على السحابة. الاستخدام المحلي متاح.",
-                            dz = "هذا الإصدار يخدم بلا إنترنت. مازال ماكانش إعداد Supabase/API باش يتعمل compte cloud. الاستعمال المحلي موجود."
+                            fr = "Le compte est créé sur le serveur du site. Le calculateur et les données locales restent disponibles hors connexion.",
+                            en = "Your account is created on the website server. The calculator and local data remain available offline.",
+                            ar = "يُنشأ الحساب على خادم الموقع، وتبقى الحاسبة والبيانات المحلية متاحة دون إنترنت.",
+                            dz = "الحساب يتعمل على سيرفر الموقع، والحاسبة والمعطيات المحلية يبقاو يخدمو بلا إنترنت."
                         ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -107,6 +107,14 @@ fun MainAppScreen(
                 viewModel.closeLoginScreen()
                 viewModel.openAdminDashboard()
             },
+            onCloudLoginSuccess = { role ->
+                viewModel.closeLoginScreen()
+                if (role.equals("admin", ignoreCase = true)) {
+                    viewModel.openAdminDashboard()
+                } else {
+                    viewModel.selectTab(AppTab.HOME)
+                }
+            },
             onCreateAccount = {
                 viewModel.closeLoginScreen()
                 viewModel.openCreateAccountScreen()

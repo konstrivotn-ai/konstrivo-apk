@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -56,6 +57,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.data.remote.CloudAuthClient
 import com.example.data.model.AppLanguage
 import com.example.ui.theme.KonstrivoAmber
 import com.example.ui.theme.KonstrivoDarkNavy
@@ -81,6 +83,7 @@ fun LoginScreen(
     viewModel: MainViewModel,
     onBack: () -> Unit,
     onLoginSuccess: () -> Unit,
+    onCloudLoginSuccess: (String) -> Unit,
     onCreateAccount: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -91,6 +94,8 @@ fun LoginScreen(
     var showPassword by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     fun submit() {
@@ -98,14 +103,17 @@ fun LoginScreen(
         scope.launch {
             loading = true
             showError = false
-            val ok = withContext(Dispatchers.Default) {
-                // Identical auth path to the former inline Settings form. Fail-closed.
-                viewModel.loginAdmin(email.trim(), password)
-            }
-            loading = false
-            if (ok) {
+            // Preserve the existing local admin gate; normal users authenticate on the website.
+            val localAdmin = withContext(Dispatchers.Default) { viewModel.loginAdmin(email.trim(), password) }
+            if (localAdmin) {
+                loading = false
                 onLoginSuccess()
-            } else {
+                return@launch
+            }
+            val result = withContext(Dispatchers.IO) { CloudAuthClient.login(context, email, password) }
+            loading = false
+            result.onSuccess { session -> onCloudLoginSuccess(session.role) }.onFailure {
+                errorMessage = it.message ?: "Unable to sign in. Check your connection and try again."
                 showError = true
             }
         }
@@ -215,6 +223,7 @@ Surface(
                             onValueChange = {
                                 email = it
                                 showError = false
+                                errorMessage = ""
                             },
                             label = { Text(language.tr("Email","Email","البريد الإلكتروني","البريد الإلكتروني")) },
                             leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
@@ -234,6 +243,7 @@ Surface(
                             onValueChange = {
                                 password = it
                                 showError = false
+                                errorMessage = ""
                             },
                             label = { Text(language.tr("Mot de passe","Password","كلمة المرور","كلمة المرور")) },
                             leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = null) },
@@ -274,12 +284,14 @@ Surface(
 
                         if (showError) {
                             Text(
-                                text = language.tr(
-                                    fr = "Email ou mot de passe incorrect.",
-                                    en = "Incorrect email or password.",
-                                    ar = "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
-                                    dz = "البريد الإلكتروني أو كلمة المرور غير صحيحة."
-                                ),
+                                text = errorMessage.ifBlank {
+                                    language.tr(
+                                        fr = "Email ou mot de passe incorrect.",
+                                        en = "Incorrect email or password.",
+                                        ar = "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+                                        dz = "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+                                    )
+                                },
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.testTag("login_error")
