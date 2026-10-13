@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.AppLanguage
+import com.example.data.remote.CloudAuthClient
 import com.example.ui.components.designsystem.KonstrivoBottomBar
 import com.example.ui.components.designsystem.KonstrivoCenterFab
 import com.example.ui.components.designsystem.KonstrivoNavItem
@@ -36,6 +38,8 @@ import com.example.ui.screens.*
 import com.example.ui.theme.*
 import com.example.ui.viewmodel.AppTab
 import com.example.ui.viewmodel.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.example.ui.components.designsystem.tr
 
 class MainActivity : ComponentActivity() {
@@ -61,6 +65,14 @@ fun MainAppScreen(
     viewModel: MainViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    // Restore/rotate the shared website session without blocking the UI thread.
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            CloudAuthClient.restoreSession(context.applicationContext)
+        }
+    }
+
     val currentTab by viewModel.currentTab.collectAsState()
     val language by viewModel.selectedLanguage.collectAsState()
     val country by viewModel.selectedCountry.collectAsState()
