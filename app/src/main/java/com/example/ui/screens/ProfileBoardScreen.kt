@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -149,8 +150,8 @@ fun ProfileScreen(
                     BoardRow(
                         titleFr = "Paramètres", titleEn = "Settings", titleAr = "الإعدادات", titleDz = "الإعدادات",
                         subFr = "Langue, pays, profil artisan", subEn = "Language, country, contractor profile", subAr = "اللغة، البلد، بيانات الحرفي", subDz = "اللغة والبلد وبيانات الحرفي",
-                        icon = Icons.Default.Settings, tint = KonstrivoSlate, tag = "profile_settings",
-                        onClick = { it.selectTab(AppTab.SETTINGS) }
+                        icon = Icons.Default.Settings, accent = KonstrivoSlate, tag = "profile_settings",
+                        onClick = { viewModel.selectTab(AppTab.SETTINGS) }
                     ),
                     viewModel
                 )
