@@ -1,0 +1,6 @@
+{
+  "name": "konstrivo",
+  "description": "Calculateur professionnel et devis chantier intelligent pour plaquistes, artisans et quincailleries BTP (Marché 2026).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

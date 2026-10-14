@@ -1,0 +1,183 @@
+﻿diff --git a/app/src/main/java/com/example/ui/components/designsystem/KonstrivoComponents.kt b/app/src/main/java/com/example/ui/components/designsystem/KonstrivoComponents.kt
+index 5968008..3d87a28 100644
+--- a/app/src/main/java/com/example/ui/components/designsystem/KonstrivoComponents.kt
++++ b/app/src/main/java/com/example/ui/components/designsystem/KonstrivoComponents.kt
+@@ -67,8 +67,8 @@ import androidx.compose.ui.text.style.TextOverflow
+ import androidx.compose.ui.unit.Dp
+ import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.unit.sp
+-import com.example.ui.theme.KonstrivoAmber
+ import com.example.ui.theme.KonstrivoError
++import com.example.ui.theme.KonstrivoGold
+ import com.example.ui.theme.KonstrivoNavy
+ import com.example.ui.theme.KonstrivoNumericStyles
+ import kotlinx.coroutines.CoroutineScope
+@@ -102,7 +102,10 @@ object KonstrivoSpacing {
+ /** Shared corner radius tokens. */
+ object KonstrivoRadius {
+     val Card = 16.dp
+-    val Badge = 8.dp
++    val Badge = 8.dp   // kept (status chips / small bubbles)
++
++    /** R1 Design System: buttons & inputs use a dedicated 12dp corner radius (independent of Badge). */
++    val Button = 12.dp
+ 
+     /** Corner radius of tinted icon containers inside cards (PHASE 2 unification). */
+     val IconBox = 12.dp
+@@ -155,7 +158,7 @@ fun KonstrivoSectionLabel(text: String, modifier: Modifier = Modifier) {
+         text = text.uppercase(),
+         style = MaterialTheme.typography.labelMedium,
+         fontWeight = FontWeight.ExtraBold,
+-        color = KonstrivoAmber,
++        color = KonstrivoGold,
+         modifier = modifier
+     )
+ }
+@@ -207,7 +210,7 @@ fun KonstrivoMetricCard(
+             Icon(
+                 imageVector = it,
+                 contentDescription = null,
+-                tint = KonstrivoAmber,
++                tint = KonstrivoGold,
+                 modifier = Modifier.size(20.dp)
+             )
+         }
+@@ -315,7 +318,7 @@ fun KonstrivoMenuCard(
+                 Icon(
+                     imageVector = it,
+                     contentDescription = null,
+-                    tint = KonstrivoAmber,
++                    tint = KonstrivoGold,
+                     modifier = Modifier.size(22.dp)
+                 )
+             }
+@@ -404,14 +407,14 @@ fun KonstrivoBrandMark(
+             .size(size)
+             .clip(RoundedCornerShape(KonstrivoRadius.IconBox))
+             .background(Color.White.copy(alpha = 0.14f))
+-            .border(1.dp, KonstrivoAmber.copy(alpha = 0.6f), RoundedCornerShape(KonstrivoRadius.IconBox)),
++            .border(1.dp, KonstrivoGold.copy(alpha = 0.6f), RoundedCornerShape(KonstrivoRadius.IconBox)),
+         contentAlignment = Alignment.Center
+     ) {
+         Text(
+             text = "K",
+             style = MaterialTheme.typography.titleMedium,
+             fontWeight = FontWeight.ExtraBold,
+-            color = KonstrivoAmber
++            color = KonstrivoGold
+         )
+     }
+ }
+@@ -456,7 +459,7 @@ fun KonstrivoTopBar(
+                             style = MaterialTheme.typography.labelSmall,
+                             fontWeight = FontWeight.SemiBold,
+                             letterSpacing = 1.sp,
+-                            color = KonstrivoAmber
++                            color = KonstrivoGold
+                         )
+                         Text(
+                             text = title,
+@@ -470,7 +473,7 @@ fun KonstrivoTopBar(
+                 }
+                 actions()
+             }
+-            HorizontalDivider(color = KonstrivoAmber.copy(alpha = 0.5f), thickness = 1.dp)
++            HorizontalDivider(color = KonstrivoGold.copy(alpha = 0.5f), thickness = 1.dp)
+         }
+     }
+ }
+@@ -619,7 +622,7 @@ fun KonstrivoPriceCard(
+             KonstrivoPriceText(
+                 text = value,
+                 style = KonstrivoPriceStyle.Large,
+-                color = if (emphasized) KonstrivoAmber else MaterialTheme.colorScheme.primary
++                color = if (emphasized) KonstrivoGold else MaterialTheme.colorScheme.primary
+             )
+         }
+     }
+@@ -662,7 +665,7 @@ fun KonstrivoBottomBar(
+                     colors = NavigationBarItemDefaults.colors(
+                         selectedIconColor = MaterialTheme.colorScheme.primary,
+                         selectedTextColor = MaterialTheme.colorScheme.primary,
+-                        indicatorColor = KonstrivoAmber.copy(alpha = 0.30f)
++                        indicatorColor = KonstrivoGold.copy(alpha = 0.30f)
+                     ),
+                     modifier = Modifier.testTag("nav_tab_${item.key.lowercase()}")
+                 )
+@@ -694,12 +697,12 @@ fun KonstrivoPrimaryButton(
+         modifier = modifier.heightIn(min = 48.dp),
+         enabled = enabled && !loading,
+         colors = ButtonDefaults.buttonColors(
+-            containerColor = KonstrivoAmber,
++            containerColor = KonstrivoGold,
+             contentColor = Color.White,
+-            disabledContainerColor = KonstrivoAmber.copy(alpha = 0.4f),
++            disabledContainerColor = KonstrivoGold.copy(alpha = 0.4f),
+             disabledContentColor = Color.White.copy(alpha = 0.6f)
+         ),
+-        shape = RoundedCornerShape(KonstrivoRadius.Badge)
++        shape = RoundedCornerShape(KonstrivoRadius.Button)  // R1: 12dp button corners
+     ) {
+         if (loading) {
+             CircularProgressIndicator(
+@@ -742,7 +745,7 @@ fun KonstrivoSecondaryButton(
+             disabledContainerColor = KonstrivoNavy.copy(alpha = 0.4f),
+             disabledContentColor = Color.White.copy(alpha = 0.6f)
+         ),
+-        shape = RoundedCornerShape(KonstrivoRadius.Badge)
++        shape = RoundedCornerShape(KonstrivoRadius.Button)  // R1: 12dp
+     ) {
+         Text(
+             text = text,
+@@ -772,7 +775,7 @@ fun KonstrivoOutlinedButton(
+             disabledContentColor = KonstrivoNavy.copy(alpha = 0.4f)
+         ),
+         border = BorderStroke(1.5.dp, if (enabled) KonstrivoNavy else KonstrivoNavy.copy(alpha = 0.4f)),
+-        shape = RoundedCornerShape(KonstrivoRadius.Badge)
++        shape = RoundedCornerShape(KonstrivoRadius.Button)  // R1: 12dp
+     ) {
+         icon?.let {
+             Icon(imageVector = it, contentDescription = null, modifier = Modifier.size(18.dp))
+@@ -833,7 +836,7 @@ fun KonstrivoDestructiveButton(
+             disabledContainerColor = KonstrivoError.copy(alpha = 0.4f),
+             disabledContentColor = Color.White.copy(alpha = 0.6f)
+         ),
+-        shape = RoundedCornerShape(KonstrivoRadius.Badge)
++        shape = RoundedCornerShape(KonstrivoRadius.Button)  // R1: 12dp
+     ) {
+         Text(
+             text = text,
+@@ -945,7 +948,7 @@ fun KonstrivoSearchField(
+         },
+         singleLine = true,
+         isError = isError,
+-        shape = RoundedCornerShape(KonstrivoRadius.Card)
++        shape = RoundedCornerShape(KonstrivoRadius.Button)  // R1: inputs 12dp
+     )
+ }
+ 
+diff --git a/app/src/main/java/com/example/ui/components/designsystem/KonstrivoSystemComponents.kt b/app/src/main/java/com/example/ui/components/designsystem/KonstrivoSystemComponents.kt
+index 5f1ed32..cd1fdc0 100644
+--- a/app/src/main/java/com/example/ui/components/designsystem/KonstrivoSystemComponents.kt
++++ b/app/src/main/java/com/example/ui/components/designsystem/KonstrivoSystemComponents.kt
+@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.sp
+ import com.example.data.model.AppLanguage
+ import com.example.data.model.Country
+ import com.example.ui.theme.KonstrivoNavy
++import com.example.ui.components.designsystem.KonstrivoRadius
+ 
+ /**
+  * KONSTRIVO PRO - Phase 4.1 system components (ADDITIVE layer).
+@@ -118,9 +119,10 @@ fun KonstrivoTextField(
+                 Text(supportingText, style = MaterialTheme.typography.labelSmall)
+             }
+         },
+-        enabled = enabled,
++                enabled = enabled,
+         readOnly = readOnly,
+-        singleLine = singleLine
++        singleLine = singleLine,
++        shape = RoundedCornerShape(KonstrivoRadius.Button)  // R1: inputs 12dp
+     )
+ }
+ 

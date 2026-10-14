@@ -1,0 +1,5 @@
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:testDebugUnitTest

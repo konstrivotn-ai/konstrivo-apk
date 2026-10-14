@@ -1,0 +1,281 @@
+ KONSTRIVO PRO - READ ONLY AUDIT
+Date: 2026-10-11 21:23:09
+Project: C:\Users\Admin\Desktop\konstrivo apk
+
+=== GIT STATUS ===
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository (or any of the parent directories): .git
+
+=== ROOT FILES ===
+
+Mode   Name                                     Length 
+----   ----                                     ------ 
+d----- .github                                         
+d----- app                                             
+d----- docs                                            
+d----- gradle                                          
+d----- web                                             
+-a---- .env.example                             1162   
+-a---- .gitignore                               1406   
+-a---- AGENTS.md                                12362  
+-a---- build.gradle.kts                         405    
+-a---- FINAL_IMPLEMENTATION_REPORT.md           4866   
+-a---- generate-admin.js                        288    
+-a---- gradle.properties                        1546   
+-a---- gradlew                                  8733   
+-a---- gradlew.bat                              2843   
+-a---- image.jpg                                760461 
+-a---- KONSTRIVO_AUDIT_REPORT.txt               290    
+-a---- KONSTRIVO_PRO_ANDROID_FINAL_COMPLETE.zip 3323458
+-a---- metadata.json                            267    
+-a---- p45_compile_check.txt                    607    
+-a---- p45_diff.txt                             58958  
+-a---- PHASES.md                                6632   
+-a---- PLAN.md                                  6641   
+-a---- project-tree.txt                         1892170
+-a---- PROJECT_OVERVIEW.md                      19819  
+-a---- PROJECT_STATE.md                         13636  
+-a---- r1-build-exit.txt                        7      
+-a---- r1-build-tail.txt                        405    
+-a---- r1-diff-components.txt                   8028   
+-a---- r1-diff-full.txt                         24198  
+-a---- r1-diff-stat.txt                         2234   
+-a---- r1-diff-theme.txt                        7444   
+-a---- r1-diffstat.txt                          2232   
+-a---- r1-fc-status.txt                         298    
+-a---- r1-finalcompile-exit.txt                 9      
+-a---- r1-gitstatus.txt                         485    
+-a---- r1-test-exit.txt                         9      
+-a---- r1-test-summary.txt                      31     
+-a---- r1-test-tail.txt                         255    
+-a---- r1-verify-status.txt                     676    
+-a---- r1-verify-status2.txt                    680    
+-a---- r2-assemble-exit.txt                     5      
+-a---- r2-diff-full.txt                         12941  
+-a---- r2-diff-stat.txt                         1679   
+-a---- r2-resume-check.txt                      1845   
+-a---- r2-test-exit.txt                         12     
+-a---- r2-verify.txt                            1791   
+-a---- r3-assemble-exit.txt                     12     
+-a---- r3-check.txt                             1963   
+-a---- r3-check2.txt                            1025   
+-a---- r3-diff-calc.txt                         6090   
+-a---- r3-final-verify.txt                      2396   
+-a---- r3-git.txt                               942    
+-a---- r3-map.txt                               4684   
+-a---- r3-prestatus.txt                         1808   
+-a---- r3-resume-verify.txt                     1544   
+-a---- r3-status.txt                            1916   
+-a---- r3-test-exit.txt                         12     
+-a---- r3-testcount2.txt                        31     
+-a---- r3-verify.txt                            2350   
+-a---- r3-verify1.txt                           2869   
+-a---- r4-assemble-exit.txt                     12     
+-a---- r4-diff-prices.txt                       1699   
+-a---- r4-final-verify.ps1                      470    
+-a---- r4-final-verify.txt                      2775   
+-a---- r4-map.txt                               2542   
+-a---- r4-poll.txt                              12     
+-a---- r4-status.txt                            2437   
+-a---- r4-test-exit.txt                         12     
+-a---- r4-verify.txt                            2583   
+-a---- r5-check2.txt                            2167   
+-a---- r5-status.txt                            2740   
+-a---- README.md                                4245   
+-a---- ROADMAP.md                               10200  
+-a---- settings.gradle.kts                      549    
+-a---- source-files.txt                         10065  
+-a---- verify45.txt                             32     
+-a---- write_market_prices.py                   161    
+
+
+
+
+=== GRADLE CONFIGURATION ===
+FOUND: gradlew.bat
+MISSING: settings.gradle
+FOUND: settings.gradle.kts
+MISSING: build.gradle
+FOUND: build.gradle.kts
+FOUND: gradle/wrapper/gradle-wrapper.properties
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.3.1-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+MISSING: app/build.gradle
+FOUND: app/build.gradle.kts
+
+=== ANDROID SOURCE FILES ===
+Source file count: 101
+app\src\androidTest\java\com\example\ExampleInstrumentedTest.kt
+app\src\androidTest\java\com\example\migration\MigrationIntegrationTest.kt
+app\src\main\AndroidManifest.xml
+app\src\main\java\com\example\MainActivity.kt
+app\src\main\java\com\example\calculator\ConstructionCalculator.kt
+app\src\main\java\com\example\calculator\PaintCalculationConstants.kt
+app\src\main\java\com\example\calculator\PaintCalculator.kt
+app\src\main\java\com\example\data\local\AppDatabase.kt
+app\src\main\java\com\example\data\local\Daos.kt
+app\src\main\java\com\example\data\local\Entities.kt
+app\src\main\java\com\example\data\local\InitialData.kt
+app\src\main\java\com\example\data\local\Migration1To2.kt
+app\src\main\java\com\example\data\model\Models.kt
+app\src\main\java\com\example\data\repository\ConstructionRepository.kt
+app\src\main\java\com\example\domain\PriceSelection.kt
+app\src\main\java\com\example\domain\currency\CurrencyConverter.kt
+app\src\main\java\com\example\domain\fiscal\FiscalCatalog.kt
+app\src\main\java\com\example\domain\material\MaterialCatalog.kt
+app\src\main\java\com\example\domain\model\MarketContext.kt
+app\src\main\java\com\example\domain\model\MaterialModels.kt
+app\src\main\java\com\example\domain\model\PriceModels.kt
+app\src\main\java\com\example\domain\model\TradeModels.kt
+app\src\main\java\com\example\domain\model\UnitModels.kt
+app\src\main\java\com\example\domain\paint\PaintPackage.kt
+app\src\main\java\com\example\domain\paint\PaintPackageCatalog.kt
+app\src\main\java\com\example\domain\paint\PaintProduct.kt
+app\src\main\java\com\example\domain\paint\PaintProductCatalog.kt
+app\src\main\java\com\example\domain\repository\RepositoryInterfaces.kt
+app\src\main\java\com\example\domain\security\AdminAuth.kt
+app\src\main\java\com\example\domain\trade\TradeCatalog.kt
+app\src\main\java\com\example\domain\usecase\CalculateConstructionUseCase.kt
+app\src\main\java\com\example\domain\usecase\DeleteQuoteUseCase.kt
+app\src\main\java\com\example\domain\usecase\FormatWhatsAppQuoteUseCase.kt
+app\src\main\java\com\example\domain\usecase\GetMarketPricesUseCase.kt
+app\src\main\java\com\example\domain\usecase\GetSavedQuotesUseCase.kt
+app\src\main\java\com\example\domain\usecase\GetUserSettingsUseCase.kt
+app\src\main\java\com\example\domain\usecase\ResetPricesUseCase.kt
+app\src\main\java\com\example\domain\usecase\SaveQuoteUseCase.kt
+app\src\main\java\com\example\domain\usecase\UpdateMaterialPriceUseCase.kt
+app\src\main\java\com\example\domain\usecase\UpdateUserSettingsUseCase.kt
+app\src\main\java\com\example\ui\components\CommonComponents.kt
+app\src\main\java\com\example\ui\components\designsystem\KonstrivoComponents.kt
+app\src\main\java\com\example\ui\components\designsystem\KonstrivoLocalization.kt
+app\src\main\java\com\example\ui\components\designsystem\KonstrivoSystemComponents.kt
+app\src\main\java\com\example\ui\screens\AdminDashboardScreen.kt
+app\src\main\java\com\example\ui\screens\CalculatorScreen.kt
+app\src\main\java\com\example\ui\screens\ChantierGuideScreen.kt
+app\src\main\java\com\example\ui\screens\CreateAccountScreen.kt
+app\src\main\java\com\example\ui\screens\HomeScreen.kt
+app\src\main\java\com\example\ui\screens\LoginScreen.kt
+app\src\main\java\com\example\ui\screens\MarketPricesScreen.kt
+app\src\main\java\com\example\ui\screens\MaterialsCatalogScreen.kt
+app\src\main\java\com\example\ui\screens\MoreScreen.kt
+app\src\main\java\com\example\ui\screens\ProjectsScreen.kt
+app\src\main\java\com\example\ui\screens\ReportsDevisScreen.kt
+app\src\main\java\com\example\ui\screens\SettingsScreen.kt
+app\src\main\java\com\example\ui\screens\SplashScreen.kt
+app\src\main\java\com\example\ui\screens\TradeDetailsScreen.kt
+app\src\main\java\com\example\ui\theme\Color.kt
+app\src\main\java\com\example\ui\theme\Theme.kt
+app\src\main\java\com\example\ui\theme\Type.kt
+app\src\main\java\com\example\ui\viewmodel\CalculatorViewModel.kt
+app\src\main\java\com\example\ui\viewmodel\DevisViewModel.kt
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt
+app\src\main\java\com\example\ui\viewmodel\PricesViewModel.kt
+app\src\main\java\com\example\ui\viewmodel\SettingsViewModel.kt
+app\src\main\res\drawable\ic_launcher_background.xml
+app\src\main\res\drawable\ic_launcher_foreground.xml
+app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml
+app\src\main\res\mipmap-anydpi-v26\ic_launcher_round.xml
+app\src\main\res\values\colors.xml
+app\src\main\res\values\strings.xml
+app\src\main\res\values\themes.xml
+app\src\main\res\xml\backup_rules.xml
+app\src\main\res\xml\data_extraction_rules.xml
+app\src\test\java\com\example\ExampleRobolectricTest.kt
+app\src\test\java\com\example\ExampleUnitTest.kt
+app\src\test\java\com\example\GreetingScreenshotTest.kt
+app\src\test\java\com\example\calculator\BoardWasteSpecTest.kt
+app\src\test\java\com\example\calculator\CloisonExampleTest.kt
+app\src\test\java\com\example\calculator\ConstructionCalculatorTest.kt
+app\src\test\java\com\example\calculator\EntraxeMontantsPhaseCTest.kt
+app\src\test\java\com\example\calculator\MontantSpecTest.kt
+app\src\test\java\com\example\calculator\PaintCalculatorProductIntegrationTest.kt
+app\src\test\java\com\example\calculator\PaintCalculatorTest.kt
+app\src\test\java\com\example\calculator\PaintEndToEndDomainTest.kt
+app\src\test\java\com\example\calculator\PaintPackageTest.kt
+app\src\test\java\com\example\calculator\PaintProductTest.kt
+app\src\test\java\com\example\calculator\PeintureCalculatorTest.kt
+app\src\test\java\com\example\calculator\PhaseDTvaPresentationTest.kt
+app\src\test\java\com\example\calculator\PhaseFFinalValidationTest.kt
+app\src\test\java\com\example\calculator\RailStockSpecTest.kt
+app\src\test\java\com\example\calculator\ReferenceVsTestDataSeparationTest.kt
+app\src\test\java\com\example\calculator\VerifiedAstralProductsTest.kt
+app\src\test\java\com\example\domain\MaterialDomainTest.kt
+app\src\test\java\com\example\domain\PriceDomainTest.kt
+app\src\test\java\com\example\domain\PricePackageSelectionSpecTest.kt
+app\src\test\java\com\example\domain\PriceSelectionUnitTest.kt
+app\src\test\java\com\example\domain\security\AdminAuthTest.kt
+app\src\test\java\com\example\migration\MigrationTestSkeleton.kt
+app\src\test\java\com\example\trade\TradeCatalogTest.kt
+
+=== IMPORTANT IMPLEMENTATION MARKERS ===
+Pattern: showMaterialsCatalog
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:188: private val _showMaterialsCatalog = MutableStateFlow(false)
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:189: val showMaterialsCatalog: StateFlow<Boolean> = _showMaterialsCatalog.asStateFlow()
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:211: _showMaterialsCatalog.value = true
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:215: _showMaterialsCatalog.value = false
+app\src\main\java\com\example\MainActivity.kt:71: val showMaterialsCatalog by viewModel.showMaterialsCatalog.collectAsState()
+app\src\main\java\com\example\MainActivity.kt:119: } else if (showMaterialsCatalog) {
+Pattern: MaterialsCatalogScreen
+app\src\main\java\com\example\ui\screens\MaterialsCatalogScreen.kt:40: fun MaterialsCatalogScreen(
+app\src\main\java\com\example\MainActivity.kt:123: MaterialsCatalogScreen(
+Pattern: KonstrivoCenterFab
+app\src\main\java\com\example\ui\components\designsystem\KonstrivoComponents.kt:689: fun KonstrivoCenterFab(
+app\src\main\java\com\example\MainActivity.kt:32: import com.example.ui.components.designsystem.KonstrivoCenterFab
+app\src\main\java\com\example\MainActivity.kt:303: KonstrivoCenterFab(onClick = { viewModel.navigateToCalculator() })
+Pattern: CreateAccountScreen
+app\src\main\java\com\example\ui\screens\CreateAccountScreen.kt:46: fun CreateAccountScreen(
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:185: private val _showCreateAccountScreen = MutableStateFlow(false)
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:186: val showCreateAccountScreen: StateFlow<Boolean> = _showCreateAccountScreen.asStateFlow()
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:202: fun openCreateAccountScreen() {
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:203: _showCreateAccountScreen.value = true
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:206: fun closeCreateAccountScreen() {
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:207: _showCreateAccountScreen.value = false
+app\src\main\java\com\example\MainActivity.kt:70: val showCreateAccount by viewModel.showCreateAccountScreen.collectAsState()
+app\src\main\java\com\example\MainActivity.kt:104: viewModel.openCreateAccountScreen()
+app\src\main\java\com\example\MainActivity.kt:109: viewModel.closeCreateAccountScreen()
+app\src\main\java\com\example\MainActivity.kt:111: CreateAccountScreen(
+app\src\main\java\com\example\MainActivity.kt:113: onBack = { viewModel.closeCreateAccountScreen() },
+app\src\main\java\com\example\MainActivity.kt:115: viewModel.closeCreateAccountScreen()
+Pattern: ProjectsScreen
+app\src\main\java\com\example\ui\screens\ProjectsScreen.kt:44: fun ProjectsScreen(
+app\src\main\java\com\example\MainActivity.kt:321: AppTab.PROJECTS -> ProjectsScreen(viewModel = viewModel)
+Pattern: showSplash
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:43: private val _showSplash = MutableStateFlow(true)
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:44: val showSplash: StateFlow<Boolean> = _showSplash.asStateFlow()
+app\src\main\java\com\example\ui\viewmodel\MainViewModel.kt:47: _showSplash.value = false
+app\src\main\java\com\example\MainActivity.kt:68: val showSplash by viewModel.showSplash.collectAsState()
+app\src\main\java\com\example\MainActivity.kt:85: if (showSplash) {
+Pattern: TODO
+app\src\main\java\com\example\calculator\ConstructionCalculator.kt:191: val qty = trappe.quantity.toDouble()
+app\src\main\java\com\example\calculator\ConstructionCalculator.kt:213: val effectiveNumberOfSides = if (params.numberOfSides > 0) params.numberOfSides.toDouble() else 2.0
+app\src\main\java\com\example\calculator\ConstructionCalculator.kt:214: val effectiveLayersPerSide = if (params.layersPerSide > 0) params.layersPerSide.toDouble() else if (params.isDoubleSkin) 2.0 else 1.0
+app\src\main\java\com\example\domain\usecase\FormatWhatsAppQuoteUseCase.kt:15: return if (clamped == clamped.toLong().toDouble()) {
+app\src\main\java\com\example\ui\components\CommonComponents.kt:1320: val p = priceText.toDoubleOrNull()
+app\src\main\java\com\example\ui\screens\AdminDashboardScreen.kt:881: onValueChange = { v -> ba13Value = v.toDoubleOrNull() ?: 0.0 },
+app\src\main\java\com\example\ui\screens\AdminDashboardScreen.kt:889: onValueChange = { v -> hydroValue = v.toDoubleOrNull() ?: 0.0 },
+app\src\main\java\com\example\ui\screens\AdminDashboardScreen.kt:897: onValueChange = { v -> laborValue = v.toDoubleOrNull() ?: 0.0 },
+app\src\main\java\com\example\ui\screens\CalculatorScreen.kt:95: val inputReady = (length.toDoubleOrNull() ?: 0.0) > 0 ||
+app\src\main\java\com\example\ui\screens\CalculatorScreen.kt:96: (width.toDoubleOrNull() ?: 0.0) > 0 ||
+app\src\main\java\com\example\ui\screens\CalculatorScreen.kt:97: (area.toDoubleOrNull() ?: 0.0) > 0 ||
+app\src\main\java\com\example\ui\screens\CalculatorScreen.kt:98: (linearMeters.toDoubleOrNull() ?: 0.0) > 0 ||
+app\src\main\java\com\example\ui\screens\CalculatorScreen.kt:99: (unitsCount.toDoubleOrNull() ?: 0.0) > 0
+app\src\main\java\com\example\ui\screens\CalculatorScreen.kt:167: val areaDouble = area.toDoubleOrNull() ?: 0.0
+app\src\main\java\com\example\ui\screens\CalculatorScreen.kt:168: val lengthDouble = length.toDoubleOrNull() ?: 0.0
+Pattern: NotImplementedError
+  No matches found.
+
+=== JAVA VERSION ===
+openjdk version "21.0.12" 2026-07-21 LTS
+OpenJDK Runtime Environment Temurin-21.0.12+8 (build 21.0.12+8-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.12+8 (build 21.0.12+8-LTS, mixed mode, sharing)
+
+=== ANDROID DEVICE TOOLS ===
+adb not found in PATH.
+
+=== EXISTING DEBUG APK FILES ===
+

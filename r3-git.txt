@@ -1,0 +1,31 @@
+ M app/src/main/java/com/example/ui/components/CommonComponents.kt
+ M app/src/main/java/com/example/ui/components/designsystem/KonstrivoComponents.kt
+ M app/src/main/java/com/example/ui/components/designsystem/KonstrivoSystemComponents.kt
+ M app/src/main/java/com/example/ui/screens/HomeScreen.kt
+ M app/src/main/java/com/example/ui/theme/Color.kt
+ M app/src/main/java/com/example/ui/theme/Theme.kt
+?? r1-build-exit.txt
+?? r1-build-tail.txt
+?? r1-diff-components.txt
+?? r1-diff-full.txt
+?? r1-diff-stat.txt
+?? r1-diff-theme.txt
+?? r1-diffstat.txt
+?? r1-fc-status.txt
+?? r1-finalcompile-exit.txt
+?? r1-gitstatus.txt
+?? r1-test-exit.txt
+?? r1-test-summary.txt
+?? r1-test-tail.txt
+?? r1-verify-status.txt
+?? r1-verify-status2.txt
+?? r2-assemble-exit.txt
+?? r2-diff-full.txt
+?? r2-diff-stat.txt
+?? r2-resume-check.txt
+?? r2-test-exit.txt
+?? r2-verify.txt
+?? r3-git.txt
+?? r3-prestatus.txt
+--- 
+5771e1a feat(ui): polish micro UX and accessibility

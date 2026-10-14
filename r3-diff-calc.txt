@@ -1,0 +1,99 @@
+warning: in the working copy of 'app/src/main/java/com/example/ui/screens/CalculatorScreen.kt', LF will be replaced by CRLF the next time Git touches it
+diff --git a/app/src/main/java/com/example/ui/screens/CalculatorScreen.kt b/app/src/main/java/com/example/ui/screens/CalculatorScreen.kt
+index 421af1f..fd13736 100644
+--- a/app/src/main/java/com/example/ui/screens/CalculatorScreen.kt
++++ b/app/src/main/java/com/example/ui/screens/CalculatorScreen.kt
+@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.unit.sp
+ import com.example.data.model.*
+ import com.example.ui.components.*
++import com.example.ui.components.designsystem.KonstrivoCard
+ import com.example.ui.components.designsystem.KonstrivoRadius
+ import com.example.ui.components.designsystem.KonstrivoSectionLabel
+ import com.example.ui.components.designsystem.tr
+@@ -184,18 +185,13 @@ fun CalculatorScreen(
+ 
+         // Main Input Parameters Card
+         item {
+-            Card(
+-                shape = RoundedCornerShape(KonstrivoRadius.Card),
+-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
++            KonstrivoCard(
+                 modifier = Modifier
+                     .fillMaxWidth()
+                     .padding(horizontal = 16.dp)
+             ) {
+                 Column(
+-                    modifier = Modifier
+-                        .fillMaxWidth()
+-                        .padding(16.dp),
++                    modifier = Modifier.fillMaxWidth(),
+                     verticalArrangement = Arrangement.spacedBy(14.dp)
+                 ) {
+                     Row(
+@@ -254,8 +250,8 @@ fun CalculatorScreen(
+                         val lengthUnit = language.tr(fr = "m", en = "m", ar = "م", dz = "م")
+                         Card(
+                             shape = RoundedCornerShape(KonstrivoRadius.Card),
+-                            colors = CardDefaults.cardColors(containerColor = KonstrivoAmber.copy(alpha = 0.08f)),
+-                            border = androidx.compose.foundation.BorderStroke(1.dp, KonstrivoAmber.copy(alpha = 0.35f)),
++                            colors = CardDefaults.cardColors(containerColor = KonstrivoGold.copy(alpha = 0.08f)),
++                            border = androidx.compose.foundation.BorderStroke(1.dp, KonstrivoGold.copy(alpha = 0.35f)),
+                             modifier = Modifier.fillMaxWidth()
+                         ) {
+                             Column(modifier = Modifier.padding(14.dp)) {
+@@ -263,7 +259,7 @@ fun CalculatorScreen(
+                                     text = language.tr("Surface & Périmètre","Surface & Périmètre","المساحة والمحيط","المساحة والمحيط"),
+                                     style = MaterialTheme.typography.labelMedium,
+                                     fontWeight = FontWeight.Bold,
+-                                    color = KonstrivoAmber
++                                    color = KonstrivoGold
+                                 )
+                                 Row(
+                                     modifier = Modifier
+@@ -686,7 +682,7 @@ fun CalculatorScreen(
+                                     modifier = Modifier.width(140.dp).testTag("input_trappe_quantity")
+                                 )
+                                 Button(
+-                                    modifier = Modifier.testTag("add_trappe_button"),
++                                    modifier = Modifier.testTag("add_trappe_button").heightIn(min = 48.dp),
+                                     onClick = {
+                                         val qty = trappeQtyText.toIntOrNull() ?: 0
+                                         if (selectedTrappeId.isNotEmpty() && qty > 0) {
+@@ -694,7 +690,8 @@ fun CalculatorScreen(
+                                             trappeQtyText = ""
+                                         }
+                                     },
+-                                    enabled = selectedTrappeId.isNotEmpty() && (trappeQtyText.toIntOrNull() ?: 0) > 0
++                                    enabled = selectedTrappeId.isNotEmpty() && (trappeQtyText.toIntOrNull() ?: 0) > 0,
++                                    shape = RoundedCornerShape(KonstrivoRadius.Button)
+                                 ) {
+                                     Text(language.tr("Ajouter","Ajouter","إضافة","إضافة"))
+                                 }
+@@ -1017,6 +1014,7 @@ fun CalculatorScreen(
+                         }
+ 
+                     TextButton(
++                        modifier = Modifier.heightIn(min = 48.dp),
+                         onClick = {
+                             val text = viewModel.generateWhatsAppText(sum)
+                             clipboardManager.setText(AnnotatedString(text))
+@@ -1195,7 +1193,7 @@ private fun CalculatorStepIndicator(
+                     modifier = Modifier
+                         .size(20.dp)
+                         .background(
+-                            color = if (active) KonstrivoAmber else KonstrivoSlate.copy(alpha = 0.35f),
++                            color = if (active) KonstrivoGold else KonstrivoSlate.copy(alpha = 0.35f),
+                             shape = RoundedCornerShape(50.dp)
+                         ),
+                     contentAlignment = Alignment.Center
+@@ -1212,7 +1210,7 @@ private fun CalculatorStepIndicator(
+                     text = step.label,
+                     style = MaterialTheme.typography.labelSmall,
+                     fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
+-                    color = if (active) KonstrivoAmber else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
++                    color = if (active) KonstrivoGold else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                     modifier = Modifier.padding(top = 4.dp)
+                 )
+             }

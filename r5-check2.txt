@@ -1,0 +1,68 @@
+5771e1a feat(ui): polish micro UX and accessibility
+---STATUS--- 
+ M app/src/main/java/com/example/ui/components/CommonComponents.kt
+ M app/src/main/java/com/example/ui/components/designsystem/KonstrivoComponents.kt
+ M app/src/main/java/com/example/ui/components/designsystem/KonstrivoSystemComponents.kt
+ M app/src/main/java/com/example/ui/screens/CalculatorScreen.kt
+ M app/src/main/java/com/example/ui/screens/HomeScreen.kt
+ M app/src/main/java/com/example/ui/screens/MarketPricesScreen.kt
+ M app/src/main/java/com/example/ui/theme/Color.kt
+ M app/src/main/java/com/example/ui/theme/Theme.kt
+?? r1-build-exit.txt
+?? r1-build-tail.txt
+?? r1-diff-components.txt
+?? r1-diff-full.txt
+?? r1-diff-stat.txt
+?? r1-diff-theme.txt
+?? r1-diffstat.txt
+?? r1-fc-status.txt
+?? r1-finalcompile-exit.txt
+?? r1-gitstatus.txt
+?? r1-test-exit.txt
+?? r1-test-summary.txt
+?? r1-test-tail.txt
+?? r1-verify-status.txt
+?? r1-verify-status2.txt
+?? r2-assemble-exit.txt
+?? r2-diff-full.txt
+?? r2-diff-stat.txt
+?? r2-resume-check.txt
+?? r2-test-exit.txt
+?? r2-verify.txt
+?? r3-assemble-exit.txt
+?? r3-check.txt
+?? r3-check2.txt
+?? r3-diff-calc.txt
+?? r3-final-verify.txt
+?? r3-git.txt
+?? r3-map.txt
+?? r3-prestatus.txt
+?? r3-resume-verify.txt
+?? r3-status.txt
+?? r3-test-exit.txt
+?? r3-testcount2.txt
+?? r3-verify.txt
+?? r3-verify1.txt
+?? r4-assemble-exit.txt
+?? r4-diff-prices.txt
+?? r4-final-verify.ps1
+?? r4-final-verify.txt
+?? r4-map.txt
+?? r4-poll.txt
+?? r4-status.txt
+?? r4-test-exit.txt
+?? r4-verify.txt
+?? r5-check2.txt
+?? r5-status.txt
+---MAP--- 
+42:import androidx.compose.material3.TextButton
+67:import com.example.ui.components.designsystem.KonstrivoPrimaryButton
+207:        border = BorderStroke(1.dp, KonstrivoAmber.copy(alpha = 0.35f)),
+232:                                KonstrivoAmber.copy(alpha = 0.55f),
+240:                            tint = KonstrivoAmber,
+342:                color = KonstrivoAmber.copy(alpha = 0.85f),
+389:                        tint = KonstrivoAmber,
+417:                KonstrivoPrimaryButton(
+480:                        tint = KonstrivoAmber,
+519:                    tint = KonstrivoAmber
+768:                            color = KonstrivoAmber

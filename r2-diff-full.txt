@@ -1,0 +1,215 @@
+diff --git a/app/src/main/java/com/example/ui/components/CommonComponents.kt b/app/src/main/java/com/example/ui/components/CommonComponents.kt
+index a3a4eca..d369581 100644
+--- a/app/src/main/java/com/example/ui/components/CommonComponents.kt
++++ b/app/src/main/java/com/example/ui/components/CommonComponents.kt
+@@ -112,7 +112,7 @@ fun RoomPresetsRow(
+                 }
+                 Surface(
+                     onClick = { onPresetSelected(preset.length, preset.width) },
+-                    shape = RoundedCornerShape(10.dp),
++                    shape = RoundedCornerShape(KonstrivoRadius.Button),
+                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                     border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
+                     modifier = Modifier.testTag("preset_${preset.id}")
+@@ -259,7 +259,7 @@ fun ArchitecturalSchematicVisualizer(
+                     for (i in 1..numVerticalStuds) {
+                         val studX = margin + (i * studStepX)
+                         drawLine(
+-                            color = if (type == CalculationType.PLACO_CLOISON) Color(0xFFF59E0B) else Color(0xFF60A5FA).copy(alpha = 0.7f),
++                            color = if (type == CalculationType.PLACO_CLOISON) KonstrivoGold else Color(0xFF60A5FA).copy(alpha = 0.7f),
+                             start = Offset(studX, margin),
+                             end = Offset(studX, margin + roomH),
+                             strokeWidth = 1.5f,
+@@ -283,21 +283,21 @@ fun ArchitecturalSchematicVisualizer(
+ 
+                     // Dimension markers
+                     // Top width dimension
+-                    drawLine(Color(0xFFF59E0B), Offset(margin, margin - 10f), Offset(margin + roomW, margin - 10f), strokeWidth = 1f)
+-                    drawLine(Color(0xFFF59E0B), Offset(margin, margin - 14f), Offset(margin, margin - 6f), strokeWidth = 1.2f)
+-                    drawLine(Color(0xFFF59E0B), Offset(margin + roomW, margin - 14f), Offset(margin + roomW, margin - 6f), strokeWidth = 1.2f)
++                    drawLine(KonstrivoGold, Offset(margin, margin - 10f), Offset(margin + roomW, margin - 10f), strokeWidth = 1f)
++                    drawLine(KonstrivoGold, Offset(margin, margin - 14f), Offset(margin, margin - 6f), strokeWidth = 1.2f)
++                    drawLine(KonstrivoGold, Offset(margin + roomW, margin - 14f), Offset(margin + roomW, margin - 6f), strokeWidth = 1.2f)
+ 
+                     // Left length dimension
+-                    drawLine(Color(0xFFF59E0B), Offset(margin - 10f, margin), Offset(margin - 10f, margin + roomH), strokeWidth = 1f)
+-                    drawLine(Color(0xFFF59E0B), Offset(margin - 14f, margin), Offset(margin - 6f, margin), strokeWidth = 1.2f)
+-                    drawLine(Color(0xFFF59E0B), Offset(margin - 14f, margin + roomH), Offset(margin - 6f, margin + roomH), strokeWidth = 1.2f)
++                    drawLine(KonstrivoGold, Offset(margin - 10f, margin), Offset(margin - 10f, margin + roomH), strokeWidth = 1f)
++                    drawLine(KonstrivoGold, Offset(margin - 14f, margin), Offset(margin - 6f, margin), strokeWidth = 1.2f)
++                    drawLine(KonstrivoGold, Offset(margin - 14f, margin + roomH), Offset(margin - 6f, margin + roomH), strokeWidth = 1.2f)
+                 }
+ 
+                 // Schematics Info Overlay
+                 Row(
+                     modifier = Modifier
+                         .align(Alignment.Center)
+-                        .background(Color(0xFF0F172A).copy(alpha = 0.85f), RoundedCornerShape(8.dp))
++                        .background(KonstrivoNavy.copy(alpha = 0.85f), RoundedCornerShape(8.dp))
+                         .border(1.dp, Color(0xFF38BDF8).copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                         .padding(horizontal = 12.dp, vertical = 6.dp),
+                     verticalAlignment = Alignment.CenterVertically,
+@@ -418,7 +418,7 @@ fun SummaryCostHeroCard(
+                         modifier = Modifier
+                             .size(40.dp)
+                             .clip(CircleShape)
+-                            .background(KonstrivoAmber),
++                            .background(KonstrivoGold),
+                         contentAlignment = Alignment.Center
+                     ) {
+                         Icon(
+@@ -447,7 +447,7 @@ fun SummaryCostHeroCard(
+                 // `grandTotalCost` is the HT total; `grandTotalTTC` is the customer-facing total.
+                 Surface(
+                     shape = RoundedCornerShape(12.dp),
+-                    color = KonstrivoAmber
++                    color = KonstrivoGold
+                 ) {
+                     Column(
+                         horizontalAlignment = Alignment.CenterHorizontally,
+@@ -504,7 +504,7 @@ fun SummaryCostHeroCard(
+                         modifier = Modifier
+                             .weight(matRatio)
+                             .fillMaxHeight()
+-                            .background(KonstrivoAmber)
++                            .background(KonstrivoGold)
+                     )
+                     Box(
+                         modifier = Modifier
+@@ -804,7 +804,7 @@ private fun BreakdownTotalRow(label: String, value: String, accentValue: Boolean
+             style = (if (accentValue) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleSmall)
+                 .copy(fontFeatureSettings = "tnum"),
+             fontWeight = FontWeight.ExtraBold,
+-            color = if (accentValue) KonstrivoAmber else MaterialTheme.colorScheme.onSurface
++            color = if (accentValue) KonstrivoGold else MaterialTheme.colorScheme.onSurface
+         )
+     }
+ }
+@@ -825,7 +825,7 @@ private fun ItemPriceRow(label: String, value: String, bold: Boolean = false, ac
+             text = value,
+             style = MaterialTheme.typography.bodySmall.copy(fontFeatureSettings = "tnum"),
+             fontWeight = if (bold) FontWeight.ExtraBold else FontWeight.Bold,
+-            color = if (accent) KonstrivoAmber else MaterialTheme.colorScheme.onSurface
++            color = if (accent) KonstrivoGold else MaterialTheme.colorScheme.onSurface
+         )
+     }
+ }
+@@ -873,7 +873,7 @@ fun CalculatedItemCard(
+                     Box(
+                         modifier = Modifier
+                             .size(42.dp)
+-                            .clip(RoundedCornerShape(10.dp))
++                            .clip(RoundedCornerShape(KonstrivoRadius.IconBox))
+                             .background(MaterialTheme.colorScheme.secondaryContainer),
+                         contentAlignment = Alignment.Center
+                     ) {
+@@ -1177,7 +1177,7 @@ fun DevisInvoicePreviewDialog(
+                 // Totals
+                 Card(
+                     modifier = Modifier.fillMaxWidth(),
+-                    shape = RoundedCornerShape(10.dp),
++                    shape = RoundedCornerShape(KonstrivoRadius.Button),
+                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                 ) {
+                     Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+@@ -1241,7 +1241,7 @@ fun DevisInvoicePreviewDialog(
+                                 ),
+                                 style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.ExtraBold
+                             )
+-                            Text("${summary.grandTotalTTC} ${summary.currency}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, color = KonstrivoAmber)
++                            Text("${summary.grandTotalTTC} ${summary.currency}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, color = KonstrivoGold)
+                         }
+                     }
+                 }
+diff --git a/app/src/main/java/com/example/ui/screens/HomeScreen.kt b/app/src/main/java/com/example/ui/screens/HomeScreen.kt
+index 1b8b5b6..9761203 100644
+--- a/app/src/main/java/com/example/ui/screens/HomeScreen.kt
++++ b/app/src/main/java/com/example/ui/screens/HomeScreen.kt
+@@ -41,6 +41,7 @@ import com.example.domain.trade.TradeCatalog
+ import com.example.ui.components.RoomPresetsRow
+ import com.example.ui.components.designsystem.KonstrivoBadge
+ import com.example.ui.components.designsystem.KonstrivoBrandMark
++import com.example.ui.components.designsystem.KonstrivoCard
+ import com.example.ui.components.designsystem.KonstrivoEmptyState
+ import com.example.ui.components.designsystem.KonstrivoPrimaryButton
+ import com.example.ui.components.designsystem.KonstrivoPriceStyle
+@@ -859,7 +860,7 @@ fun PlacoFlagshipCard(
+                         rowPair.forEach { (type, label) ->
+                             Surface(
+                                 onClick = { onTypeSelected(type) },
+-                                shape = RoundedCornerShape(10.dp),
++                                shape = RoundedCornerShape(KonstrivoRadius.Button),
+                                 color = MaterialTheme.colorScheme.surfaceVariant,
+                                 border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
+                                 modifier = Modifier
+@@ -903,24 +904,17 @@ fun TradeItemCard(
+     modifier: Modifier = Modifier
+ ) {
+     val isAvailable = trade.isAvailable
+-    Card(
++    KonstrivoCard(
+         onClick = onClick,
+-        shape = RoundedCornerShape(KonstrivoRadius.Card),
+-        colors = CardDefaults.cardColors(
+-            containerColor = if (isAvailable) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+-        ),
+-        border = androidx.compose.foundation.BorderStroke(
+-            1.dp,
+-            if (isAvailable) MaterialTheme.colorScheme.outline.copy(alpha = 0.15f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.08f)
+-        ),
++        containerColor = if (isAvailable) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
++        showBorder = true,
++        contentPadding = KonstrivoSpacing.CardInner, // 14dp — same as previous inner padding
+         modifier = modifier
+             .fillMaxWidth()
+             .testTag("trade_card_${trade.id}")
+     ) {
+         Row(
+-            modifier = Modifier
+-                .fillMaxWidth()
+-                .padding(14.dp),
++            modifier = Modifier.fillMaxWidth(),
+             verticalAlignment = Alignment.CenterVertically,
+             horizontalArrangement = Arrangement.SpaceBetween
+         ) {
+@@ -946,7 +940,7 @@ fun TradeItemCard(
+                             shape = RoundedCornerShape(4.dp),
+                             color = when (trade.status) {
+                                 TradeStatus.ACTIVE -> KonstrivoEmerald.copy(alpha = 0.15f)
+-                                TradeStatus.IN_DEVELOPMENT -> KonstrivoAmber.copy(alpha = 0.15f)
++                                TradeStatus.IN_DEVELOPMENT -> KonstrivoGold.copy(alpha = 0.15f)
+                                 TradeStatus.COMING_SOON -> MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+                             }
+                         ) {
+@@ -955,7 +949,7 @@ fun TradeItemCard(
+                                 style = MaterialTheme.typography.labelSmall,
+                                 color = when (trade.status) {
+                                     TradeStatus.ACTIVE -> KonstrivoEmerald
+-                                    TradeStatus.IN_DEVELOPMENT -> KonstrivoAmber
++                                    TradeStatus.IN_DEVELOPMENT -> KonstrivoGold
+                                     TradeStatus.COMING_SOON -> MaterialTheme.colorScheme.outline
+                                 },
+                                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+@@ -1006,17 +1000,15 @@ fun RecentEstimateCard(
+         } ?: estimate.calculationTypeId
+     }
+ 
+-    Card(
++    KonstrivoCard(
+         onClick = onClick,
+-        shape = RoundedCornerShape(KonstrivoRadius.Card),
+-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)),
++        containerColor = MaterialTheme.colorScheme.surface,
++        showBorder = true,
++        contentPadding = KonstrivoSpacing.CardInner,
+         modifier = modifier.fillMaxWidth()
+     ) {
+         Column(
+-            modifier = Modifier
+-                .fillMaxWidth()
+-                .padding(KonstrivoSpacing.CardInner),
++            modifier = Modifier.fillMaxWidth(),
+             verticalArrangement = Arrangement.spacedBy(6.dp)
+         ) {
+             // 1) Meta row — service type + date

@@ -1,0 +1,95 @@
+5771e1a feat(ui): polish micro UX and accessibility
+---STATUS--- 
+ M app/src/main/java/com/example/ui/components/CommonComponents.kt
+ M app/src/main/java/com/example/ui/components/designsystem/KonstrivoComponents.kt
+ M app/src/main/java/com/example/ui/components/designsystem/KonstrivoSystemComponents.kt
+ M app/src/main/java/com/example/ui/screens/HomeScreen.kt
+ M app/src/main/java/com/example/ui/theme/Color.kt
+ M app/src/main/java/com/example/ui/theme/Theme.kt
+?? r1-build-exit.txt
+?? r1-build-tail.txt
+?? r1-diff-components.txt
+?? r1-diff-full.txt
+?? r1-diff-stat.txt
+?? r1-diff-theme.txt
+?? r1-diffstat.txt
+?? r1-fc-status.txt
+?? r1-finalcompile-exit.txt
+?? r1-gitstatus.txt
+?? r1-test-exit.txt
+?? r1-test-summary.txt
+?? r1-test-tail.txt
+?? r1-verify-status.txt
+?? r1-verify-status2.txt
+?? r2-assemble-exit.txt
+?? r2-diff-full.txt
+?? r2-diff-stat.txt
+?? r2-resume-check.txt
+?? r2-test-exit.txt
+?? r2-verify.txt
+?? r3-check.txt
+?? r3-check2.txt
+?? r3-git.txt
+?? r3-map.txt
+?? r3-prestatus.txt
+?? r3-status.txt
+---MAP--- 
+11:import androidx.compose.foundation.shape.RoundedCornerShape
+132:                    FilterChip(
+141:                        colors = FilterChipDefaults.filterChipColors(
+187:            Card(
+188:                shape = RoundedCornerShape(KonstrivoRadius.Card),
+255:                        Card(
+256:                            shape = RoundedCornerShape(KonstrivoRadius.Card),
+257:                            colors = CardDefaults.cardColors(containerColor = KonstrivoAmber.copy(alpha = 0.08f)),
+258:                            border = androidx.compose.foundation.BorderStroke(1.dp, KonstrivoAmber.copy(alpha = 0.35f)),
+266:                                    color = KonstrivoAmber
+314:                        OutlinedTextField(
+318:                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+323:                        OutlinedTextField(
+327:                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+337:                                OutlinedTextField(
+341:                                    shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+345:                                OutlinedTextField(
+349:                                    shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+355:                            OutlinedTextField(
+359:                                shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+366:                            OutlinedTextField(
+370:                                shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+428:                                FilterChip(
+458:                        OutlinedTextField(
+462:                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+467:                        OutlinedTextField(
+471:                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+482:                            FilterChip(
+487:                            FilterChip(
+555:                                FilterChip(
+583:                                FilterChip(
+616:                                FilterChip(
+637:                                FilterChip(
+642:                                FilterChip(
+670:                                    FilterChip(
+681:                                OutlinedTextField(
+688:                                Button(
+715:                                            IconButton(onClick = { viewModel.setTrappeQuantity(line.dimensionKey, 0) }) {
+778:                                    FilterChip(
+825:                                FilterChip(
+830:                                FilterChip(
+842:                        Surface(
+843:                            shape = RoundedCornerShape(12.dp),
+915:                                FilterChip(
+928:                        OutlinedTextField(
+932:                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+936:                        OutlinedTextField(
+941:                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+956:                    CalculationParamsCard(
+982:                    SummaryCostHeroCard(
+1019:                    TextButton(
+1036:                    CalculatedItemCard(
+1047:                    CalculationBreakdownCard(
+1058:                    Card(
+1059:                        shape = RoundedCornerShape(KonstrivoRadius.Card),
+1198:                            color = if (active) KonstrivoAmber else KonstrivoSlate.copy(alpha = 0.35f),
+1199:                            shape = RoundedCornerShape(50.dp)
+1215:                    color = if (active) KonstrivoAmber else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+---END---

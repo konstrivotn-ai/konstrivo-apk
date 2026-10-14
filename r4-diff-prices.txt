@@ -1,0 +1,31 @@
+diff --git a/app/src/main/java/com/example/ui/screens/MarketPricesScreen.kt b/app/src/main/java/com/example/ui/screens/MarketPricesScreen.kt
+index 8bfd2fa..e8a29c4 100644
+--- a/app/src/main/java/com/example/ui/screens/MarketPricesScreen.kt
++++ b/app/src/main/java/com/example/ui/screens/MarketPricesScreen.kt
+@@ -33,7 +33,7 @@ import com.example.ui.components.designsystem.tr
+ import com.example.ui.components.designsystem.KonstrivoPriceText
+ import com.example.ui.components.designsystem.KonstrivoRadius
+ import com.example.ui.components.designsystem.KonstrivoSpacing
+-import com.example.ui.theme.ConstructionAmberSecondary
++import com.example.ui.theme.KonstrivoGold
+ import com.example.ui.viewmodel.MainViewModel
+ 
+ /**
+@@ -180,7 +180,7 @@ fun MarketPricesScreen(
+                 )
+             },
+             singleLine = true,
+-            shape = RoundedCornerShape(KonstrivoRadius.Card),
++            shape = RoundedCornerShape(KonstrivoRadius.Button),  // R4: inputs unified to 12dp
+             modifier = Modifier
+                 .fillMaxWidth()
+                 .padding(horizontal = KonstrivoSpacing.Lg)
+@@ -213,7 +213,7 @@ fun MarketPricesScreen(
+                     onClick = { viewModel.setSelectedPriceCategory(catKey) },
+                     label = { Text(catTitle, style = MaterialTheme.typography.labelSmall) },
+                     colors = FilterChipDefaults.filterChipColors(
+-                        selectedContainerColor = ConstructionAmberSecondary,
++                        selectedContainerColor = KonstrivoGold,  // R4: unified accent #F59E0B
+                         selectedLabelColor = Color.White
+                     ),
+                     modifier = Modifier
