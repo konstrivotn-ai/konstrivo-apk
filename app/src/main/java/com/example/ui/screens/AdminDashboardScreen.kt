@@ -557,7 +557,7 @@ private fun AdminDevisSection(language: AppLanguage, estimates: List<ProjectEsti
                 Card(shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(text = "Devis ID: ${est.id}", fontWeight = FontWeight.Bold)
-                        Text(text = "Total: ${est.totalEstimatedCost} TND", color = KonstrivoEmerald)
+                        Text(text = "Total: ${est.grandTotal} ${est.currency}", color = KonstrivoEmerald)
                     }
                 }
             }
@@ -574,7 +574,6 @@ private fun AdminUsersSection(
     val context = LocalContext.current
     var companyName by remember(userSettings.companyHeader) { mutableStateOf(userSettings.companyHeader) }
     var contractorName by remember(userSettings.contractorName) { mutableStateOf(userSettings.contractorName ?: "") }
-    var userEmail by remember(userSettings.contractorEmail) { mutableStateOf(userSettings.contractorEmail ?: "") }
 
     Column(
         modifier = Modifier
@@ -631,20 +630,11 @@ private fun AdminUsersSection(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                OutlinedTextField(
-                    value = userEmail,
-                    onValueChange = { userEmail = it },
-                    label = { Text("Email (Google Auth)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
                 Button(
                     onClick = {
                         val updatedSettings = userSettings.copy(
                             companyHeader = companyName,
-                            contractorName = contractorName,
-                            contractorEmail = userEmail
+                            contractorName = contractorName
                         )
                         viewModel.updateUserSettings(updatedSettings)
                         Toast.makeText(context, language.tr(fr = "Profil mis à jour avec succès", en = "Profile successfully updated", ar = "تم تحديث الملف الشخصي بنجاح", dz = "تحدث الملف الشخصي بنجاح"), Toast.LENGTH_SHORT).show()
