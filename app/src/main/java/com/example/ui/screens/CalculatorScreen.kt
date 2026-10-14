@@ -557,3 +557,55 @@ fun CalculatorScreen(
         }
     }
 }
+
+/**
+ * Compact progress indicator for the calculator's four user-facing stages.
+ * Presentation only; it does not alter calculation inputs or formulas.
+ */
+@Composable
+private fun CalculatorStepIndicator(
+    currentStep: Int,
+    language: AppLanguage,
+    modifier: Modifier = Modifier
+) {
+    val steps = listOf(
+        language.tr("Métier", "Trade", "الصنعة", "الصنعة"),
+        language.tr("Mesures", "Measurements", "القياسات", "القياسات"),
+        language.tr("Calcul", "Calculate", "الحساب", "الحساب"),
+        language.tr("Résultat", "Result", "النتيجة", "النتيجة")
+    )
+    val activeStep = currentStep.coerceIn(1, steps.size)
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        steps.forEachIndexed { index, label ->
+            val stepNumber = index + 1
+            val active = stepNumber <= activeStep
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .background(
+                            color = if (active) KonstrivoGold else MaterialTheme.colorScheme.outline.copy(alpha = 0.35f),
+                            shape = RoundedCornerShape(50)
+                        )
+                ) {}
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = if (stepNumber == activeStep) FontWeight.Bold else FontWeight.Normal,
+                    color = if (stepNumber <= activeStep) KonstrivoGold else MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+            }
+        }
+    }
+}
