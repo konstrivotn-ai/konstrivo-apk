@@ -637,18 +637,6 @@ private fun AdminUsersSection(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-<<<<<<< HEAD
-                OutlinedTextField(
-                    value = userEmail,
-                    onValueChange = { userEmail = it },
-                    label = { Text("Email (Google Auth)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-=======
->>>>>>> c6cb897b6326dbf8c1f048e28f1e375482ebd635
                 Button(
                     onClick = {
                         val updatedSettings = userSettings.copy(
