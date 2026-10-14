@@ -172,11 +172,11 @@ fun CalculatorScreen(
                 language = language,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
             )
         }
 
-        // شبكة اختصارات الحاسبة المرجعية
+        // شبكة اختصارات الحاسبة المرجعية للأقسام (ياجور، سقف، دهان، ترطيبة...)
         item {
             ReferenceCalculatorGrid(
                 language = language,

@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,10 +33,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/**
- * Creates accounts through the website's existing Express API. Local calculator
- * and Room data remain available offline; cloud account creation requires internet.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAccountScreen(
@@ -52,7 +47,6 @@ fun CreateAccountScreen(
     var loading by remember { mutableStateOf(false) }
     var submitError by remember { mutableStateOf("") }
 
-    // Match ref_top_03 fields
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var company by remember { mutableStateOf("") }
@@ -101,10 +95,10 @@ fun CreateAccountScreen(
                     )
                     Text(
                         text = language.tr(
-                            "Espace PRO • Offline-first",
-                            "PRO workspace • Offline-first",
-                            "مساحة PRO • تعمل بدون إنترنت",
-                            "مساحة PRO • تعمل بدون إنترنت"
+                            "Espace PRO • KONSTRIVO",
+                            "PRO workspace • KONSTRIVO",
+                            "مساحة PRO • KONSTRIVO",
+                            "مساحة PRO • KONSTRIVO"
                         ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -112,167 +106,166 @@ fun CreateAccountScreen(
                 }
             }
 
-            /* Superseded by the reference layout: form fields sit directly on the navy background.
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-            */
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                OutlinedTextField(
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                    label = { Text(language.tr("Prénom", "First name", "الاسم", "الاسم")) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    isError = attempted && firstName.trim().length < 2,
+                    modifier = Modifier.fillMaxWidth().testTag("signup_first_name")
+                )
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                    label = { Text(language.tr("Nom", "Last name", "اللقب", "اللقب")) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    isError = attempted && lastName.trim().length < 2,
+                    modifier = Modifier.fillMaxWidth().testTag("signup_last_name")
+                )
+                OutlinedTextField(
+                    value = company,
+                    onValueChange = { company = it },
+                    leadingIcon = { Icon(Icons.Default.Business, contentDescription = null) },
+                    label = { Text(language.tr("Entreprise", "Company", "الشركة", "الشركة")) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    isError = attempted && !companyOk,
+                    modifier = Modifier.fillMaxWidth().testTag("signup_company")
+                )
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
+                    label = { Text(language.tr("Téléphone", "Phone", "رقم الهاتف", "رقم الهاتف")) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    isError = attempted && !phoneOk,
+                    modifier = Modifier.fillMaxWidth().testTag("signup_phone")
+                )
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                    label = { Text(language.tr("Email", "Email", "البريد الإلكتروني", "البريد الإلكتروني")) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    isError = attempted && !emailOk,
+                    modifier = Modifier.fillMaxWidth().testTag("signup_email")
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                    label = { Text(language.tr("Mot de passe", "Password", "كلمة المرور", "كلمة المرور")) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    isError = attempted && !pwdOk,
+                    modifier = Modifier.fillMaxWidth().testTag("signup_password")
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    OutlinedTextField(
-                        value = firstName,
-                        onValueChange = { firstName = it },
-                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
-                        label = { Text(language.tr("Prénom", "First name", "الاسم", "الاسم")) },
-                        singleLine = true,
-                        isError = attempted && firstName.trim().length < 2,
-                        modifier = Modifier.fillMaxWidth().testTag("signup_first_name")
+                    Checkbox(
+                        checked = acceptedTerms,
+                        onCheckedChange = { acceptedTerms = it },
+                        modifier = Modifier.testTag("signup_terms")
                     )
-                    OutlinedTextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
-                        label = { Text(language.tr("Nom", "Last name", "اللقب", "اللقب")) },
-                        singleLine = true,
-                        isError = attempted && lastName.trim().length < 2,
-                        modifier = Modifier.fillMaxWidth().testTag("signup_last_name")
+                    Text(
+                        text = language.tr(
+                            fr = "J'accepte les conditions d'utilisation",
+                            en = "I accept the terms of service",
+                            ar = "أوافق على شروط الاستخدام",
+                            dz = "نوافق على شروط الاستعمال"
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    OutlinedTextField(
-                        value = company,
-                        onValueChange = { company = it },
-                        leadingIcon = { Icon(Icons.Default.Business, contentDescription = null) },
-                        label = { Text(language.tr("Entreprise", "Company", "الشركة", "الشركة")) },
-                        singleLine = true,
-                        isError = attempted && !companyOk,
-                        modifier = Modifier.fillMaxWidth().testTag("signup_company")
-                    )
-                    OutlinedTextField(
-                        value = phone,
-                        onValueChange = { phone = it },
-                        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
-                        label = { Text(language.tr("Téléphone", "Phone", "رقم الهاتف", "رقم الهاتف")) },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        isError = attempted && !phoneOk,
-                        modifier = Modifier.fillMaxWidth().testTag("signup_phone")
-                    )
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-                        label = { Text(language.tr("Email", "Email", "البريد الإلكتروني", "البريد الإلكتروني")) },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        isError = attempted && !emailOk,
-                        modifier = Modifier.fillMaxWidth().testTag("signup_email")
-                    )
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-                        label = { Text(language.tr("Mot de passe", "Password", "كلمة المرور", "كلمة المرور")) },
-                        singleLine = true,
-                        isError = attempted && !pwdOk,
-                        modifier = Modifier.fillMaxWidth().testTag("signup_password")
-                    )
+                }
 
-                    // Terms line as shown in ref: checkbox + small text.
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Checkbox(
-                            checked = acceptedTerms,
-                            onCheckedChange = { acceptedTerms = it },
-                            modifier = Modifier.testTag("signup_terms")
-                        )
-                        Text(
-                            text = language.tr(
-                                fr = "J'accepte les conditions d'utilisation",
-                                en = "I accept the terms of service",
-                                ar = "أوافق على شروط الاستخدام",
-                                dz = "نوافق على شروط الاستعمال"
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    Button(
-                        onClick = {
-                            attempted = true
-                            submitError = ""
-                            if (canSubmit && !loading) {
-                                scope.launch {
-                                    loading = true
-                                    val result = withContext(Dispatchers.IO) {
-                                        CloudAuthClient.register(
-                                            context = context,
-                                            fullName = "${firstName.trim()} ${lastName.trim()}",
-                                            email = email,
-                                            password = password,
-                                            phone = phone,
-                                            companyName = company
-                                        )
-                                    }
-                                    loading = false
-                                    result.onSuccess { onSignIn() }.onFailure {
-                                        submitError = it.message ?: "Unable to create account. Check your connection and try again."
-                                    }
+                Button(
+                    onClick = {
+                        attempted = true
+                        submitError = ""
+                        if (canSubmit && !loading) {
+                            scope.launch {
+                                loading = true
+                                val result = withContext(Dispatchers.IO) {
+                                    CloudAuthClient.register(
+                                        context = context,
+                                        fullName = "${firstName.trim()} ${lastName.trim()}",
+                                        email = email,
+                                        password = password,
+                                        phone = phone,
+                                        companyName = company
+                                    )
+                                }
+                                loading = false
+                                result.onSuccess { onSignIn() }.onFailure {
+                                    submitError = it.message ?: language.tr(
+                                        "Échec de la création du compte. Vérifiez votre connexion.",
+                                        "Unable to create account. Check your connection.",
+                                        "تعذر إنشاء الحساب. تحقق من الاتصال.",
+                                        "ما نجموش نعملو الحساب. ثبت من الاتصال."
+                                    )
                                 }
                             }
-                        },
-                        enabled = canSubmit && !loading,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .testTag("btn_signup_submit"),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        if (loading) {
-                            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                        } else {
-                            Text(
-                                text = language.tr("Créer mon compte", "Create account", "إنشاء حساب", "إنشاء حساب"),
-                                fontWeight = FontWeight.ExtraBold
-                            )
                         }
-                    }
-
-                    TextButton(
-                        onClick = onSignIn,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .testTag("btn_signup_goto_login")
-                    ) {
+                    },
+                    enabled = canSubmit && !loading,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .testTag("btn_signup_submit"),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    if (loading) {
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onPrimary)
+                    } else {
                         Text(
-                            text = language.tr(
-                                fr = "Vous avez déjà un compte ? Se connecter",
-                                en = "Already have an account? Sign in",
-                                ar = "عندك حساب؟ تسجيل الدخول",
-                                dz = "عندك compte؟ تسجيل الدخول"
-                            ),
-                            fontWeight = FontWeight.Bold
+                            text = language.tr("Créer mon compte", "Create account", "إنشاء حساب", "إنشاء حساب"),
+                            fontWeight = FontWeight.ExtraBold
                         )
                     }
                 }
-            /* Stray Card closer — the form Card wrapper was removed (reference layout).
+
+                TextButton(
+                    onClick = onSignIn,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .testTag("btn_signup_goto_login")
+                ) {
+                    Text(
+                        text = language.tr(
+                            fr = "Vous avez déjà un compte ? Se connecter",
+                            en = "Already have an account? Sign in",
+                            ar = "عندك حساب؟ تسجيل الدخول",
+                            dz = "عندك حساب؟ تسجيل الدخول"
+                        ),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
-            */
 
             if (submitError.isNotBlank()) {
                 Text(submitError, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
 
-            // Explain online accounts while preserving offline use.
             Card(
                 shape = RoundedCornerShape(18.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),

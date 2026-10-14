@@ -56,83 +56,156 @@ fun ProfileScreen(
 ) {
     val language by viewModel.selectedLanguage.collectAsState()
     val isAdmin by viewModel.isAdmin.collectAsState()
-    BoardScaffold(title = language.tr("Profile / Mon Compte", "Profile / My Account", "الحساب", "الحساب"), tag = "profile_screen", onBack = onBack) {
-        LazyColumn(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            item { CloudAccountCard(viewModel, language, onSignIn, onCreateAccount, onAdminAccess) }
+
+    BoardScaffold(
+        title = language.tr("Profil / Mon Compte", "Profile / My Account", "حسابي الشخصي", "حسابي الشخصي"),
+        tag = "profile_screen",
+        onBack = onBack
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
             item {
-                Card(shape = RoundedCornerShape(KonstrivoRadius.Card),
+                CloudAccountCard(viewModel, language, onSignIn, onCreateAccount, onAdminAccess)
+            }
+            item {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = KonstrivoNavy),
-                    modifier = Modifier.fillMaxWidth()) {
-                    Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(language.tr("FREE vs PRO", "FREE vs PRO", "مجاني vs برو", "مجاني vs برو"),
-                            style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, color = KonstrivoGold)
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(18.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.WorkspacePremium,
+                                contentDescription = null,
+                                tint = KonstrivoGold,
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Text(
+                                text = language.tr("Avantages PRO", "PRO Benefits", "ميزات PRO", "ميزات PRO"),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = KonstrivoGold
+                            )
+                        }
+
                         val rows = listOf(
-                            Triple(language.tr("Devis illimites", "Unlimited quotes", "عروض غير محدودة", "ديفي بلا حدود"), false, isAdmin),
-                            Triple(language.tr("Catalogue complet", "Full catalog", "كتالوج كامل", "كتالوج كامل"), true, true),
-                            Triple(language.tr("Support prioritaire", "Priority support", "دعم ذو اولوية", "دعم ذو اولوية"), false, isAdmin),
+                            Triple(language.tr("Devis illimités", "Unlimited quotes", "عروض أسعار غير محدودة", "عروض بلا حدود"), false, isAdmin),
+                            Triple(language.tr("Catalogue complet", "Full catalog", "الكتالوج الكامل", "الكتالوج الكامل"), true, true),
+                            Triple(language.tr("Support prioritaire", "Priority support", "دعم أولوية خاصة", "دعم خاص"), false, isAdmin)
                         )
+
                         rows.forEach { (label, free, pro) ->
-                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(label, style = MaterialTheme.typography.bodyMedium, color = Color.White)
-                                Text("FREE ${if (free) "OK" else "--"}  -  PRO ${if (pro) "OK" else "--"}",
-                                    style = MaterialTheme.typography.labelMedium, color = Color.White.copy(alpha = 0.8f))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = "FREE (${if (free) "✓" else "—"})  •  PRO (${if (pro) "✓" else "—"})",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = KonstrivoGold.copy(alpha = 0.9f),
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
-                        Button(onClick = onUpgrade,
+
+                        Button(
+                            onClick = onUpgrade,
                             colors = ButtonDefaults.buttonColors(containerColor = KonstrivoGold, contentColor = KonstrivoNavy),
-                            shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
-                            Text(language.tr("Upgrade to PRO", "Upgrade to PRO", "الترقية الى برو", "الترقية الى برو"))
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                        ) {
+                            Text(
+                                text = language.tr("Passer à la version PRO", "Upgrade to PRO", "الترقية إلى النسخة الاحترافية", "طور لـ PRO"),
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
             }
+
             item {
-                BoardRowCard(BoardRow("Parametres", "Settings", "الاعدادات", "الاعدادات",
-                    "Langue, pays, entreprise", "Language, country, company", "اللغة والدولة والشركة", "اللغة والبلد والشركة",
-                    Icons.Default.Settings, KonstrivoSlate, "profile_settings",
-                    onClick = { it.selectTab(AppTab.SETTINGS) }), viewModel)
+                BoardRowCard(
+                    BoardRow(
+                        titleFr = "Paramètres", titleEn = "Settings", titleAr = "الإعدادات", titleDz = "الإعدادات",
+                        subFr = "Langue, pays, profil artisan", subEn = "Language, country, contractor profile", subAr = "اللغة، البلد، بيانات الحرفي", subDz = "اللغة والبلد وبيانات الحرفي",
+                        icon = Icons.Default.Settings, tint = KonstrivoSlate, tag = "profile_settings",
+                        onClick = { it.selectTab(AppTab.SETTINGS) }
+                    ),
+                    viewModel
+                )
             }
+
             item {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.WorkspacePremium, contentDescription = null, tint = KonstrivoGold)
-                    Text("  KONSTRIVO PRO", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.WorkspacePremium, contentDescription = null, tint = KonstrivoGold, modifier = Modifier.size(16.dp))
+                    Text(
+                        text = "  KONSTRIVO PRO • Construction & Bâtiment",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
     }
 }
 
-/**
- * Shared-account card: shows the website session state (restoring, signed
- * out, signed in) and the supported account actions. The role shown for
- * admin access is the one validated by the backend (GET /users/me) — the
- * locally stored preference value alone is never trusted.
- */
 @Composable
 private fun CloudAccountCard(
     viewModel: MainViewModel,
     language: com.example.data.model.AppLanguage,
     onSignIn: () -> Unit,
     onCreateAccount: () -> Unit,
-    onAdminAccess: () -> Unit,
+    onAdminAccess: () -> Unit
 ) {
     val context = LocalContext.current
     val cloudAuth by viewModel.cloudAuthState.collectAsState()
     val isAdmin by viewModel.isAdmin.collectAsState()
 
     Card(
-        shape = RoundedCornerShape(KonstrivoRadius.Card),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             Text(
-                language.tr("Compte KONSTRIVO", "KONSTRIVO Account", "حساب KONSTRIVO", "حساب KONSTRIVO"),
+                text = language.tr("Compte KONSTRIVO", "KONSTRIVO Account", "حساب KONSTRIVO", "حساب KONSTRIVO"),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.ExtraBold,
                 color = KonstrivoGold
             )
+
             when {
                 cloudAuth.isRestoring -> {
                     Row(
@@ -141,11 +214,11 @@ private fun CloudAccountCard(
                     ) {
                         CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = KonstrivoGold)
                         Text(
-                            language.tr(
-                                "Restauration de la session…",
-                                "Restoring session…",
-                                "جارٍ استرجاع الجلسة…",
-                                "باش نرجعو الجلسة…"
+                            text = language.tr(
+                                "Restauration de la session...",
+                                "Restoring session...",
+                                "جارٍ استرجاع الجلسة...",
+                                "جارٍ استرجاع الجلسة..."
                             ),
                             style = MaterialTheme.typography.bodySmall
                         )
@@ -154,29 +227,38 @@ private fun CloudAccountCard(
 
                 cloudAuth.session == null -> {
                     Text(
-                        language.tr(
-                            "Connectez-vous pour retrouver vos comptes partagés avec le site konstrivo.konstrivo.blitz.cloud.",
-                            "Sign in to share your account with the konstrivo.konstrivo.blitz.cloud website.",
-                            "سجّل الدخول لمشاركة حسابك مع موقع konstrivo.konstrivo.blitz.cloud.",
-                            "ادخل باش تشارك حسابك مع ست konstrivo.konstrivo.blitz.cloud."
+                        text = language.tr(
+                            "Connectez-vous pour synchroniser vos projets avec l'espace web.",
+                            "Sign in to sync your projects with the web portal.",
+                            "سجّل الدخول لمزامنة مشاريعك مع البوابة الإلكترونية.",
+                            "سجّل الدخول لمزامنة مشاريعك عبر الموقع."
                         ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
                         Button(
                             onClick = onSignIn,
                             shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.weight(1f).testTag("profile_sign_in")
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                                .testTag("profile_sign_in")
                         ) {
-                            Text(language.tr("Se connecter", "Sign in", "تسجيل الدخول", "ادخل"))
+                            Text(language.tr("Se connecter", "Sign in", "تسجيل الدخول", "دخول"), fontWeight = FontWeight.Bold)
                         }
                         OutlinedButton(
                             onClick = onCreateAccount,
                             shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.weight(1f).testTag("profile_create_account")
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                                .testTag("profile_create_account")
                         ) {
-                            Text(language.tr("Créer un compte", "Create account", "إنشاء حساب", "اعمل حساب"))
+                            Text(language.tr("Créer un compte", "Create account", "إنشاء حساب", "حساب جديد"), fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -190,69 +272,83 @@ private fun CloudAccountCard(
                         Surface(
                             shape = CircleShape,
                             color = KonstrivoNavy,
-                            modifier = Modifier.size(44.dp)
+                            modifier = Modifier.size(46.dp)
                         ) {
                             Icon(
-                                Icons.Default.Person,
+                                imageVector = Icons.Default.Person,
                                 contentDescription = null,
                                 tint = Color.White,
-                                modifier = Modifier.padding(10.dp)
+                                modifier = Modifier.padding(11.dp)
                             )
                         }
-                        Column(Modifier.weight(1f)) {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                session.fullName.ifBlank { session.email },
+                                text = session.fullName.ifBlank { session.email },
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold
                             )
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
-                                    Icons.Default.Email,
+                                    imageVector = Icons.Default.Email,
                                     contentDescription = null,
-                                    modifier = Modifier.size(12.dp),
+                                    modifier = Modifier.size(13.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    " " + session.email,
+                                    text = " ${session.email}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
                     }
+
                     if (!cloudAuth.isVerified) {
                         Text(
-                            language.tr(
-                                "Session locale enregistrée — vérification du serveur indisponible pour le moment.",
-                                "Saved local session — server verification is unavailable right now.",
-                                "جلسة محلية محفوظة — التحقق من الخادم غير متاح حالياً.",
-                                "جلسة محلية محفوظة — التحقق من السيرفر ما يجاش حالياً."
+                            text = language.tr(
+                                "Session locale active (hors ligne).",
+                                "Active local session (offline).",
+                                "جلسة محلية نشطة (بدون إنترنت).",
+                                "جلسة محلية نشطة."
                             ),
                             style = MaterialTheme.typography.labelSmall,
                             color = KonstrivoGold
                         )
                     }
+
                     if (cloudAuth.isVerified && isAdmin) {
                         Button(
                             onClick = onAdminAccess,
                             colors = ButtonDefaults.buttonColors(containerColor = KonstrivoGold, contentColor = KonstrivoNavy),
                             shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.fillMaxWidth().testTag("profile_admin_access")
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .testTag("profile_admin_access")
                         ) {
-                            Text(language.tr("Tableau de bord admin", "Admin dashboard", "لوحة التحكم", "لوحة التحكم"))
+                            Text(
+                                text = language.tr("Tableau de bord admin", "Admin dashboard", "لوحة التحكم", "لوحة التحكم"),
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
+
                     OutlinedButton(
                         onClick = { viewModel.signOutCloudSession(context) },
                         shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth().testTag("profile_sign_out")
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .testTag("profile_sign_out")
                     ) {
                         Icon(Icons.Default.Logout, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Text(" " + language.tr("Se déconnecter", "Sign out", "تسجيل الخروج", "اخرج"))
+                        Text(
+                            text = " " + language.tr("Se déconnecter", "Sign out", "تسجيل الخروج", "خروج"),
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
         }
     }
 }
-

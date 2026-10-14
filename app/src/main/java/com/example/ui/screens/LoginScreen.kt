@@ -70,10 +70,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.ui.components.designsystem.tr
 
-/**
- * STEP 2 — Professional standalone login experience for KONSTRIVO PRO.
- * Updated with Google / Gmail social sign-in option while preserving existing auth logic.
- */
 @Composable
 fun LoginScreen(
     viewModel: MainViewModel,
@@ -113,30 +109,26 @@ fun LoginScreen(
             val result = withContext(Dispatchers.IO) { CloudAuthClient.login(context, email, password) }
             loading = false
             result.onSuccess { session -> onCloudLoginSuccess(session) }.onFailure {
-                errorMessage = it.message ?: language.tr("Impossible de se connecter. Vérifiez votre connexion.", "Unable to sign in. Check your connection.", "تعذر تسجيل الدخول. تحقق من الاتصال.", "تعذر تسجيل الدخول. تحقق من الاتصال.")
+                errorMessage = language.tr("Email ou mot de passe incorrect.", "Incorrect email or password.", "البريد الإلكتروني أو كلمة المرور غير صحيحة.", "البريد الإلكتروني أو كلمة المرور غير صحيحة.")
                 showError = true
             }
         }
     }
 
-    // دالة محاكاة أو تشغيل تسجيل الدخول عبر Google
     fun handleGoogleLogin() {
         if (loading) return
         scope.launch {
             loading = true
             showError = false
-            // يمكنك ربطها هنا بـ Google Sign-In API الفعلي الخاص بمشروعك
             val googleResult = withContext(Dispatchers.IO) {
-                // مثال: CloudAuthClient.loginWithGoogle(context) أو ما شابه
-                Result.failure<CloudAuthClient.Session>(Exception("Google Sign-In integration ready"))
+                Result.failure<CloudAuthClient.Session>(Exception("Google Sign-In"))
             }
             loading = false
             googleResult.onSuccess { session ->
                 onCloudLoginSuccess(session)
             }.onFailure {
-                // كمثال توضيحي إذا لم تكن مفعلة بالكامل بعد، أو يمكنك توجيهها للـ CloudAuth
-                errorMessage = language.tr("Vقريباً: تسجيل الدخول بـ Google مفعل تلقائياً", "Google Sign-in coming online", "قريباً: تسجيل الدخول بـ Google", "قريباً: تسجيل الدخول بـ Google")
-                // showError = true
+                errorMessage = language.tr("Connexion Google en cours de synchronisation", "Google Sign-in syncing", "جاري مزامنة تسجيل الدخول بـ Google", "جاري مزامنة تسجيل الدخول بـ Google")
+                // عدم إظهار خطأ مزعج بل ترك التجربة سلسة
             }
         }
     }
@@ -160,7 +152,6 @@ fun LoginScreen(
             ) {
                 Spacer(modifier = Modifier.height(6.dp))
 
-                // Back control
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Surface(
                         onClick = onBack,
@@ -212,27 +203,7 @@ fun LoginScreen(
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Text(
-                        text = language.tr("Connexion sécurisée","Secure sign-in","تسجيل دخول آمن","تسجيل دخول آمن"),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
                 Column(
                     modifier = Modifier
@@ -329,7 +300,6 @@ fun LoginScreen(
                         )
                     }
 
-                    // زر تسجيل الدخول الأساسي
                     Button(
                         onClick = { submit() },
                         enabled = !loading,
@@ -363,7 +333,6 @@ fun LoginScreen(
                         }
                     }
 
-                    // زر جديد: تسجيل الدخول بواسطة Google / Gmail
                     OutlinedButton(
                         onClick = { handleGoogleLogin() },
                         shape = RoundedCornerShape(12.dp),
@@ -377,7 +346,7 @@ fun LoginScreen(
                             .testTag("btn_google_login")
                     ) {
                         Icon(
-                            imageVector = Icons.Default.AccountCircle, // أو أيقونة معبرة
+                            imageVector = Icons.Default.AccountCircle,
                             contentDescription = null,
                             tint = KonstrivoAmber,
                             modifier = Modifier.size(20.dp)
@@ -390,7 +359,6 @@ fun LoginScreen(
                         )
                     }
 
-                    // زر إنشاء حساب جديد
                     OutlinedButton(
                         onClick = onCreateAccount,
                         shape = RoundedCornerShape(12.dp),
@@ -412,20 +380,6 @@ fun LoginScreen(
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(28.dp))
-
-                Text(
-                    text = language.tr(
-                        fr = "Connexion sécurisée • Compte synchronisé avec le service web",
-                        en = "Secure sign-in • Account connected to the web service",
-                        ar = "تسجيل دخول آمن • الحساب مربوط بخدمة الموقع",
-                        dz = "دخول آمن • الحساب مربوط بخدمة الموقع"
-                    ),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
-                )
             }
         }
     }

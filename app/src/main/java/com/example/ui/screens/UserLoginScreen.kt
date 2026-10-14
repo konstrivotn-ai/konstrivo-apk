@@ -10,14 +10,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -26,6 +30,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,17 +52,12 @@ import com.example.data.model.AppLanguage
 import com.example.data.remote.CloudAuthClient
 import com.example.ui.components.designsystem.KonstrivoBrandMark
 import com.example.ui.components.designsystem.tr
+import com.example.ui.theme.KonstrivoAmber
+import com.example.ui.theme.KonstrivoGold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/**
- * Customer-facing sign-in screen, connected to the website's shared
- * `/api/v1/auth` account system (same accounts as the website). Kept separate
- * from LoginScreen, which remains the owner/admin gate (local PBKDF2 + cloud
- * admin). Login success is reported through [onSignInSuccess] with the
- * server-issued session so the caller can apply it to the app state.
- */
 @Composable
 fun UserLoginScreen(
     language: AppLanguage,
@@ -161,6 +161,7 @@ fun UserLoginScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it; attempted = false },
@@ -168,8 +169,10 @@ fun UserLoginScreen(
                     label = { Text(language.tr("البريد الإلكتروني", "Email address", "البريد الإلكتروني", "الإيميل")) },
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    singleLine = true
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
                 )
+
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it; attempted = false },
@@ -178,8 +181,10 @@ fun UserLoginScreen(
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    singleLine = true
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
                 )
+
                 Button(
                     onClick = {
                         if (email.isBlank() || password.isBlank()) {
@@ -198,12 +203,13 @@ fun UserLoginScreen(
                                     .onSuccess { session -> onSignInSuccess(session) }
                                     .onFailure { err ->
                                         errorMessage = err.message
-                                            ?: "Unable to sign in. Check your connection and try again."
+                                            ?: language.tr("تعذر تسجيل الدخول. تحقق من الاتصال.", "Unable to sign in. Check your connection.", "تعذر تسجيل الدخول. تحقق من الاتصال.", "تعذر تسجيل الدخول.")
                                     }
                             }
                         }
                     },
                     enabled = !loading,
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth().height(52.dp).testTag("btn_user_login")
                 ) {
                     if (loading) {
@@ -213,9 +219,37 @@ fun UserLoginScreen(
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        Text(language.tr("تسجيل الدخول", "Sign in", "تسجيل الدخول", "ادخل"))
+                        Text(language.tr("تسجيل الدخول", "Sign in", "تسجيل الدخول", "ادخل"), fontWeight = FontWeight.Bold)
                     }
                 }
+
+                // زر تسجيل الدخول عبر Google / Gmail
+                OutlinedButton(
+                    onClick = {
+                        loading = true
+                        scope.launch {
+                            // محاكاة أو تفعيل مسار ربط Google Sign-In
+                            loading = false
+                        }
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, KonstrivoGold.copy(alpha = 0.8f)),
+                    modifier = Modifier.fillMaxWidth().height(52.dp).testTag("btn_google_signin")
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = null,
+                        tint = KonstrivoAmber,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = language.tr("Connexion avec Google (Gmail)", "Sign in with Google", "التسجيل بـ Google", "التسجيل بـ Google"),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
                 if (attempted && (email.isBlank() || password.isBlank())) {
                     Text(
                         text = language.tr(
@@ -228,6 +262,7 @@ fun UserLoginScreen(
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
+
                 if (errorMessage.isNotBlank()) {
                     Text(
                         text = errorMessage,
@@ -235,18 +270,27 @@ fun UserLoginScreen(
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
+
                 TextButton(
                     onClick = { showForgotDialog = true },
                     modifier = Modifier.fillMaxWidth().testTag("btn_user_forgot_password")
                 ) {
-                    Text(language.tr("نسيت كلمة المرور؟", "Forgot password?", "نسيت كلمة المرور؟", "تسيت كلمة السر؟"))
+                    Text(language.tr("نسيت كلمة المرور؟", "Forgot password?", "نسيت كلمة المرور؟", "نسيت كلمة السر؟"))
                 }
+
                 Spacer(modifier = Modifier.height(2.dp))
-                TextButton(
+
+                Button(
                     onClick = onCreateAccount,
-                    modifier = Modifier.fillMaxWidth().testTag("btn_user_create_account")
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    modifier = Modifier.fillMaxWidth().height(52.dp).testTag("btn_user_create_account")
                 ) {
-                    Text(language.tr("إنشاء حساب جديد", "Create an account", "إنشاء حساب جديد", "اعمل حساب جديد"))
+                    Text(
+                        language.tr("إنشاء حساب جديد", "Create an account", "إنشاء حساب جديد", "اعمل حساب جديد"),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
@@ -262,7 +306,7 @@ fun UserLoginScreen(
                 Text(language.tr("استعادة كلمة المرور", "Password recovery", "استعادة كلمة المرور", "استرجاع كلمة السر"))
             },
             text = {
-                androidx.compose.foundation.layout.Column(
+                Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
@@ -279,7 +323,8 @@ fun UserLoginScreen(
                         onValueChange = { resetEmail = it; resetMessage = "" },
                         label = { Text(language.tr("البريد الإلكتروني", "Email", "البريد الإلكتروني", "الإيميل")) },
                         singleLine = true,
-                        enabled = !resetLoading
+                        enabled = !resetLoading,
+                        shape = RoundedCornerShape(12.dp)
                     )
                     if (resetMessage.isNotBlank()) {
                         Text(
@@ -309,21 +354,22 @@ fun UserLoginScreen(
                                 )
                             }.onFailure { err ->
                                 resetMessage = err.message
-                                    ?: "Unable to request a reset link. Please try again."
+                                    ?: language.tr("تعذر إرسال رابط الاسترجاع.", "Unable to request a reset link.", "تعذر إرسال رابط الاسترجاع.", "ما نجموش نبعثو الرابط.")
                             }
                         }
                     },
-                    enabled = !resetLoading
+                    enabled = !resetLoading,
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     if (resetLoading) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
-                    else Text(language.tr("Envoyer", "Send", "إرسال", "ابعث"))
+                    else Text(language.tr("إرسال", "Send", "إرسال", "ابعث"))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showForgotDialog = false },
                     enabled = !resetLoading
-                ) { Text(language.tr("Fermer", "Close", "إغلاق", "سكر")) }
+                ) { Text(language.tr("إغلاق", "Close", "إغلاق", "سكر")) }
             }
         )
     }

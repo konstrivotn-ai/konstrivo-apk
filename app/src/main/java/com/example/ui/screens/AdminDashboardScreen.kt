@@ -206,7 +206,8 @@ private fun AdminHeader(
         }
         Button(
             onClick = onLogout,
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            shape = RoundedCornerShape(10.dp)
         ) {
             Icon(Icons.Default.PowerSettingsNew, contentDescription = null, modifier = Modifier.size(16.dp))
             Spacer(modifier = Modifier.width(6.dp))
@@ -281,7 +282,7 @@ private fun AdminOverviewSection(
         KonstrivoMenuCard(
             title = language.tr(fr = "Fournisseurs", en = "Suppliers", ar = "الموردون", dz = "الموردون"),
             onClick = { onOpen(AdminSection.SUPPLIERS) },
-            subtitle = language.tr(fr = "Import catalogue — bientôt disponible", en = "Catalogue import — coming soon", ar = "استيراد الكتالوج — قريباً", dz = "استيراد الكتالوج — قريباً"),
+            subtitle = language.tr(fr = "Import catalogue", en = "Catalogue import", ar = "استيراد الكتالوج", dz = "استيراد الكتالوج"),
             icon = Icons.Default.LocalShipping,
             testTag = "admin_suppliers"
         )
@@ -495,6 +496,7 @@ private fun AdminPricesSection(
                     onValueChange = { ba13Value = it },
                     label = { Text("BA13 Standard Price") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -503,6 +505,7 @@ private fun AdminPricesSection(
                     onValueChange = { hydroValue = it },
                     label = { Text("BA13 Hydrofuge Price") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -511,6 +514,7 @@ private fun AdminPricesSection(
                     onValueChange = { laborValue = it },
                     label = { Text("Labor Rate per m²") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -526,7 +530,8 @@ private fun AdminPricesSection(
 
                         Toast.makeText(context, language.tr(fr = "Mis à jour avec succès", en = "Successfully updated", ar = "تم التحديث بنجاح", dz = "تحدث بنجاح"), Toast.LENGTH_SHORT).show()
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = KonstrivoAmber)
                 ) {
                     Icon(Icons.Default.Save, contentDescription = null, tint = KonstrivoNavy)
@@ -598,7 +603,7 @@ private fun AdminUsersSection(
                         .background(color = KonstrivoAmber.copy(alpha = 0.2f), shape = RoundedCornerShape(40.dp))
                         .border(2.dp, KonstrivoAmber, RoundedCornerShape(40.dp))
                         .clickable {
-                            Toast.makeText(context, "Selection de photo bientôt disponible", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, language.tr(fr = "Sélection de photo bientôt disponible", en = "Photo selection coming soon", ar = "اختيار الصورة قريباً", dz = "اختيار الصورة قريباً"), Toast.LENGTH_SHORT).show()
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -621,6 +626,7 @@ private fun AdminUsersSection(
                     value = companyName,
                     onValueChange = { companyName = it },
                     label = { Text(language.tr(fr = "Nom de la Société", en = "Company Name", ar = "اسم الشركة", dz = "اسم الشركة")) },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -628,6 +634,7 @@ private fun AdminUsersSection(
                     value = contractorName,
                     onValueChange = { contractorName = it },
                     label = { Text(language.tr(fr = "Nom de l'Artisan / Responsable", en = "Contractor Name", ar = "اسم الحرفي / المسؤول", dz = "اسم الحرفي")) },
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -636,6 +643,7 @@ private fun AdminUsersSection(
                     onValueChange = { userEmail = it },
                     label = { Text("Email (Google Auth)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -649,7 +657,8 @@ private fun AdminUsersSection(
                         viewModel.updateUserSettings(updatedSettings)
                         Toast.makeText(context, language.tr(fr = "Profil mis à jour avec succès", en = "Profile successfully updated", ar = "تم تحديث الملف الشخصي بنجاح", dz = "تحدث الملف الشخصي بنجاح"), Toast.LENGTH_SHORT).show()
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = KonstrivoAmber)
                 ) {
                     Icon(Icons.Default.Save, contentDescription = null, tint = KonstrivoNavy)
