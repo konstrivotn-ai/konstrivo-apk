@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Save
@@ -25,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.data.local.UserSettingsEntity
 import com.example.ui.components.designsystem.tr
@@ -45,7 +42,6 @@ fun UserDashboardScreen(
 
     var companyName by remember(userSettings.companyHeader) { mutableStateOf(userSettings.companyHeader) }
     var contractorName by remember(userSettings.contractorName) { mutableStateOf(userSettings.contractorName ?: "") }
-    var userEmail by remember(userSettings.contractorEmail) { mutableStateOf(userSettings.contractorEmail ?: "") }
     var userPhone by remember(userSettings.contractorPhone) { mutableStateOf(userSettings.contractorPhone ?: "") }
 
     Surface(
@@ -142,17 +138,6 @@ fun UserDashboardScreen(
                     )
 
                     OutlinedTextField(
-                        value = userEmail,
-                        onValueChange = { userEmail = it },
-                        label = { Text(language.tr("Adresse Email", "Email Address", "البريد الإلكتروني", "الإيميل")) },
-                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        modifier = Modifier.fillMaxWidth().testTag("field_user_email")
-                    )
-
-                    OutlinedTextField(
                         value = userPhone,
                         onValueChange = { userPhone = it },
                         label = { Text(language.tr("Numéro de Téléphone", "Phone Number", "رقم الهاتف", "رقم الهاتف")) },
@@ -170,7 +155,6 @@ fun UserDashboardScreen(
                             val updatedSettings = userSettings.copy(
                                 companyHeader = companyName,
                                 contractorName = contractorName,
-                                contractorEmail = userEmail,
                                 contractorPhone = userPhone
                             )
                             viewModel.updateUserSettings(updatedSettings)
