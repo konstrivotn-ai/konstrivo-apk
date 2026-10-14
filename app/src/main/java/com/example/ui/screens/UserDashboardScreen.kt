@@ -103,7 +103,7 @@ fun UserDashboardScreen(
                                     Toast.LENGTH_SHORT
                                 ).show()
                             },
-                        alignment = Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.AddAPhoto,
