@@ -227,7 +227,7 @@ enum class CalculationType(
         "Faux Plafond Simple BA13",
         "سقف مستعار معلق بسيط BA13",
         "فوبلافون مستوي بالـ Fourrure",
-        1.05
+        1.10
     ),
     PLACO_CLOISON(
         "placo_cloison",
@@ -235,7 +235,7 @@ enum class CalculationType(
         "Cloison de Séparation (Rails & Montants)",
         "جدار فاصل مزدوج الهيكل",
         "فاصل كلووزون (Double Face)",
-        1.05
+        1.10
     ),
     PLACO_DEMONTABLE(
         "placo_demontable",
@@ -243,7 +243,7 @@ enum class CalculationType(
         "Plafond Démontable 60x60",
         "سقف تفكيكي شبكي 60×60 سم",
         "فوبلافون ديكور 60×60 سم",
-        1.05
+        1.10
     ),
     PLACO_AQUAPANEL(
         "placo_aquapanel",
@@ -251,7 +251,7 @@ enum class CalculationType(
         "Habillage Extérieur (Aquapanel / Ciment)",
         "تغليف خارجي ألواح إسمنتية",
         "أكوابانيل للواجهات والرطوبة",
-        1.05
+        1.10
     ),
     PLACO_CACHE_LUMIERE(
         "placo_cache_lumiere",
@@ -259,7 +259,7 @@ enum class CalculationType(
         "Décors & Cache-Lumière (Caisson)",
         "إنارة مخفية وديكور كرتوش (Caisson)",
         "الكرتوش والميزان (شريط الليد)",
-        1.05
+        1.10
     ),
     PLACO_PVC(
         "placo_pvc",
@@ -267,7 +267,7 @@ enum class CalculationType(
         "Plafond PVC (Anti-Humidité)",
         "سقف بلاستيك PVC للحمامات",
         "فوبلافون PVC ضد الماء للادوش",
-        1.05
+        1.10
     ),
     PLACO_DOUBLAGE_COLLE(
         "placo_doublage_colle",
@@ -275,7 +275,7 @@ enum class CalculationType(
         "Doublage Collé (Plaques collées au mur)",
         "تغليف الحوائط باللصق المباشر",
         "تغليف بإللصاق على الحيط",
-        1.05
+        1.10
     ),
     PLACO_DOUBLAGE_OSSATURE(
         "placo_doublage_ossature",
@@ -283,7 +283,7 @@ enum class CalculationType(
         "Doublage sur Ossature Métallique",
         "تغليف الحوائط بهيكل معدني",
         "تغليف بالريل والمونتون",
-        1.05
+        1.10
     ),
     PLACO_PLAFOND_AUTOPORTANT(
         "placo_plafond_autoportant",
@@ -291,7 +291,7 @@ enum class CalculationType(
         "Plafond Autoportant (Rails & Montants)",
         "سقف ذاتي الارتكاز بالريل والمونتون",
         "فوبلافون أوتوپورتان (Rails & Montants)",
-        1.05
+        1.10
     ),
     PLACO_JOINTS_FINITION(
         "placo_joints_finition",
@@ -299,7 +299,7 @@ enum class CalculationType(
         "Joints & Finition (Enduit / Bande / Ponçage)",
         "مرحلة الفواصل والمعالجة والتشطيب",
         "الجوان والفينيسيو (Enduit / Bande)",
-        1.05
+        1.10
     ),
 
     // Peinture types
@@ -317,7 +317,7 @@ enum class CalculationType(
         "Décor Sablé / Stucco",
         "دهان ديكوري سابلي أو ستوكو",
         "ديكور سابلي أو ستيكو",
-        1.05
+        1.10
     ),
 
     // Maçonnerie
@@ -327,7 +327,7 @@ enum class CalculationType(
         "Mur en Briques (8 ou 12 trous)",
         "بناء جدار بالآجر (8 أو 12 ثقب)",
         "بنيان حائط بالآجور التونسي",
-        1.05
+        1.10
     ),
 
     // Crépissage
@@ -337,7 +337,7 @@ enum class CalculationType(
         "Enduit Ciment / Crépissage (1.5 cm)",
         "لياسة وتلبيس إسمنتي (1.5 سم)",
         "ترطيبة ولياسة بالحمصي والرمل",
-        1.05
+        1.10
     ),
 
     // Carrelage
