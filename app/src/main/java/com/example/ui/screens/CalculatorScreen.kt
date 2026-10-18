@@ -62,6 +62,7 @@ fun CalculatorScreen(
     val openingArea by viewModel.openingArea.collectAsState()
     val wasteMargin by viewModel.wasteMargin.collectAsState()
     val boardType by viewModel.selectedBoardType.collectAsState()
+    val boardDimensions by viewModel.boardDimensions.collectAsState()
     val selectedMontantType by viewModel.selectedMontantType.collectAsState()
     val selectedRailType by viewModel.selectedRailType.collectAsState()
     val isDoubleSkin by viewModel.isDoubleSkin.collectAsState()
@@ -509,11 +510,22 @@ fun CalculatorScreen(
                             modifier = Modifier.fillMaxWidth().testTag("placo_board_type_selector")
                         ) {
                             items(boardItems) { (key, label) ->
-                                FilterChip(
-                                    selected = boardType == key,
-                                    onClick = { viewModel.setSelectedBoardType(key) },
-                                    label = { Text(label, style = MaterialTheme.typography.labelSmall) }
-                                )
+                                FilterChip(selected = boardType == key, onClick = { viewModel.setSelectedBoardType(key) }, label = { Text(label, style = MaterialTheme.typography.labelSmall) })
+                            }
+                        }
+                        Text(language.tr("Dimensions de la plaque", "Board dimensions", "أبعاد اللوح", "قياس اللوح"), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                        val dimensionOptions = listOf(
+                            "1.2x2.5" to "1,20 × 2,50 m · 3,00 m²",
+                            "1.2x2.8" to "1,20 × 2,80 m · 3,36 m²",
+                            "1.2x3.0" to "1,20 × 3,00 m · 3,60 m²",
+                            "0.9x2.0" to "0,90 × 2,00 m · 1,80 m²"
+                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            dimensionOptions.forEach { (key, label) ->
+                                Row(modifier = Modifier.fillMaxWidth().clickable { viewModel.setBoardDimensions(key) }.padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    RadioButton(selected = boardDimensions == key, onClick = { viewModel.setBoardDimensions(key) })
+                                    Text(label, style = MaterialTheme.typography.bodyMedium)
+                                }
                             }
                         }
                     }
@@ -776,6 +788,28 @@ fun CalculatorScreen(
                         ResultTotalRow("Total TTC", result.grandTotalTTC, result.currency, bold = true)
                         if (result.retentionRate > 0.0) ResultTotalRow("Retenue de garantie (${result.retentionRate}%)", -result.retentionAmount, result.currency)
                         ResultTotalRow("Net à payer", result.netPayableAfterRetention, result.currency, bold = true)
+                        HorizontalDivider()
+                        Text(language.tr("Méthodologie d’exécution", "Work methodology", "منهجية التنفيذ", "طريقة الخدمة"), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        val methodology = when (selectedType) {
+                            CalculationType.PLACO_PLAFOND_FIXE -> listOf("Tracer le niveau périphérique et contrôler les diagonales.", "Fixer les cornières de rive et poser les suspentes selon le support.", "Installer les fourrures au pas prévu par le système.", "Poser les plaques avec joints décalés et vis adaptées.", "Traiter les joints en plusieurs passes, laisser sécher puis poncer.")
+                            CalculationType.PLACO_CLOISON -> listOf("Tracer l’axe de la cloison et repérer les ouvertures.", "Fixer les rails au sol et au plafond avec bandes adaptées.", "Installer les montants à l’entraxe choisi et renforcer les baies.", "Poser isolant et plaques selon le nombre de faces configuré.", "Réaliser bandes, enduits et contrôle final de planéité.")
+                            CalculationType.PLACO_DEMONTABLE -> listOf("Déterminer le niveau fini et le calepinage des dalles.", "Fixer les cornières périphériques au niveau.", "Suspendre et mettre à niveau l’ossature T24.", "Installer les dalles 60 × 60 et contrôler les coupes.")
+                            CalculationType.PLOMBERIE_INSTALLATION -> listOf("Repérer les points d’eau et le cheminement des réseaux.", "Dimensionner alimentation et évacuation selon le chantier.", "Fixer les tubes, réaliser les raccords et prévoir l’accès maintenance.", "Effectuer un essai d’étanchéité avant fermeture.")
+                            CalculationType.ELECTRICITE_INSTALLATION -> listOf("Tracer les circuits et séparer éclairage et prises.", "Poser gaines et câbles selon les sections validées par l’électricien.", "Installer protections et tableau selon le schéma du chantier.", "Tester continuité, terre et protections avant mise en service.")
+                            CalculationType.ETANCHEITE_TOITURE -> listOf("Préparer le support, réparer fissures et vérifier les pentes.", "Appliquer le primaire compatible avec le système choisi.", "Poser la membrane avec recouvrements et relevés traités.", "Contrôler évacuations et réaliser un essai d’étanchéité.")
+                            CalculationType.ISOLATION_THERMIQUE -> listOf("Vérifier la continuité de l’enveloppe et l’absence d’humidité.", "Découper l’isolant sans le comprimer et limiter les ponts thermiques.", "Traiter joints, raccords et points singuliers.", "Respecter les prescriptions du fabricant pour le pare-vapeur.")
+                            CalculationType.SOLS_PARQUET -> listOf("Contrôler planéité, humidité et acclimatation du parquet.", "Poser la sous-couche compatible et prévoir le jeu périphérique.", "Assembler les lames en décalant les joints.", "Poser les plinthes sans bloquer la dilatation.")
+                            CalculationType.FACADE_FINITION -> listOf("Contrôler la stabilité du support et traiter les fissures.", "Appliquer le primaire et le système de façade compatibles.", "Respecter épaisseurs, renforts et temps de séchage fabricant.", "Vérifier les points singuliers et la protection contre l’eau.")
+                            CalculationType.DEMOLITION_DEPOSE -> listOf("Vérifier les réseaux cachés et sécuriser la zone.", "Protéger les accès et définir l’ordre de dépose.", "Démonter progressivement et trier les gravats.", "Évacuer les déchets selon les règles locales.")
+                            else -> listOf("Vérifier les mesures et l’état du support avant intervention.", "Préparer les matériaux et respecter les instructions du fabricant.", "Contrôler dimensions, fixations et finitions avant réception.")
+                        }
+                        methodology.forEach { step ->
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top) {
+                                Text("•", color = KonstrivoGold, fontWeight = FontWeight.Bold)
+                                Text(step, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                        Text(language.tr("Référence indicative : confirmez les normes locales et les instructions du fabricant selon le système installé.", "Guidance only: verify local standards and manufacturer instructions for the installed system.", "معلومات إرشادية: تثبّت من المعايير المحلية وتعليمات المصنّع حسب النظام المركّب.", "معلومات إرشادية: تثبّت من المعايير المحلية وتعليمات المصنّع حسب النظام المركّب."), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedButton(
                                 onClick = {
