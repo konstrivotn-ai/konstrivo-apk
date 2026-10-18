@@ -36,6 +36,10 @@ class CalculatorViewModel(
     private val _inputUnitsCount = MutableStateFlow("1.0")
     val inputUnitsCount: StateFlow<String> = _inputUnitsCount.asStateFlow()
 
+    // Combined door/window opening area; website deducts only at >= 1 m².
+    private val _openingArea = MutableStateFlow("0.0")
+    val openingArea: StateFlow<String> = _openingArea.asStateFlow()
+
     private val _wasteMargin = MutableStateFlow("10.0")
     val wasteMargin: StateFlow<String> = _wasteMargin.asStateFlow()
 
@@ -110,6 +114,7 @@ class CalculatorViewModel(
     fun setInputHeight(value: String) { _inputHeight.value = value }
     fun setInputLinearMeters(value: String) { _inputLinearMeters.value = value }
     fun setInputUnitsCount(value: String) { _inputUnitsCount.value = value }
+    fun setOpeningArea(value: String) { _openingArea.value = value }
     fun setWasteMargin(value: String) { _wasteMargin.value = value }
     fun setSelectedBoardType(type: String) { _selectedBoardType.value = type }
     fun setSelectedMontantType(value: String?) { _selectedMontantType.value = value }
@@ -164,6 +169,7 @@ class CalculatorViewModel(
             _inputHeight,
             _inputLinearMeters,
             _inputUnitsCount,
+            _openingArea,
             _wasteMargin,
             _selectedBoardType,
             _selectedMontantType,
@@ -187,28 +193,30 @@ class CalculatorViewModel(
             val heightStr = args[4] as String
             val linearMStr = args[5] as String
             val unitsStr = args[6] as String
-            val wasteStr = args[7] as String
-            val boardType = args[8] as String
-            val montantType = args[9] as String?
-            val railType = args[10] as String?
-            val isDouble = args[11] as Boolean
-            val includeIns = args[12] as Boolean
-            val insType = args[13] as String
-            val customLabor = args[14] as String
-            val entraxe = args[15] as Double
-            val jointsMetersStr = args[16] as String
-            val cornersCountStr = args[17] as String
-            val finishQualityVal = args[18] as Int
-            val trappes = @Suppress("UNCHECKED_CAST") (args[19] as List<ConstructionCalculator.TrappeLine>)
+            val openingAreaStr = args[7] as String
+            val wasteStr = args[8] as String
+            val boardType = args[9] as String
+            val montantType = args[10] as String?
+            val railType = args[11] as String?
+            val isDouble = args[12] as Boolean
+            val includeIns = args[13] as Boolean
+            val insType = args[14] as String
+            val customLabor = args[15] as String
+            val entraxe = args[16] as Double
+            val jointsMetersStr = args[17] as String
+            val cornersCountStr = args[18] as String
+            val finishQualityVal = args[19] as Int
+            val trappes = @Suppress("UNCHECKED_CAST") (args[20] as List<ConstructionCalculator.TrappeLine>)
             @Suppress("UNCHECKED_CAST")
-            val prices = args[20] as List<MaterialPriceEntity>
-            val country = args[21] as Country
+            val prices = args[21] as List<MaterialPriceEntity>
+            val country = args[22] as Country
 
             val length = lengthStr.toDoubleOrNull() ?: 0.0
             val width = widthStr.toDoubleOrNull() ?: 0.0
             val height = heightStr.toDoubleOrNull() ?: 2.8
             val linearM = linearMStr.toDoubleOrNull() ?: 0.0
             val units = unitsStr.toDoubleOrNull() ?: 1.0
+            val openingArea = (openingAreaStr.toDoubleOrNull() ?: 0.0).coerceAtLeast(0.0)
             val waste = wasteStr.toDoubleOrNull() ?: 10.0
             val customLaborVal = customLabor.toDoubleOrNull()
             val jointsMetersVal = jointsMetersStr.toDoubleOrNull() ?: 0.0
@@ -235,6 +243,7 @@ class CalculatorViewModel(
                 height = height,
                 linearMeters = linearM,
                 unitCount = units,
+                netOpeningsArea = openingArea,
                 wasteMarginPercent = waste,
                 boardType = boardType,
                 isDoubleSkin = isDouble,
