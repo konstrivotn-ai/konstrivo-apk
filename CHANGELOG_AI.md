@@ -2,6 +2,12 @@
 
 > Append-only AI change log for the Android application. Newest first.
 
+- **2026-10-19 — Board dimension selector and trade methodology (in progress):**
+  - Added selectable board dimensions (1.20×2.50, 1.20×2.80, 1.20×3.00 and 0.90×2.00 m) and wired selected dimensions into existing board-area calculations.
+  - Added trade-aware methodology guidance for ceilings, partitions, plumbing, electrical, waterproofing, insulation, parquet, facade finishing and demolition.
+  - Methodology is advisory and does not claim automatic DTU certification.
+  - Requires CI validation; complete website parity, PDF audit export and shared-site catalog synchronization remain outstanding.
+
 - **2026-10-18 — Interactive fiscal and estimate settings (in progress):**
   - Added selectable VAT overrides (19%, 13%, 7%, 0%) with a reset to the selected country's fiscal profile.
   - Added Tunisia fiscal-stamp toggle (1.000 DT), guarantee-retention choices (0%, 5%, 10%), custom labor-rate input, and waste-margin input.
