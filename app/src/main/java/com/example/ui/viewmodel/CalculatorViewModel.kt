@@ -238,7 +238,7 @@ class CalculatorViewModel(
             val linearM = linearMStr.toDoubleOrNull() ?: 0.0
             val units = unitsStr.toDoubleOrNull() ?: 1.0
             val openingArea = (openingAreaStr.toDoubleOrNull() ?: 0.0).coerceAtLeast(0.0)
-            val waste = wasteStr.toDoubleOrNull() ?: 10.0
+            val waste = (wasteStr.toDoubleOrNull() ?: 10.0).coerceIn(0.0, 50.0)
             val customLaborVal = customLabor.toDoubleOrNull()
             val jointsMetersVal = jointsMetersStr.toDoubleOrNull() ?: 0.0
             val cornersCountVal = cornersCountStr.toDoubleOrNull() ?: 0.0
