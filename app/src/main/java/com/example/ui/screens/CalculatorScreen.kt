@@ -68,6 +68,9 @@ fun CalculatorScreen(
     val includeInsulation by viewModel.includeInsulation.collectAsState()
     val insulationType by viewModel.insulationType.collectAsState()
     val customLabor by viewModel.customLaborRate.collectAsState()
+    val tvaRateOverride by viewModel.tvaRateOverride.collectAsState()
+    val fiscalStampEnabled by viewModel.fiscalStampEnabled.collectAsState()
+    val retentionRate by viewModel.retentionRate.collectAsState()
     val inputJointsMeters by viewModel.inputJointsMeters.collectAsState()
     val inputCornersCount by viewModel.inputCornersCount.collectAsState()
     val finishQuality by viewModel.finishQuality.collectAsState()
@@ -594,6 +597,81 @@ fun CalculatorScreen(
             }
         }
 
+        // Website parity: fiscal settings, configurable labor and waste margin.
+        item {
+            KonstrivoCard(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(Icons.Default.ReceiptLong, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Text(
+                            text = language.tr("Fiscalité & paramètres du devis", "Tax & estimate settings", "الضرائب وإعدادات عرض السعر", "الضرائب وإعدادات عرض السعر"),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Text(language.tr("Taux TVA", "VAT rate", "نسبة الأداء على القيمة المضافة", "نسبة الأداء على القيمة المضافة"), fontWeight = FontWeight.SemiBold)
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                        listOf("19", "13", "7", "0").forEach { rate ->
+                            FilterChip(
+                                selected = (tvaRateOverride.toDoubleOrNull()?.toInt()?.toString() ?: summary?.tvaRate?.toInt()?.toString()) == rate,
+                                onClick = { viewModel.setTvaRateOverride(rate) },
+                                label = { Text("$rate%") },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                    TextButton(onClick = { viewModel.setTvaRateOverride("") }) {
+                        Text(language.tr("Taux du pays (par défaut)", "Use country default", "استعمال نسبة البلد الأصلية", "استعمال نسبة البلد الأصلية"))
+                    }
+                    if (country == Country.TUNISIA) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(language.tr("Timbre fiscal", "Fiscal stamp", "الطابع الجبائي", "الطابع الجبائي"), fontWeight = FontWeight.SemiBold)
+                                Text("1.000 DT", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            Switch(checked = fiscalStampEnabled, onCheckedChange = viewModel::setFiscalStampEnabled)
+                        }
+                    }
+                    Text(language.tr("Retenue de garantie", "Guarantee retention", "خصم الضمان", "خصم الضمان"), fontWeight = FontWeight.SemiBold)
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                        listOf("0", "5", "10").forEach { rate ->
+                            FilterChip(
+                                selected = retentionRate == rate,
+                                onClick = { viewModel.setRetentionRate(rate) },
+                                label = { Text("$rate%") },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                    OutlinedTextField(
+                        value = customLabor,
+                        onValueChange = viewModel::setCustomLaborRate,
+                        label = { Text(language.tr("Main d'œuvre (DT/m², ml ou unité selon métier)", "Labor rate (DT/m², linear m or unit)", "سعر اليد العاملة (حسب وحدة الخدمة)", "سوم اليد العاملة (حسب وحدة الخدمة)")) },
+                        supportingText = { Text(language.tr("Laisser vide pour le tarif estimé du métier.", "Leave blank to use the trade estimate.", "خلّيه فارغ لاستعمال السعر التقديري للصنعة.", "خلّيه فارغ لاستعمال سوم الصنعة التقديري.")) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                        modifier = Modifier.fillMaxWidth().testTag("input_custom_labor_rate")
+                    )
+                    OutlinedTextField(
+                        value = wasteMargin,
+                        onValueChange = viewModel::setWasteMargin,
+                        label = { Text(language.tr("Marge de chute (%)", "Waste margin (%)", "نسبة الضياع (%)", "نسبة الضياع (%)")) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                        modifier = Modifier.fillMaxWidth().testTag("input_waste_margin")
+                    )
+                    Text(
+                        text = language.tr("Les réglages fiscaux sont intégrés au même résultat de calcul.", "Tax settings are applied to the same calculation result.", "الإعدادات الجبائية داخلة في نفس نتيجة الحساب.", "الإعدادات الجبائية داخلة في نفس نتيجة الحساب."),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
         // Visible estimate results: material details and HT/TVA/TTC totals.
         item {
             val result = summary
@@ -605,7 +683,10 @@ fun CalculatorScreen(
                     appendLine("Main d'œuvre HT: ${String.format(java.util.Locale.US, "%.2f", result.estimatedLaborCost)} ${result.currency}")
                     appendLine("Total HT: ${String.format(java.util.Locale.US, "%.2f", result.grandTotalHT)} ${result.currency}")
                     appendLine("TVA (${result.tvaRate}%): ${String.format(java.util.Locale.US, "%.2f", result.totalTva)} ${result.currency}")
+                    appendLine("Timbre fiscal: ${String.format(java.util.Locale.US, "%.2f", result.fiscalStampAmount)} ${result.currency}")
                     appendLine("Total TTC: ${String.format(java.util.Locale.US, "%.2f", result.grandTotalTTC)} ${result.currency}")
+                    appendLine("Retenue de garantie (${result.retentionRate}%): -${String.format(java.util.Locale.US, "%.2f", result.retentionAmount)} ${result.currency}")
+                    appendLine("Net à payer: ${String.format(java.util.Locale.US, "%.2f", result.netPayableAfterRetention)} ${result.currency}")
                     appendLine()
                     result.items.forEach { line ->
                         appendLine("${line.nameFr}: ${String.format(java.util.Locale.US, "%.2f", line.quantity)} ${line.unit} × ${String.format(java.util.Locale.US, "%.2f", line.unitPrice)} = ${String.format(java.util.Locale.US, "%.2f", line.totalPrice)} ${result.currency}")
@@ -649,7 +730,10 @@ fun CalculatorScreen(
                         ResultTotalRow("Main d'œuvre HT", result.estimatedLaborCost, result.currency)
                         ResultTotalRow("Total HT", result.grandTotalHT, result.currency, bold = true)
                         ResultTotalRow("TVA (${result.tvaRate}%)", result.totalTva, result.currency)
+                        if (result.fiscalStampAmount > 0.0) ResultTotalRow("Timbre fiscal", result.fiscalStampAmount, result.currency)
                         ResultTotalRow("Total TTC", result.grandTotalTTC, result.currency, bold = true)
+                        if (result.retentionRate > 0.0) ResultTotalRow("Retenue de garantie (${result.retentionRate}%)", -result.retentionAmount, result.currency)
+                        ResultTotalRow("Net à payer", result.netPayableAfterRetention, result.currency, bold = true)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedButton(
                                 onClick = {
