@@ -135,6 +135,8 @@ object ConstructionCalculator {
         }
 
         val area = max(0.0, params.area)
+        // Website rule: only deduct openings when their combined area reaches 1.00 m².
+        val deductibleOpeningArea = params.netOpeningsArea.takeIf { it >= 1.0 } ?: 0.0
         val perimeter = if (params.perimeter > 0) params.perimeter else if (area > 0) 4 * Math.sqrt(area) else 0.0
         var estimatedLaborRate = params.customLaborRatePerM2 ?: 12.0
 
@@ -207,6 +209,7 @@ object ConstructionCalculator {
             CalculationType.PLACO_CLOISON -> {
                 estimatedLaborRate = params.customLaborRatePerM2 ?: (16.0 * country.rateToTndMultiplier)
                 val boardKey = params.boardType.ifEmpty { "plaque_ba13_standard" }
+                val wallNetArea = max(0.0, area - deductibleOpeningArea)
                 val boardArea = max(0.5, params.boardWidthM * params.boardLengthM) // 1.2 x 2.5 = 3.0 m²
 
                 // Support explicit configuration for number of sides and layers per side while
@@ -216,7 +219,7 @@ object ConstructionCalculator {
                 val faces = effectiveNumberOfSides * effectiveLayersPerSide
 
                 // Plaques calculées depuis les dimensions réelles du panneau, le nombre de faces + la marge de chute.
-                val numBoards = ceil((area * faces * wasteFactor) / boardArea)
+                val numBoards = ceil((wallNetArea * faces * wasteFactor) / boardArea)
                 addItem(
                     boardKey,
                     numBoards,
@@ -224,12 +227,12 @@ object ConstructionCalculator {
                     if (faces == 4.0) "Plaques BA13 Double Peau (4 faces)" else "Plaques BA13 Double Face (2 faces)",
                     if (faces == 4.0) "ألواح جبس BA13 تغليف مزدوج (4 جهات)" else "ألواح جبس BA13 تغليف وجهين",
                     if (faces == 4.0) "ألواح بلاكو تغليف دوبل من الشيرتين" else "ألواح بلاكو تغليف وجهين للفاصل",
-                    "${faces} faces x ${area} m² + chute ${(params.wasteMarginPercent).toInt()}% / ${boardArea} m²"
+                    "${faces} faces x ${wallNetArea} m² net + chute ${(params.wasteMarginPercent).toInt()}% / ${boardArea} m²"
                 )
 
                 // Longueur de cloison (m) — fournie ou dérivée de la surface / hauteur.
                 val wallLength = if (params.wallLengthMeters > 0) params.wallLengthMeters
-                else if (params.height > 0) area / params.height
+                else if (params.height > 0) wallNetArea / params.height
                 else perimeter / 2.0
 
                 // Rails plancher + plafond : 2 fois la longueur du mur.
@@ -573,7 +576,7 @@ object ConstructionCalculator {
                 else if (params.height > 0.0 && area > 0.0) area / params.height
                 else perimeter / 2.0
 
-                val netArea = max(0.0, (wallLength * params.height) - params.netOpeningsArea)
+                val netArea = max(0.0, (wallLength * params.height) - deductibleOpeningArea)
 
                 // Brick type mapping: default to 12-hole (15 bricks/m²) unless explicit 8-hole selected
                 val bricksPerM2 = if (params.boardType == "brique_8_trous") 12.0 else 15.0
@@ -741,7 +744,7 @@ object ConstructionCalculator {
                 addItem("barre_seuil_porte_alu", max(1.0, ceil(kotlin.math.sqrt(area) / 4.0)), "pièces", "Barre de seuil aluminium", "حاجز عتبة ألمنيوم", "حاجز عتبة ألمنيوم", "ceil(sqrt(area) / 4)", fallbackUnitPrice = 15.0)
             }
             CalculationType.FACADE_FINITION -> {
-                val netArea = max(0.0, area - params.netOpeningsArea)
+                val netArea = max(0.0, area - deductibleOpeningArea)
                 estimatedLaborRate = params.customLaborRatePerM2 ?: (18.0 * country.rateToTndMultiplier)
                 addItem("enduit_monocouche_facade_25kg", ceil(netArea * 1.15 / 1.5), "sacs 25kg", "Enduit monocouche façade (25kg)", "ملاط تلبيس الواجهة 25 كغ", "ملاط تلبيس الواجهة 25 كغ", "net area × 1.15 / 1.5", fallbackUnitPrice = 26.0)
                 addItem("corniere_facade_entoilee_pvc", max(1.0, ceil(kotlin.math.sqrt(area) * 4.0 / 2.5)), "pièces 2.5m", "Cornière façade entoilée", "زاوية واجهة بشبكة", "زاوية واجهة بشبكة", "perimeter estimate / 2.5", fallbackUnitPrice = 5.5)
