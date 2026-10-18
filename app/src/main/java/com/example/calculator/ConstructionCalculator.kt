@@ -703,7 +703,7 @@ object ConstructionCalculator {
             CalculationType.PLOMBERIE_INSTALLATION -> {
                 val network = max(0.0, if (params.linearMeters > 0.0) params.linearMeters else params.perimeter)
                 val points = max(1.0, params.unitCount)
-                estimatedLaborRate = params.customLaborRatePerM2 ?: (25.0 * country.rateToTndMultiplier)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (65.0 * country.rateToTndMultiplier)
                 addItem("ppr_tube_20_4m", max(1.0, ceil((network * 0.70 / 4.0) * wasteFactor)), "barres 4m", "Tube PPR 20mm (barre 4m)", "أنبوب PPR 20 ملم", "أنبوب PPR 20 ملم", "(" + network + "m × 0.7 × " + wasteFactor + ") / 4")
                 addItem("ppr_tube_25_4m", max(1.0, ceil((network * 0.30 / 4.0) * wasteFactor)), "barres 4m", "Tube PPR 25mm (barre 4m)", "أنبوب PPR 25 ملم", "أنبوب PPR 25 ملم", "(" + network + "m × 0.3 × " + wasteFactor + ") / 4")
                 addItem("pvc_tube_40_4m", max(1.0, ceil((network * 0.50 / 4.0) * wasteFactor)), "barres 4m", "Tube PVC évacuation 40mm (barre 4m)", "أنبوب PVC 40 ملم", "أنبوب PVC 40 ملم", "(" + network + "m × 0.5 × " + wasteFactor + ") / 4")
@@ -713,7 +713,7 @@ object ConstructionCalculator {
             }
             CalculationType.ELECTRICITE_INSTALLATION -> {
                 val points = max(1.0, params.unitCount)
-                estimatedLaborRate = params.customLaborRatePerM2 ?: (20.0 * country.rateToTndMultiplier)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (25.0 * country.rateToTndMultiplier)
                 addItem("cable_1_5mm_100m", max(1.0, ceil((points * 18.0 / 100.0) * wasteFactor)), "rouleaux 100m", "Câble cuivre 1.5 mm² (100m)", "سلك نحاسي 1.5 ملم²", "سلك نحاسي 1.5 ملم²", "(points × 18m) / 100 × waste")
                 addItem("gaine_icta_20_50m", max(1.0, ceil((points * 12.0 / 50.0) * wasteFactor)), "couronnes 50m", "Gaine ICTA 20mm (50m)", "أنبوب حماية ICTA 20 ملم", "أنبوب حماية ICTA 20 ملم", "(points × 12m) / 50 × waste")
                 addItem("spot_led_encastrable", points, "pièces", "Spots LED encastrables", "سبوت LED", "سبوت LED", "1 point d'éclairage par point déclaré")
@@ -721,18 +721,18 @@ object ConstructionCalculator {
             }
             CalculationType.ETANCHEITE_TOITURE -> {
                 val roofArea = max(0.0, area + max(0.0, params.linearMeters) * 0.20)
-                estimatedLaborRate = params.customLaborRatePerM2 ?: (18.0 * country.rateToTndMultiplier)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (14.0 * country.rateToTndMultiplier)
                 addItem("membrane_etancheite_4mm_10m2", max(1.0, ceil((roofArea * 1.15 * wasteFactor) / 10.0)), "rouleaux 10m²", "Membrane bitumineuse 4mm (10m²)", "غشاء عزل بيتوميني 4 ملم", "غشاء عزل بيتوميني 4 ملم", "(surface + acrotère × 0.20) × 1.15 × waste / 10")
                 addItem("bitume_liquide_bidon_20l", max(1.0, ceil(area * 0.35 / 20.0)), "bidons 20L", "Bitume liquide (20L)", "بيتومين سائل 20 لتر", "بيتومين سائل 20 لتر", "0.35 L/m²; catalog price")
                 addItem("solin_alu", max(1.0, ceil(max(0.0, params.linearMeters) / 3.0)), "pièces 3m", "Solin aluminium (3m)", "حافة ألمنيوم للعزل", "حافة ألمنيوم للعزل", "linear meters / 3")
             }
             CalculationType.ISOLATION_THERMIQUE -> {
-                estimatedLaborRate = params.customLaborRatePerM2 ?: (12.0 * country.rateToTndMultiplier)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (6.0 * country.rateToTndMultiplier)
                 addItem("laine_de_verre_50mm", max(1.0, ceil(area * wasteFactor / 15.0)), "rouleaux", "Laine de verre 50mm", "صوف زجاجي 50 ملم", "صوف زجاجي 50 ملم", "area × waste / 15")
                 addItem("bande_resiliente_48mm", max(1.0, ceil(perimeter / 30.0)), "rouleaux 30m", "Bande résiliente 48mm", "شريط عازل للصوت", "شريط عازل للصوت", "perimeter / 30")
             }
             CalculationType.SOLS_PARQUET -> {
-                estimatedLaborRate = params.customLaborRatePerM2 ?: (18.0 * country.rateToTndMultiplier)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (12.0 * country.rateToTndMultiplier)
                 val parquetArea = area * wasteFactor
                 addItem("parquet_stratifie_8mm_m2", parquetArea, "m²", "Parquet stratifié 8mm", "باركيه 8 ملم", "باركيه 8 ملم", "area × waste")
                 addItem("sous_couche_acoustique_sol_m2", parquetArea, "m²", "Sous-couche acoustique", "طبقة عازلة تحت الأرضية", "طبقة عازلة تحت الأرضية", "same net parquet area")
@@ -741,15 +741,15 @@ object ConstructionCalculator {
             }
             CalculationType.FACADE_FINITION -> {
                 val netArea = max(0.0, area - params.netOpeningsArea)
-                estimatedLaborRate = params.customLaborRatePerM2 ?: (22.0 * country.rateToTndMultiplier)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (18.0 * country.rateToTndMultiplier)
                 addItem("enduit_monocouche_facade_25kg", ceil(netArea * 1.15 / 1.5), "sacs 25kg", "Enduit monocouche façade (25kg)", "ملاط تلبيس الواجهة 25 كغ", "ملاط تلبيس الواجهة 25 كغ", "net area × 1.15 / 1.5")
                 addItem("corniere_facade_entoilee_pvc", max(1.0, ceil(kotlin.math.sqrt(area) * 4.0 / 2.5)), "pièces 2.5m", "Cornière façade entoilée", "زاوية واجهة بشبكة", "زاوية واجهة بشبكة", "perimeter estimate / 2.5")
             }
             CalculationType.DEMOLITION_DEPOSE -> {
-                val thicknessCm = max(1.0, params.height * 100.0 / 2.8)
+                val thicknessCm = max(1.0, params.height)
                 val rawVolume = area * (thicknessCm / 100.0)
                 val expandedVolume = rawVolume * 1.40
-                estimatedLaborRate = params.customLaborRatePerM2 ?: (25.0 * country.rateToTndMultiplier)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (12.0 * country.rateToTndMultiplier)
                 addItem("camion_evacuation_gravats_6m3", max(1.0, ceil(expandedVolume / 6.0)), "camions 6m³", "Camion évacuation gravats (6m³)", "شاحنة إزالة الأنقاض 6م³", "شاحنة إزالة الأنقاض 6م³", "area × thickness × 1.40 / 6")
                 addItem("sacs_gravats_renforces_10pcs", max(1.0, ceil(expandedVolume * 2.0)), "lots de 10", "Sacs gravats renforcés (lot de 10)", "أكياس أنقاض مقواة", "أكياس أنقاض مقواة", "volume foisonné × 20 bags / 10")
             }
