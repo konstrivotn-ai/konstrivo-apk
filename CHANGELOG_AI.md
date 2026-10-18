@@ -2,6 +2,12 @@
 
 > Append-only AI change log for the Android application. Newest first.
 
+- **2026-10-18 — Opening deduction parity (in progress):**
+  - Added an explicit opening-area input for placo partitions, masonry walls and facade finishing.
+  - Matched the website rule: openings are deducted only when the combined area is at least 1.00 m²; placo partition board quantity is calculated from net wall area before waste.
+  - Added a regression test for 0.99 m² (no deduction) and 2.00 m² (deduction).
+  - This is one parity increment, not full website parity; other trade-specific controls, fiscal options, result details, PDF/quote/WhatsApp and shared sync remain to be completed.
+
 - **2026-10-18 — Android calculator parity expansion (in progress):**
   - Set the default waste margin to 10% across all native calculation types and the calculator parameter fallback.
   - Added native calculator categories and calculation branches for plumbing, electrical installation, waterproofing, insulation, parquet flooring, facade finishing, and demolition.
