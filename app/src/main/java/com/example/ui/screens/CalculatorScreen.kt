@@ -555,6 +555,234 @@ fun CalculatorScreen(
                 }
             }
         }
+        // Live calculation result: keep it directly below the measurement inputs.
+        item {
+            summary?.let { result ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .testTag("calculator_result_card"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        KonstrivoGold.copy(alpha = 0.65f)
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = KonstrivoGold.copy(alpha = 0.18f)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Assessment,
+                                    contentDescription = null,
+                                    tint = KonstrivoGold,
+                                    modifier = Modifier.padding(10.dp).size(22.dp)
+                                )
+                            }
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = language.tr(
+                                        "Résultat du métré",
+                                        "Measurement result",
+                                        "نتيجة المترية",
+                                        "نتيجة المترية"
+                                    ),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = when (language) {
+                                        AppLanguage.DERJA -> result.calculationType.nameDerja
+                                        AppLanguage.ARABIC -> result.calculationType.nameAr
+                                        AppLanguage.FRENCH -> result.calculationType.nameFr
+                                        AppLanguage.ENGLISH -> result.calculationType.nameFr
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp),
+                            color = KonstrivoNavy
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp)) {
+                                Text(
+                                    text = language.tr(
+                                        "TOTAL ESTIMÉ",
+                                        "ESTIMATED TOTAL",
+                                        "الكلفة التقديرية",
+                                        "الكلفة التقديرية"
+                                    ),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = Color.White.copy(alpha = 0.78f)
+                                )
+                                Text(
+                                    text = String.format(
+                                        java.util.Locale.ROOT,
+                                        "%.2f %s",
+                                        if (result.grandTotalTTC > 0.0) result.grandTotalTTC else result.grandTotalCost,
+                                        result.currency
+                                    ),
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = KonstrivoGold
+                                )
+                                Text(
+                                    text = language.tr(
+                                        "Matériaux : %.2f %s  •  Main-d’œuvre : %.2f %s".format(
+                                            result.totalMaterialCost, result.currency,
+                                            result.estimatedLaborCost, result.currency
+                                        ),
+                                        "Materials: %.2f %s  •  Labor: %.2f %s".format(
+                                            result.totalMaterialCost, result.currency,
+                                            result.estimatedLaborCost, result.currency
+                                        ),
+                                        "المواد: %.2f %s  •  اليد العاملة: %.2f %s".format(
+                                            result.totalMaterialCost, result.currency,
+                                            result.estimatedLaborCost, result.currency
+                                        ),
+                                        "المواد: %.2f %s  •  اليد العاملة: %.2f %s".format(
+                                            result.totalMaterialCost, result.currency,
+                                            result.estimatedLaborCost, result.currency
+                                        )
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White.copy(alpha = 0.88f)
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = language.tr(
+                                    "Matériaux nécessaires",
+                                    "Required materials",
+                                    "المواد اللازمة",
+                                    "المواد اللازمة"
+                                ),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = language.tr(
+                                    "${result.items.size} articles",
+                                    "${result.items.size} items",
+                                    "${result.items.size} مواد",
+                                    "${result.items.size} مواد"
+                                ),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        if (result.items.isEmpty()) {
+                            Text(
+                                text = language.tr(
+                                    "Aucun matériau calculé pour ces mesures.",
+                                    "No materials calculated for these measurements.",
+                                    "ما تحسبت حتى مادة للقياسات هاذي.",
+                                    "ما تحسبت حتى مادة للقياسات هاذي."
+                                ),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            result.items.forEach { material ->
+                                HorizontalDivider(
+                                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.18f)
+                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = when (language) {
+                                                AppLanguage.DERJA -> material.nameDerja
+                                                AppLanguage.ARABIC -> material.nameAr
+                                                AppLanguage.FRENCH -> material.nameFr
+                                                AppLanguage.ENGLISH -> material.nameFr
+                                            },
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                        Text(
+                                            text = "${String.format(java.util.Locale.ROOT, "%.2f", material.quantity)} ${material.unit} × ${String.format(java.util.Locale.ROOT, "%.2f", material.unitPrice)} ${result.currency}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Text(
+                                        text = "${String.format(java.util.Locale.ROOT, "%.2f", material.totalPrice)} ${result.currency}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                val lines = buildString {
+                                    appendLine(result.calculationType.nameFr)
+                                    appendLine("${language.tr("Total estimé", "Estimated total", "الكلفة التقديرية", "الكلفة التقديرية")}: ${if (result.grandTotalTTC > 0.0) result.grandTotalTTC else result.grandTotalCost} ${result.currency}")
+                                    appendLine()
+                                    result.items.forEach { material ->
+                                        val materialName = when (language) {
+                                            AppLanguage.DERJA -> material.nameDerja
+                                            AppLanguage.ARABIC -> material.nameAr
+                                            AppLanguage.FRENCH, AppLanguage.ENGLISH -> material.nameFr
+                                        }
+                                        appendLine("${materialName}: ${material.quantity} ${material.unit} — ${material.totalPrice} ${result.currency}")
+                                    }
+                                }
+                                clipboardManager.setText(AnnotatedString(lines))
+                                Toast.makeText(
+                                    context,
+                                    language.tr("Résultat copié", "Result copied", "تم نسخ النتيجة", "تم نسخ النتيجة"),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(Icons.Default.ContentCopy, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                language.tr(
+                                    "Copier le résultat",
+                                    "Copy result",
+                                    "انسخ النتيجة",
+                                    "انسخ النتيجة"
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
 
