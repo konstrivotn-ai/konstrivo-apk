@@ -45,6 +45,8 @@ class CalculatorViewModel(
 
     private val _selectedBoardType = MutableStateFlow("plaque_ba13_standard")
     val selectedBoardType: StateFlow<String> = _selectedBoardType.asStateFlow()
+    private val _boardDimensions = MutableStateFlow("1.2x2.5")
+    val boardDimensions: StateFlow<String> = _boardDimensions.asStateFlow()
 
     private val _selectedMontantType = MutableStateFlow<String?>(null)
     val selectedMontantType: StateFlow<String?> = _selectedMontantType.asStateFlow()
@@ -127,6 +129,9 @@ class CalculatorViewModel(
     fun setOpeningArea(value: String) { _openingArea.value = value }
     fun setWasteMargin(value: String) { _wasteMargin.value = value }
     fun setSelectedBoardType(type: String) { _selectedBoardType.value = type }
+    fun setBoardDimensions(value: String) {
+        if (value in setOf("1.2x2.5", "1.2x2.8", "1.2x3.0", "0.9x2.0")) _boardDimensions.value = value
+    }
     fun setSelectedMontantType(value: String?) { _selectedMontantType.value = value }
     fun setSelectedRailType(value: String?) { _selectedRailType.value = value }
     fun setIsDoubleSkin(doubleSkin: Boolean) { _isDoubleSkin.value = doubleSkin }
@@ -202,7 +207,8 @@ class CalculatorViewModel(
             countryFlow,
             _tvaRateOverride,
             _fiscalStampEnabled,
-            _retentionRate
+            _retentionRate,
+            _boardDimensions
         ) { args ->
             val type = args[0] as CalculationType
             val areaStr = args[1] as String
@@ -231,6 +237,9 @@ class CalculatorViewModel(
             val tvaRateOverride = (args[23] as String).toDoubleOrNull()?.takeIf { it in listOf(0.0, 7.0, 13.0, 19.0) }
             val fiscalStampEnabled = args[24] as Boolean
             val retentionRate = ((args[25] as String).toDoubleOrNull() ?: 0.0).coerceIn(0.0, 10.0)
+            val boardDimensions = args[26] as String
+            val boardWidthM = boardDimensions.substringBefore("x").toDoubleOrNull() ?: 1.2
+            val boardLengthM = boardDimensions.substringAfter("x").toDoubleOrNull() ?: 2.5
 
             val length = lengthStr.toDoubleOrNull() ?: 0.0
             val width = widthStr.toDoubleOrNull() ?: 0.0
@@ -267,6 +276,8 @@ class CalculatorViewModel(
                 netOpeningsArea = openingArea,
                 wasteMarginPercent = waste,
                 boardType = boardType,
+                boardWidthM = boardWidthM,
+                boardLengthM = boardLengthM,
                 isDoubleSkin = isDouble,
                 includeInsulation = includeIns,
                 insulationType = insType,
