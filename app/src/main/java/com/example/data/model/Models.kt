@@ -309,7 +309,7 @@ enum class CalculationType(
         "Peinture Intérieure Complète (Enduit + Fixateur + Finition)",
         "دهان داخلي كامل (معجون + أساس + تشطيب)",
         "دهينة كاملة (أندوي + فيكساتور + سيتان)",
-        1.08
+        1.10
     ),
     PEINTURE_SABLE(
         "peinture_sable",
