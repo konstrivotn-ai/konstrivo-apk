@@ -60,8 +60,8 @@ object CloudCatalogClient {
             val label = row.optString("labelFr")
             if (id.isBlank() || label.isBlank()) null else {
                 val dimsJson = row.optJSONArray("dims") ?: JSONArray()
-                val dims = (0 until dimsJson.length()).mapNotNull { index ->
-                    val d = dimsJson.optJSONObject(index) ?: return@mapNotNull null
+                val dims = (0 until dimsJson.length()).mapNotNull dimLoop@ { index ->
+                    val d = dimsJson.optJSONObject(index) ?: return@dimLoop null
                     val key = d.optString("key")
                     if (key.isBlank()) null else DimensionItem(
                         key, d.optString("labelFr").ifBlank { key }, d.optString("labelAr"),
