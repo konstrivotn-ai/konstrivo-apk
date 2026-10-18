@@ -134,6 +134,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val includeInsulation: StateFlow<Boolean> get() = calculatorViewModel.includeInsulation
     val insulationType: StateFlow<String> get() = calculatorViewModel.insulationType
     val customLaborRate: StateFlow<String> get() = calculatorViewModel.customLaborRate
+    val tvaRateOverride: StateFlow<String> get() = calculatorViewModel.tvaRateOverride
+    val fiscalStampEnabled: StateFlow<Boolean> get() = calculatorViewModel.fiscalStampEnabled
+    val retentionRate: StateFlow<String> get() = calculatorViewModel.retentionRate
     val entraxeMontants: StateFlow<Double> get() = calculatorViewModel.entraxeMontants
     val inputJointsMeters: StateFlow<String> get() = calculatorViewModel.inputJointsMeters
     val inputCornersCount: StateFlow<String> get() = calculatorViewModel.inputCornersCount
@@ -356,6 +359,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setIncludeInsulation(include: Boolean) = calculatorViewModel.setIncludeInsulation(include)
     fun setInsulationType(type: String) = calculatorViewModel.setInsulationType(type)
     fun setCustomLaborRate(rate: String) = calculatorViewModel.setCustomLaborRate(rate)
+    fun setTvaRateOverride(rate: String) = calculatorViewModel.setTvaRateOverride(rate)
+    fun setFiscalStampEnabled(enabled: Boolean) = calculatorViewModel.setFiscalStampEnabled(enabled)
+    fun setRetentionRate(rate: String) = calculatorViewModel.setRetentionRate(rate)
 
     fun setEntraxeMontantsMeters(value: Double) = calculatorViewModel.setEntraxeMontantsMeters(value)
     fun setInputJointsMeters(value: String) = calculatorViewModel.setInputJointsMeters(value)
