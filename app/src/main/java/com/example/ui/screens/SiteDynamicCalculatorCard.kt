@@ -47,7 +47,7 @@ import java.util.Locale
  * prices are loaded from /api/v1; the app does not need a release to discover them.
  */
 @Composable
-fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifier) {
+fun SiteDynamicCalculatorCard(language: AppLanguage, countryCode: String, currencyCode: String, modifier: Modifier = Modifier) {
     var refreshKey by remember { mutableStateOf(0) }
     var trades by remember { mutableStateOf(emptyList<CloudCatalogClient.TradeItem>()) }
     var selectedTradeId by remember { mutableStateOf("") }
@@ -97,7 +97,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
         bundle = null
         dimensionValues.clear()
         try {
-            val loaded = withContext(Dispatchers.IO) { CloudCatalogClient.loadTradeBundle(trade) }
+            val loaded = withContext(Dispatchers.IO) { CloudCatalogClient.loadTradeBundle(trade, countryCode, currencyCode) }
             bundle = loaded
             if (loaded.services.none { it.id == selectedServiceId }) selectedServiceId = loaded.services.firstOrNull()?.id.orEmpty()
             if (loaded.metreItems.none { it.id == selectedMetreId }) selectedMetreId = loaded.metreItems.firstOrNull()?.id.orEmpty()
