@@ -388,6 +388,8 @@ fun CalculatorScreen(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth().testTag("input_units_count")
                         )
+                    } else if (selectedType == CalculationType.PLOMBERIE_INSTALLATION) {
+                        // Plumbing is measured by network length and water points below, not by floor area.
                     } else if (selectedType == CalculationType.PLACO_CACHE_LUMIERE) {
                         OutlinedTextField(
                             value = linearMeters,
