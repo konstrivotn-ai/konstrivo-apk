@@ -193,7 +193,7 @@ fun CalculatorScreen(
 
         // Catalogue live partagé avec le site : nouveaux métiers, prestations et matériaux.
         item {
-            SiteDynamicCalculatorCard(language = language)
+            SiteDynamicCalculatorCard(language = language, countryCode = country.code, currencyCode = country.currencyCode)
         }
 
         // شريط اختيار المهن والأنشطة الرئيسية
