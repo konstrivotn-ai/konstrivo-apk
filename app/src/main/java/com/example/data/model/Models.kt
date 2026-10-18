@@ -146,10 +146,10 @@ val GLOBAL_METIERS_LIST = listOf(
         nameDerja = "الضو والتريسينتي",
         nameEn = "Electrical & Wiring",
         iconEmoji = "⚡",
-        isAvailable = false,
-        tradeCategory = null,
-        badgeLabelFr = "Bientôt (Roadmap)",
-        badgeLabelAr = "قريبًا (Roadmap)",
+        isAvailable = true,
+        tradeCategory = TradeCategory.ELECTRICITE,
+        badgeLabelFr = "Actif",
+        badgeLabelAr = "متاح",
         descriptionFr = "Tableaux électriques, gaines, câbles, spots LED",
         descriptionAr = "لوحات التوزيع، القنوات الكهربائية، الإضاءة والأسلاك"
     ),
@@ -160,10 +160,10 @@ val GLOBAL_METIERS_LIST = listOf(
         nameDerja = "البلومبي والصحي",
         nameEn = "Plumbing & Sanitary",
         iconEmoji = "🚿",
-        isAvailable = false,
-        tradeCategory = null,
-        badgeLabelFr = "Bientôt (Roadmap)",
-        badgeLabelAr = "قريبًا (Roadmap)",
+        isAvailable = true,
+        tradeCategory = TradeCategory.PLOMBERIE,
+        badgeLabelFr = "Actif",
+        badgeLabelAr = "متاح",
         descriptionFr = "Tuyauterie PER/Multicouche, évacuations PVC, sanitaires",
         descriptionAr = "تمديدات الأنابيب، شبكة الصرف، تجهيزات الحمام"
     ),
@@ -174,10 +174,10 @@ val GLOBAL_METIERS_LIST = listOf(
         nameDerja = "العزل والحرارة والصوت",
         nameEn = "Thermal & Acoustic Insulation",
         iconEmoji = "🛡️",
-        isAvailable = false,
-        tradeCategory = null,
-        badgeLabelFr = "Bientôt (Roadmap)",
-        badgeLabelAr = "قريبًا (Roadmap)",
+        isAvailable = true,
+        tradeCategory = TradeCategory.ISOLATION,
+        badgeLabelFr = "Actif",
+        badgeLabelAr = "متاح",
         descriptionFr = "Laine minérale, polyuréthane, membranes acoustiques",
         descriptionAr = "صوف صخري وزجاجي، عوازل الرطوبة والحرارة"
     ),
@@ -188,45 +188,42 @@ val GLOBAL_METIERS_LIST = listOf(
         nameDerja = "الكتامة والسطوح",
         nameEn = "Waterproofing & Roofing",
         iconEmoji = "☔",
-        isAvailable = false,
-        tradeCategory = null,
-        badgeLabelFr = "Bientôt (Roadmap)",
-        badgeLabelAr = "قريبًا (Roadmap)",
+        isAvailable = true,
+        tradeCategory = TradeCategory.ETANCHEITE,
+        badgeLabelFr = "Actif",
+        badgeLabelAr = "متاح",
         descriptionFr = "Membranes bitumineuses, résines liquides, pare-vapeur",
         descriptionAr = "عوازل البيتومين، الراتنج المائي، حماية الأسطح"
     ),
+
+
+
+
     MetierTrade(
-        id = "plomberie", nameFr = "Plomberie & Sanitaire", nameAr = "السباكة والصحي",
-        nameDerja = "البلومبي والصحي", nameEn = "Plumbing & Sanitary", iconEmoji = "🚿",
-        isAvailable = true, tradeCategory = TradeCategory.PLOMBERIE,
+        id = "sols", nameFr = "Sols & Parquet", nameAr = "الأرضيات والباركيه",
+        nameDerja = "الأرضيات والباركي", nameEn = "Flooring & Parquet", iconEmoji = "🪵",
+        isAvailable = true, tradeCategory = TradeCategory.SOLS,
         badgeLabelFr = "Actif", badgeLabelAr = "متاح",
-        descriptionFr = "Réseaux d'alimentation, évacuation et raccords",
-        descriptionAr = "شبكات الماء والتصريف والوصلات"
+        descriptionFr = "Parquet stratifié et béton ciré",
+        descriptionAr = "باركيه وخرسانة ديكورية"
     ),
     MetierTrade(
-        id = "electricite", nameFr = "Électricité & Câblage", nameAr = "الكهرباء والتمديدات",
-        nameDerja = "الضو والتريسينتي", nameEn = "Electrical & Wiring", iconEmoji = "⚡",
-        isAvailable = true, tradeCategory = TradeCategory.ELECTRICITE,
+        id = "facade", nameFr = "Façade", nameAr = "الواجهات",
+        nameDerja = "الواجهة", nameEn = "Facade", iconEmoji = "🏢",
+        isAvailable = true, tradeCategory = TradeCategory.FACADE,
         badgeLabelFr = "Actif", badgeLabelAr = "متاح",
-        descriptionFr = "Câbles, gaines, prises et éclairage",
-        descriptionAr = "أسلاك وقنوات ومقابس وإنارة"
+        descriptionFr = "Enduit monocouche et peinture extérieure",
+        descriptionAr = "تلبيس ودهان خارجي"
     ),
     MetierTrade(
-        id = "etancheite", nameFr = "Étanchéité & Toitures", nameAr = "العزل المائي والأسطح",
-        nameDerja = "الكتامة والسطوح", nameEn = "Waterproofing & Roofing", iconEmoji = "☔",
-        isAvailable = true, tradeCategory = TradeCategory.ETANCHEITE,
+        id = "demolition", nameFr = "Démolition & Gravats", nameAr = "الهدم والأنقاض",
+        nameDerja = "الهدم والفضلات", nameEn = "Demolition & Debris", iconEmoji = "🧱",
+        isAvailable = true, tradeCategory = TradeCategory.DEMOLITION,
         badgeLabelFr = "Actif", badgeLabelAr = "متاح",
-        descriptionFr = "Membranes et systèmes d'étanchéité",
-        descriptionAr = "أغشية وأنظمة العزل المائي"
-    ),
-    MetierTrade(
-        id = "isolation", nameFr = "Isolation Thermique & Phonique", nameAr = "العزل الحراري والصوتي",
-        nameDerja = "العزل والحرارة والصوت", nameEn = "Thermal & Acoustic Insulation", iconEmoji = "🛡️",
-        isAvailable = true, tradeCategory = TradeCategory.ISOLATION,
-        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
-        descriptionFr = "Laine minérale et panneaux isolants",
-        descriptionAr = "صوف عازل وألواح عزل"
-    ),
+        descriptionFr = "Dépose, démolition et évacuation",
+        descriptionAr = "تفكيك وهدم وإزالة الأنقاض"
+    )
+,
     MetierTrade(
         id = "sols", nameFr = "Sols & Parquet", nameAr = "الأرضيات والباركيه",
         nameDerja = "الأرضيات والباركي", nameEn = "Flooring & Parquet", iconEmoji = "🪵",
