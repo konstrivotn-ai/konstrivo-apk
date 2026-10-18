@@ -604,7 +604,12 @@ fun CalculatorScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = result.calculationType.nameForLanguage(language),
+                                    text = when (language) {
+                                        AppLanguage.DERJA -> result.calculationType.nameDerja
+                                        AppLanguage.ARABIC -> result.calculationType.nameAr
+                                        AppLanguage.FRENCH -> result.calculationType.nameFr
+                                        AppLanguage.ENGLISH -> result.calculationType.nameFr
+                                    },
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
