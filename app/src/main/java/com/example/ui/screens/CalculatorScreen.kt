@@ -443,6 +443,27 @@ fun CalculatorScreen(
                         }
                     }
 
+                    if (selectedType == CalculationType.PLOMBERIE_INSTALLATION || selectedType == CalculationType.ELECTRICITE_INSTALLATION) {
+                        OutlinedTextField(
+                            value = unitsCount,
+                            onValueChange = { viewModel.setInputUnitsCount(it) },
+                            label = { Text(if (selectedType == CalculationType.PLOMBERIE_INSTALLATION) "Nombre de points d'eau" else "Nombre de points électriques") },
+                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.fillMaxWidth().testTag("input_units_count")
+                        )
+                    }
+                    if (selectedType == CalculationType.PLOMBERIE_INSTALLATION || selectedType == CalculationType.ETANCHEITE_TOITURE) {
+                        OutlinedTextField(
+                            value = linearMeters,
+                            onValueChange = { viewModel.setInputLinearMeters(it) },
+                            label = { Text(if (selectedType == CalculationType.PLOMBERIE_INSTALLATION) "Longueur du réseau (m)" else "Périmètre des acrotères (m)") },
+                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            modifier = Modifier.fillMaxWidth().testTag("input_linear_meters")
+                        )
+                    }
+
                     // اختيار البلاط للأسقف القابلة للفك (Dalles)
                     if (selectedTrade == TradeCategory.PLACO && selectedType == CalculationType.PLACO_DEMONTABLE) {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
