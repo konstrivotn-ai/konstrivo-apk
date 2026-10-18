@@ -433,11 +433,11 @@ fun CalculatorScreen(
                             )
                         }
 
-                        if (selectedType == CalculationType.PLACO_CLOISON || selectedType == CalculationType.MACONNERIE_BRIQUE) {
+                        if (selectedType == CalculationType.PLACO_CLOISON || selectedType == CalculationType.MACONNERIE_BRIQUE || selectedType == CalculationType.DEMOLITION_DEPOSE) {
                             OutlinedTextField(
                                 value = height,
                                 onValueChange = { viewModel.setInputHeight(it) },
-                                label = { Text(language.tr("Hauteur sous plafond (m)","Hauteur sous plafond (m)","ارتفاع السقف (متر)","ارتفاع السقف (متر)")) },
+                                label = { Text(if (selectedType == CalculationType.DEMOLITION_DEPOSE) "Épaisseur à démolir (cm)" else language.tr("Hauteur sous plafond (m)","Hauteur sous plafond (m)","ارتفاع السقف (متر)","ارتفاع السقف (متر)")) },
                                 shape = RoundedCornerShape(KonstrivoRadius.IconBox),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                                 modifier = Modifier.fillMaxWidth().testTag("input_height")
