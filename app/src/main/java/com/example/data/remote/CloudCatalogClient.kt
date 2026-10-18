@@ -102,7 +102,7 @@ object CloudCatalogClient {
         val result = linkedMapOf<String, Pair<Double, String>>()
         for (page in 1..10) {
             val root = try {
-                request("prices?currency=\${query(currencyCode)}&market=\${query(marketCode)}&page=$page&limit=200")
+                request("prices?currency=${query(currencyCode)}&market=${query(marketCode)}&page=$page&limit=200")
             } catch (_: Exception) {
                 break // Missing price data must not hide the trade/material catalog.
             }
