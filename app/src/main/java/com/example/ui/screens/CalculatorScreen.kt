@@ -57,6 +57,7 @@ fun CalculatorScreen(
     val height by viewModel.inputHeight.collectAsState()
     val linearMeters by viewModel.inputLinearMeters.collectAsState()
     val unitsCount by viewModel.inputUnitsCount.collectAsState()
+    val openingArea by viewModel.openingArea.collectAsState()
     val wasteMargin by viewModel.wasteMargin.collectAsState()
     val boardType by viewModel.selectedBoardType.collectAsState()
     val selectedMontantType by viewModel.selectedMontantType.collectAsState()
@@ -443,6 +444,18 @@ fun CalculatorScreen(
                                 modifier = Modifier.fillMaxWidth().testTag("input_height")
                             )
                         }
+                    }
+
+                    if (selectedType == CalculationType.PLACO_CLOISON || selectedType == CalculationType.MACONNERIE_BRIQUE || selectedType == CalculationType.FACADE_FINITION) {
+                        OutlinedTextField(
+                            value = openingArea,
+                            onValueChange = { viewModel.setOpeningArea(it) },
+                            label = { Text(language.tr("Surface des ouvertures à déduire (m²)", "Opening area to deduct (m²)", "مساحة البيبان والشبابك للطرح (م²)", "مساحة البيبان والشبابك للطرح (م²)")) },
+                            supportingText = { Text(language.tr("Déduction appliquée à partir de 1,00 m² au total.", "Deduction applies when total opening area is at least 1.00 m².", "الطرح يتطبق كي المساحة الجملية للفتحات توصل 1 م².", "الطرح يتطبق كي المساحة الجملية للفتحات توصل 1 م².")) },
+                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            modifier = Modifier.fillMaxWidth().testTag("input_opening_area")
+                        )
                     }
 
                     if (selectedType == CalculationType.PLOMBERIE_INSTALLATION || selectedType == CalculationType.ELECTRICITE_INSTALLATION) {
