@@ -63,7 +63,6 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
 
     val isArabic = language == AppLanguage.ARABIC || language == AppLanguage.DERJA
     fun text(fr: String, ar: String): String = if (isArabic) ar else fr
-    val selectedTrade = trades.firstOrNull { it.id == selectedTradeId }
     val selectedService = bundle?.services?.firstOrNull { it.id == selectedServiceId }
     val selectedMetre = bundle?.metreItems?.firstOrNull { it.id == selectedMetreId }
     val selectedMaterial = bundle?.materials?.firstOrNull { it.id == selectedMaterialId }
@@ -83,7 +82,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
         }
     }
 
-    LaunchedEffect(selectedTradeId) {
+    LaunchedEffect(selectedTradeId, refreshKey) {
         val trade = trades.firstOrNull { it.id == selectedTradeId } ?: return@LaunchedEffect
         isLoadingBundle = true
         errorMessage = null
