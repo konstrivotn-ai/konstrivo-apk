@@ -2,6 +2,14 @@
 
 > Append-only AI change log for the Android application. Newest first.
 
+- **2026-10-18 — Calculator default waste margin aligned with website:**
+  - Set all native `CalculationType.defaultWasteMargin` values to `1.10` (10%), including interior painting.
+  - Set the calculator ViewModel's initial and invalid-input fallback waste margin to `10.0` percent.
+  - Added a unit test that guards the default margin across every native calculation type.
+  - Only defaults changed; quantity formulas, units, material prices, and tax arithmetic were not changed.
+  - Android Gradle tests/build have not been run in this environment.
+
+
 - **2026-10-13 — Shared-account session restoration wired into the UI (fixes the
   "restore invoked but never applied" defect):**
   - **`MainActivity`:** the startup `CloudAuthClient.restoreSession()` result is now applied
