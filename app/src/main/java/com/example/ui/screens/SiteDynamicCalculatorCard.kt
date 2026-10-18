@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.example.data.model.AppLanguage
 import com.example.data.remote.CloudCatalogClient
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.Locale
@@ -66,6 +67,14 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
     val selectedMetre = bundle?.metreItems?.firstOrNull { it.id == selectedMetreId }
     val selectedMaterial = bundle?.materials?.firstOrNull { it.id == selectedMaterialId }
 
+    // Keep the live catalog fresh while this calculator is on screen.
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(60_000)
+            refreshKey++
+        }
+    }
+
     LaunchedEffect(refreshKey) {
         isLoadingTrades = true
         errorMessage = null
@@ -86,16 +95,13 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
         isLoadingBundle = true
         errorMessage = null
         bundle = null
-        selectedServiceId = ""
-        selectedMetreId = ""
-        selectedMaterialId = ""
         dimensionValues.clear()
         try {
             val loaded = withContext(Dispatchers.IO) { CloudCatalogClient.loadTradeBundle(trade) }
             bundle = loaded
-            selectedServiceId = loaded.services.firstOrNull()?.id.orEmpty()
-            selectedMetreId = loaded.metreItems.firstOrNull()?.id.orEmpty()
-            selectedMaterialId = loaded.materials.firstOrNull()?.id.orEmpty()
+            if (loaded.services.none { it.id == selectedServiceId }) selectedServiceId = loaded.services.firstOrNull()?.id.orEmpty()
+            if (loaded.metreItems.none { it.id == selectedMetreId }) selectedMetreId = loaded.metreItems.firstOrNull()?.id.orEmpty()
+            if (loaded.materials.none { it.id == selectedMaterialId }) selectedMaterialId = loaded.materials.firstOrNull()?.id.orEmpty()
         } catch (e: Exception) {
             errorMessage = text("Impossible de charger les prestations et matériaux de ce métier.", "ما نجّمش نحمّل الخدمات والمواد متاع الصنعة هاذي.")
         } finally {
