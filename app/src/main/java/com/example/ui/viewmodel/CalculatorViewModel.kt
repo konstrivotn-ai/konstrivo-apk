@@ -36,7 +36,7 @@ class CalculatorViewModel(
     private val _inputUnitsCount = MutableStateFlow("1.0")
     val inputUnitsCount: StateFlow<String> = _inputUnitsCount.asStateFlow()
 
-    private val _wasteMargin = MutableStateFlow("5.0")
+    private val _wasteMargin = MutableStateFlow("10.0")
     val wasteMargin: StateFlow<String> = _wasteMargin.asStateFlow()
 
     private val _selectedBoardType = MutableStateFlow("plaque_ba13_standard")
@@ -206,7 +206,7 @@ class CalculatorViewModel(
             val height = heightStr.toDoubleOrNull() ?: 2.8
             val linearM = linearMStr.toDoubleOrNull() ?: 0.0
             val units = unitsStr.toDoubleOrNull() ?: 1.0
-            val waste = wasteStr.toDoubleOrNull() ?: 5.0
+            val waste = wasteStr.toDoubleOrNull() ?: 10.0
             val customLaborVal = customLabor.toDoubleOrNull()
             val jointsMetersVal = jointsMetersStr.toDoubleOrNull() ?: 0.0
             val cornersCountVal = cornersCountStr.toDoubleOrNull() ?: 0.0
