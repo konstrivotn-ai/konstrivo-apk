@@ -125,6 +125,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val inputHeight: StateFlow<String> get() = calculatorViewModel.inputHeight
     val inputLinearMeters: StateFlow<String> get() = calculatorViewModel.inputLinearMeters
     val inputUnitsCount: StateFlow<String> get() = calculatorViewModel.inputUnitsCount
+    val openingArea: StateFlow<String> get() = calculatorViewModel.openingArea
     val wasteMargin: StateFlow<String> get() = calculatorViewModel.wasteMargin
     val selectedBoardType: StateFlow<String> get() = calculatorViewModel.selectedBoardType
     val selectedMontantType: StateFlow<String?> get() = calculatorViewModel.selectedMontantType
@@ -346,6 +347,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setInputHeight(value: String) = calculatorViewModel.setInputHeight(value)
     fun setInputLinearMeters(value: String) = calculatorViewModel.setInputLinearMeters(value)
     fun setInputUnitsCount(value: String) = calculatorViewModel.setInputUnitsCount(value)
+    fun setOpeningArea(value: String) = calculatorViewModel.setOpeningArea(value)
     fun setWasteMargin(value: String) = calculatorViewModel.setWasteMargin(value)
     fun setSelectedBoardType(type: String) = calculatorViewModel.setSelectedBoardType(type)
     fun setSelectedMontantType(type: String?) = calculatorViewModel.setSelectedMontantType(type)
