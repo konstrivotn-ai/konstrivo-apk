@@ -27,6 +27,9 @@ class CalculatorParityDefaultsTest {
             assertEquals("Website trade should be active: $id", true, trade!!.isAvailable)
             assertEquals("Website trade should have a mapped calculation: $id", true,
                 trade.workTypes.any { it.calculationType != null && it.status.name == "ACTIVE" })
+            val calculatorTrade = GLOBAL_METIERS_LIST.firstOrNull { it.id == id }
+            assertEquals("Missing calculator trade card: $id", true, calculatorTrade != null)
+            assertEquals("Calculator trade should be enabled: $id", true, calculatorTrade!!.isAvailable)
         }
     }
 
@@ -57,6 +60,8 @@ class CalculatorParityDefaultsTest {
             assertEquals("Incorrect calculation type for ${type.id}", type, result.calculationType)
             assertEquals("Website trade should return material rows: ${type.id}", true, result.items.isNotEmpty())
             assertEquals("Waste margin should be 10%: ${type.id}", 10.0, result.wasteMarginPercent, 0.000001)
+            assertEquals("Website fallback catalog should provide a positive material total: ${type.id}",
+                true, result.totalMaterialCost > 0.0)
         }
     }
 
