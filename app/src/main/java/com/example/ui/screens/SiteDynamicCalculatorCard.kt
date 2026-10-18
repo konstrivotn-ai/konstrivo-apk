@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -141,7 +142,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
                     Text(text("Chargement du catalogue partagé…", "قاعدين نحمّلو في الكاتالوغ المشترك…"))
                 }
             } else if (trades.isNotEmpty()) {
-                Text(text("MÉTIERS / المهن", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                Text(text("MÉTIERS / Trades", "المهن"), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                 Row(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     trades.forEach { trade ->
                         FilterChip(
@@ -175,7 +176,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
                         }
                     }
                     selectedService?.let { service ->
-                        Text(text("Unité : ${service.unit}  •  Tarif indicatif : ${service.suggestedRate?.let { String.format(Locale.FRANCE, "%.3f", it) + " DT" } ?: text("non défini", "موش محدّد")}", style = MaterialTheme.typography.bodySmall)
+                        Text("Unité : ${service.unit}  •  Tarif indicatif : ${service.suggestedRate?.let { String.format(Locale.FRANCE, "%.3f", it) + " DT" } ?: text("non défini", "موش محدّد")}", style = MaterialTheme.typography.bodySmall)
                         OutlinedTextField(
                             value = serviceQuantity,
                             onValueChange = { serviceQuantity = it },
@@ -188,7 +189,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
                         val rate = service.suggestedRate
                         if (q != null && q >= 0 && rate != null && rate >= 0) {
                             Text(
-                                text("Total indicatif de la prestation : ${String.format(Locale.FRANCE, "%.3f", q * rate)} DT",
+                                text = "Total indicatif de la prestation : ${String.format(Locale.FRANCE, "%.3f", q * rate)} DT",
                                 style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -209,7 +210,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
                         }
                     }
                     selectedMetre?.let { element ->
-                        Text(text("Unité de résultat : ${element.unit} • Méthode : ${element.method}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Unité de résultat : ${element.unit} • Méthode : ${element.method}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         element.dimensions.forEach { dim ->
                             OutlinedTextField(
                                 value = dimensionValues[dim.key].orEmpty(),
@@ -227,7 +228,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
                                 color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall
                             )
                             calculated != null -> Text(
-                                text("Quantité calculée : ${String.format(Locale.FRANCE, "%.3f", calculated)} ${element.unit}",
+                                text = "Quantité calculée : ${String.format(Locale.FRANCE, "%.3f", calculated)} ${element.unit}",
                                 style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -248,7 +249,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, modifier: Modifier = Modifi
                         }
                     }
                     selectedMaterial?.let { material ->
-                        Text(text("${material.code} • ${material.category} • ${material.unit}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("${material.code} • ${material.category} • ${material.unit}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         if (material.specs.isNotBlank()) Text(material.specs, style = MaterialTheme.typography.bodySmall)
                     }
                 }
