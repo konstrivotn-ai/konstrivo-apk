@@ -2,6 +2,11 @@
 
 > Append-only AI change log for the Android application. Newest first.
 
+- **2026-10-18 — Visible calculation results and share actions (in progress):**
+  - Added a result panel to the calculator UI with each calculated material line and totals for materials, labor, HT, TVA and TTC.
+  - Added copy-to-clipboard and WhatsApp share actions for the generated estimate text.
+  - This does not replace the requested PDF technical audit report, fiscal timbre/retention controls, or complete website parity.
+
 - **2026-10-18 — Opening deduction parity (in progress):**
   - Added an explicit opening-area input for placo partitions, masonry walls and facade finishing.
   - Matched the website rule: openings are deducted only when the combined area is at least 1.00 m²; placo partition board quantity is calculated from net wall area before waste.
