@@ -1,6 +1,8 @@
 package com.example.ui.screens
 
 import android.widget.Toast
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -591,6 +593,111 @@ fun CalculatorScreen(
                 }
             }
         }
+
+        // Visible estimate results: material details and HT/TVA/TTC totals.
+        item {
+            val result = summary
+            if (result != null) {
+                val reportText = buildString {
+                    appendLine("KONSTRIVO PRO — ${result.calculationType.nameFr}")
+                    appendLine("Surface: ${String.format(java.util.Locale.US, "%.2f", result.inputArea)} m²")
+                    appendLine("Matériaux HT: ${String.format(java.util.Locale.US, "%.2f", result.totalMaterialCost)} ${result.currency}")
+                    appendLine("Main d'œuvre HT: ${String.format(java.util.Locale.US, "%.2f", result.estimatedLaborCost)} ${result.currency}")
+                    appendLine("Total HT: ${String.format(java.util.Locale.US, "%.2f", result.grandTotalHT)} ${result.currency}")
+                    appendLine("TVA (${result.tvaRate}%): ${String.format(java.util.Locale.US, "%.2f", result.totalTva)} ${result.currency}")
+                    appendLine("Total TTC: ${String.format(java.util.Locale.US, "%.2f", result.grandTotalTTC)} ${result.currency}")
+                    appendLine()
+                    result.items.forEach { line ->
+                        appendLine("${line.nameFr}: ${String.format(java.util.Locale.US, "%.2f", line.quantity)} ${line.unit} × ${String.format(java.util.Locale.US, "%.2f", line.unitPrice)} = ${String.format(java.util.Locale.US, "%.2f", line.totalPrice)} ${result.currency}")
+                    }
+                }
+                KonstrivoCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(
+                            text = language.tr("Résultat du métré", "Estimate result", "نتيجة حساب الكميات", "نتيجة حساب المترية"),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            text = "${String.format(java.util.Locale.US, "%.2f", result.inputArea)} m²",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = KonstrivoGold,
+                            fontWeight = FontWeight.Bold
+                        )
+                        result.items.forEach { line ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(line.nameFr, fontWeight = FontWeight.SemiBold)
+                                    Text(
+                                        text = "${String.format(java.util.Locale.US, "%.2f", line.quantity)} ${line.unit} × ${String.format(java.util.Locale.US, "%.2f", line.unitPrice)}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Text(
+                                    text = "${String.format(java.util.Locale.US, "%.2f", line.totalPrice)} ${result.currency}",
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                        }
+                        ResultTotalRow("Matériaux HT", result.totalMaterialCost, result.currency)
+                        ResultTotalRow("Main d'œuvre HT", result.estimatedLaborCost, result.currency)
+                        ResultTotalRow("Total HT", result.grandTotalHT, result.currency, bold = true)
+                        ResultTotalRow("TVA (${result.tvaRate}%)", result.totalTva, result.currency)
+                        ResultTotalRow("Total TTC", result.grandTotalTTC, result.currency, bold = true)
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedButton(
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(reportText))
+                                    Toast.makeText(context, "Résultat copié", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.ContentCopy, contentDescription = null)
+                                Spacer(Modifier.width(6.dp))
+                                Text(language.tr("Copier", "Copy", "نسخ", "نسخ"))
+                            }
+                            Button(
+                                onClick = {
+                                    val url = "https://wa.me/?text=" + Uri.encode(reportText)
+                                    try {
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                                    } catch (_: Exception) {
+                                        Toast.makeText(context, "WhatsApp indisponible", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.Share, contentDescription = null)
+                                Spacer(Modifier.width(6.dp))
+                                Text("WhatsApp")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ResultTotalRow(label: String, amount: Double, currency: String, bold: Boolean = false) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(label, fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal)
+        Text(
+            text = "${String.format(java.util.Locale.US, "%.2f", amount)} ${currency}",
+            fontWeight = if (bold) FontWeight.ExtraBold else FontWeight.Medium,
+            color = if (bold) KonstrivoGold else MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 
