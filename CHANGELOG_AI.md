@@ -2,13 +2,14 @@
 
 > Append-only AI change log for the Android application. Newest first.
 
-- **2026-10-18 — Calculator default waste margin aligned with website:**
-  - Set all native `CalculationType.defaultWasteMargin` values to `1.10` (10%), including interior painting.
-  - Set the calculator ViewModel's initial and invalid-input fallback waste margin to `10.0` percent.
-  - Added a unit test that guards the default margin across every native calculation type.
-  - Only defaults changed; quantity formulas, units, material prices, and tax arithmetic were not changed.
-  - Android Gradle tests/build have not been run in this environment.
-
+- **2026-10-18 — Android calculator parity expansion (in progress):**
+  - Set the default waste margin to 10% across all native calculation types and the calculator parameter fallback.
+  - Added native calculator categories and calculation branches for plumbing, electrical installation, waterproofing, insulation, parquet flooring, facade finishing, and demolition.
+  - Activated corresponding trade/work-type entries in the domain trade catalog; added point-count and linear-meter fields for plumbing/electrical and roof waterproofing.
+  - Material costs for these new branches are resolved from the existing app price catalog; no test products or production records were inserted.
+  - Added unit tests for the 10% defaults and expected website trade coverage.
+  - **Not yet full parity:** per-trade subtypes/options, full tax/timbre/guarantee-retention controls, detailed methodology/standards and website result/PDF/quote/WhatsApp parity still require implementation and verification.
+  - GitHub Actions build and unit tests are the validation source; check run status before considering this slice verified.
 
 - **2026-10-13 — Shared-account session restoration wired into the UI (fixes the
   "restore invoked but never applied" defect):**
