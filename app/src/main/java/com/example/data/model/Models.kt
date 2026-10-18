@@ -195,35 +195,6 @@ val GLOBAL_METIERS_LIST = listOf(
         descriptionFr = "Membranes bitumineuses, résines liquides, pare-vapeur",
         descriptionAr = "عوازل البيتومين، الراتنج المائي، حماية الأسطح"
     ),
-
-
-
-
-    MetierTrade(
-        id = "sols", nameFr = "Sols & Parquet", nameAr = "الأرضيات والباركيه",
-        nameDerja = "الأرضيات والباركي", nameEn = "Flooring & Parquet", iconEmoji = "🪵",
-        isAvailable = true, tradeCategory = TradeCategory.SOLS,
-        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
-        descriptionFr = "Parquet stratifié et béton ciré",
-        descriptionAr = "باركيه وخرسانة ديكورية"
-    ),
-    MetierTrade(
-        id = "facade", nameFr = "Façade", nameAr = "الواجهات",
-        nameDerja = "الواجهة", nameEn = "Facade", iconEmoji = "🏢",
-        isAvailable = true, tradeCategory = TradeCategory.FACADE,
-        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
-        descriptionFr = "Enduit monocouche et peinture extérieure",
-        descriptionAr = "تلبيس ودهان خارجي"
-    ),
-    MetierTrade(
-        id = "demolition", nameFr = "Démolition & Gravats", nameAr = "الهدم والأنقاض",
-        nameDerja = "الهدم والفضلات", nameEn = "Demolition & Debris", iconEmoji = "🧱",
-        isAvailable = true, tradeCategory = TradeCategory.DEMOLITION,
-        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
-        descriptionFr = "Dépose, démolition et évacuation",
-        descriptionAr = "تفكيك وهدم وإزالة الأنقاض"
-    )
-,
     MetierTrade(
         id = "sols", nameFr = "Sols & Parquet", nameAr = "الأرضيات والباركيه",
         nameDerja = "الأرضيات والباركي", nameEn = "Flooring & Parquet", iconEmoji = "🪵",
