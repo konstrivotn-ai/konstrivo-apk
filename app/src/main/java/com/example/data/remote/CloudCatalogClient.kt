@@ -11,6 +11,9 @@ object CloudCatalogClient {
     private const val API_BASE = "https://konstrivo.konstrivo.blitz.cloud/api/v1/"
     private const val CONNECT_TIMEOUT_MS = 7000
     private const val READ_TIMEOUT_MS = 9000
+    private const val PRICE_CACHE_TTL_MS = 120_000L
+    @Volatile private var cachedPrices: Map<String, Pair<Double, String>> = emptyMap()
+    @Volatile private var cachedPricesAtMs: Long = 0L
 
     data class TradeItem(val id: String, val code: String, val labelFr: String, val labelAr: String, val labelDerja: String, val icon: String)
     data class ServiceItem(val id: String, val nameFr: String, val nameAr: String, val unit: String, val suggestedRate: Double?)
@@ -90,7 +93,10 @@ object CloudCatalogClient {
         return TradeBundle(services, metreItems, materials)
     }
 
+    @Synchronized
     private fun loadPriceMap(): Map<String, Pair<Double, String>> {
+        val now = System.currentTimeMillis()
+        if (cachedPrices.isNotEmpty() && now - cachedPricesAtMs < PRICE_CACHE_TTL_MS) return cachedPrices
         val result = linkedMapOf<String, Pair<Double, String>>()
         for (page in 1..10) {
             val root = try {
@@ -108,6 +114,10 @@ object CloudCatalogClient {
             val total = container?.optInt("total", -1) ?: -1
             val limit = container?.optInt("limit", 200) ?: 200
             if (pageRows.isEmpty() || (total >= 0 && page * limit >= total) || pageRows.size < 200) break
+        }
+        if (result.isNotEmpty()) {
+            cachedPrices = result.toMap()
+            cachedPricesAtMs = now
         }
         return result
     }
