@@ -39,9 +39,9 @@ object CloudCatalogClient {
     }
 
     fun loadTradeBundle(trade: TradeItem): TradeBundle {
-        val servicesRoot = request("trades/\${segment(trade.id)}/services")
-        val metreRoot = request("trades/\${segment(trade.id)}/metre-elements")
-        val materialRoot = request("materials?trade=\${query(trade.code)}&page=1&limit=200")
+        val servicesRoot = request("trades/${segment(trade.id)}/services")
+        val metreRoot = request("trades/${segment(trade.id)}/metre-elements")
+        val materialRoot = request("materials?trade=${query(trade.code)}&page=1&limit=200")
         val prices = loadPriceMap()
 
         val services = rows(servicesRoot).mapNotNull { row ->
