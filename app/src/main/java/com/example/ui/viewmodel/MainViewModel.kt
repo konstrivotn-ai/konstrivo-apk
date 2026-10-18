@@ -128,6 +128,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val openingArea: StateFlow<String> get() = calculatorViewModel.openingArea
     val wasteMargin: StateFlow<String> get() = calculatorViewModel.wasteMargin
     val selectedBoardType: StateFlow<String> get() = calculatorViewModel.selectedBoardType
+    val boardDimensions: StateFlow<String> get() = calculatorViewModel.boardDimensions
     val selectedMontantType: StateFlow<String?> get() = calculatorViewModel.selectedMontantType
     val selectedRailType: StateFlow<String?> get() = calculatorViewModel.selectedRailType
     val isDoubleSkin: StateFlow<Boolean> get() = calculatorViewModel.isDoubleSkin
@@ -353,6 +354,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setOpeningArea(value: String) = calculatorViewModel.setOpeningArea(value)
     fun setWasteMargin(value: String) = calculatorViewModel.setWasteMargin(value)
     fun setSelectedBoardType(type: String) = calculatorViewModel.setSelectedBoardType(type)
+    fun setBoardDimensions(value: String) = calculatorViewModel.setBoardDimensions(value)
     fun setSelectedMontantType(type: String?) = calculatorViewModel.setSelectedMontantType(type)
     fun setSelectedRailType(type: String?) = calculatorViewModel.setSelectedRailType(type)
     fun setIsDoubleSkin(doubleSkin: Boolean) = calculatorViewModel.setIsDoubleSkin(doubleSkin)
