@@ -194,6 +194,62 @@ val GLOBAL_METIERS_LIST = listOf(
         badgeLabelAr = "قريبًا (Roadmap)",
         descriptionFr = "Membranes bitumineuses, résines liquides, pare-vapeur",
         descriptionAr = "عوازل البيتومين، الراتنج المائي، حماية الأسطح"
+    ),
+    MetierTrade(
+        id = "plomberie", nameFr = "Plomberie & Sanitaire", nameAr = "السباكة والصحي",
+        nameDerja = "البلومبي والصحي", nameEn = "Plumbing & Sanitary", iconEmoji = "🚿",
+        isAvailable = true, tradeCategory = TradeCategory.PLOMBERIE,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Réseaux d'alimentation, évacuation et raccords",
+        descriptionAr = "شبكات الماء والتصريف والوصلات"
+    ),
+    MetierTrade(
+        id = "electricite", nameFr = "Électricité & Câblage", nameAr = "الكهرباء والتمديدات",
+        nameDerja = "الضو والتريسينتي", nameEn = "Electrical & Wiring", iconEmoji = "⚡",
+        isAvailable = true, tradeCategory = TradeCategory.ELECTRICITE,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Câbles, gaines, prises et éclairage",
+        descriptionAr = "أسلاك وقنوات ومقابس وإنارة"
+    ),
+    MetierTrade(
+        id = "etancheite", nameFr = "Étanchéité & Toitures", nameAr = "العزل المائي والأسطح",
+        nameDerja = "الكتامة والسطوح", nameEn = "Waterproofing & Roofing", iconEmoji = "☔",
+        isAvailable = true, tradeCategory = TradeCategory.ETANCHEITE,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Membranes et systèmes d'étanchéité",
+        descriptionAr = "أغشية وأنظمة العزل المائي"
+    ),
+    MetierTrade(
+        id = "isolation", nameFr = "Isolation Thermique & Phonique", nameAr = "العزل الحراري والصوتي",
+        nameDerja = "العزل والحرارة والصوت", nameEn = "Thermal & Acoustic Insulation", iconEmoji = "🛡️",
+        isAvailable = true, tradeCategory = TradeCategory.ISOLATION,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Laine minérale et panneaux isolants",
+        descriptionAr = "صوف عازل وألواح عزل"
+    ),
+    MetierTrade(
+        id = "sols", nameFr = "Sols & Parquet", nameAr = "الأرضيات والباركيه",
+        nameDerja = "الأرضيات والباركي", nameEn = "Flooring & Parquet", iconEmoji = "🪵",
+        isAvailable = true, tradeCategory = TradeCategory.SOLS,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Parquet stratifié et béton ciré",
+        descriptionAr = "باركيه وخرسانة ديكورية"
+    ),
+    MetierTrade(
+        id = "facade", nameFr = "Façade", nameAr = "الواجهات",
+        nameDerja = "الواجهة", nameEn = "Facade", iconEmoji = "🏢",
+        isAvailable = true, tradeCategory = TradeCategory.FACADE,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Enduit monocouche et peinture extérieure",
+        descriptionAr = "تلبيس ودهان خارجي"
+    ),
+    MetierTrade(
+        id = "demolition", nameFr = "Démolition & Gravats", nameAr = "الهدم والأنقاض",
+        nameDerja = "الهدم والفضلات", nameEn = "Demolition & Debris", iconEmoji = "🧱",
+        isAvailable = true, tradeCategory = TradeCategory.DEMOLITION,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Dépose, démolition et évacuation",
+        descriptionAr = "تفكيك وهدم وإزالة الأنقاض"
     )
 )
 
@@ -209,7 +265,14 @@ enum class TradeCategory(
     MACONNERIE("maconnerie", "Maçonnerie & Briques", "بناء الجدران والآجر", "بنيان الآجور والعرصة", "Foundation"),
     CREPISSAGE("crepissage", "Enduit Ciment & Crépissage", "اللياسة والتلبيس الإسمنتي", "الترطيبة واللياسة", "Brush"),
     CARRELAGE("carrelage", "Revêtement & Carrelage", "السيراميك والأرضيات", "الفايونس والقاعة", "GridOn"),
-    MENUISERIE("menuiserie", "Menuiserie Bois & Alu", "النجارة والألمنيوم", "النجارة والبيبان والشبابك", "DoorSliding")
+    MENUISERIE("menuiserie", "Menuiserie Bois & Alu", "النجارة والألمنيوم", "النجارة والبيبان والشبابك", "DoorSliding"),
+    PLOMBERIE("plomberie", "Plomberie & Sanitaire", "السباكة والصحي", "البلومبي والصحي", "Plumbing"),
+    ELECTRICITE("electricite", "Électricité & Câblage", "الكهرباء والتمديدات", "الضو والتريسينتي", "Bolt"),
+    ETANCHEITE("etancheite", "Étanchéité & Toitures", "العزل المائي والأسطح", "الكتامة والسطوح", "Umbrella"),
+    ISOLATION("isolation", "Isolation Thermique & Phonique", "العزل الحراري والصوتي", "العزل والحرارة والصوت", "Shield"),
+    SOLS("sols", "Sols & Parquet", "الأرضيات والباركيه", "الأرضيات والباركي", "Layers"),
+    FACADE("facade", "Façade", "الواجهات", "الواجهة", "House"),
+    DEMOLITION("demolition", "Démolition & Gravats", "الهدم والأنقاض", "الهدم والفضلات", "Hammer")
 }
 
 enum class CalculationType(
@@ -366,7 +429,14 @@ enum class CalculationType(
         "نوافذ وأبواب ألمنيوم",
         "شبابك ألمنيوم وسيليكون وجلد",
         1.0
-    )
+    ),
+    PLOMBERIE_INSTALLATION("plomberie_installation", TradeCategory.PLOMBERIE, "Installation plomberie sanitaire", "تركيب السباكة والصحي", "تركيب البلومبي والصحي", 1.10),
+    ELECTRICITE_INSTALLATION("electricite_installation", TradeCategory.ELECTRICITE, "Installation électrique", "تركيب الكهرباء", "تركيب الضو والتريسينتي", 1.10),
+    ETANCHEITE_TOITURE("etancheite_toiture", TradeCategory.ETANCHEITE, "Étanchéité toiture", "عزل السطح مائيًا", "كتامة السطح", 1.10),
+    ISOLATION_THERMIQUE("isolation_thermique", TradeCategory.ISOLATION, "Isolation thermique et phonique", "عزل حراري وصوتي", "عزل الحرارة والصوت", 1.10),
+    SOLS_PARQUET("sols_parquet", TradeCategory.SOLS, "Pose de parquet stratifié", "تركيب باركيه", "تركيب باركي", 1.10),
+    FACADE_FINITION("facade_finition", TradeCategory.FACADE, "Finition de façade", "تشطيب الواجهة", "فينيسيو الواجهة", 1.10),
+    DEMOLITION_DEPOSE("demolition_depose", TradeCategory.DEMOLITION, "Démolition et dépose", "الهدم والإزالة", "الهدم والقلع", 1.10)
 }
 
 data class CalculatedItem(
