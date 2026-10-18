@@ -350,7 +350,7 @@ fun TradeSelectorBar(
                 TradeCategory.ISOLATION -> Icons.Default.Shield to Color(0xFF10B981)
                 TradeCategory.SOLS -> Icons.Default.Layers to Color(0xFF8B5E3C)
                 TradeCategory.FACADE -> Icons.Default.Home to Color(0xFF64748B)
-                TradeCategory.DEMOLITION -> Icons.Default.Hammer to Color(0xFFDC2626)
+                TradeCategory.DEMOLITION -> Icons.Default.Build to Color(0xFFDC2626)
             }
 
             val title = when (language) {
