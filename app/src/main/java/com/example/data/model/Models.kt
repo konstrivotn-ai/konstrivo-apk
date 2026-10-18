@@ -388,7 +388,7 @@ enum class CalculationType(
         "Portes Bois & Blocs-Portes",
         "أبواب خشبية وتركيب الكوادر",
         "بيبان لوح وكوادر وفوم",
-        1.0
+        1.10
     ),
     MENUISERIE_ALU(
         "menuiserie_alu",
@@ -396,7 +396,7 @@ enum class CalculationType(
         "Fenêtres Aluminium & Baies Vitrées",
         "نوافذ وأبواب ألمنيوم",
         "شبابك ألمنيوم وسيليكون وجلد",
-        1.0
+        1.10
     ),
     PLOMBERIE_INSTALLATION("plomberie_installation", TradeCategory.PLOMBERIE, "Installation plomberie sanitaire", "تركيب السباكة والصحي", "تركيب البلومبي والصحي", 1.10),
     ELECTRICITE_INSTALLATION("electricite_installation", TradeCategory.ELECTRICITE, "Installation électrique", "تركيب الكهرباء", "تركيب الضو والتريسينتي", 1.10),
