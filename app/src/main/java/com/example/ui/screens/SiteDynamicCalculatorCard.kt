@@ -90,7 +90,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, countryCode: String, curren
         }
     }
 
-    LaunchedEffect(selectedTradeId, refreshKey) {
+    LaunchedEffect(selectedTradeId, refreshKey, countryCode, currencyCode) {
         val trade = trades.firstOrNull { it.id == selectedTradeId } ?: return@LaunchedEffect
         isLoadingBundle = true
         errorMessage = null
