@@ -2,6 +2,14 @@
 
 > Append-only AI change log for the Android application. Newest first.
 
+- **2026-10-19 — Live website catalog in Android calculator (in progress):**
+  - Added a read-only Android API client for the same website `/api/v1/trades`, `/trades/:id/services`, `/trades/:id/metre-elements`, `/materials`, and `/prices` endpoints.
+  - Added a live catalog panel to the calculator: refreshable trade list, website-configured services and suggested rates, dynamic metric element/dimension inputs, and the trade's material list with published prices when available.
+  - Newly registered active trade codes are fetched as data rather than mapped to a Kotlin enum, so the app can discover new site trades without an APK release. CSV/import-created trades still need their service and metric definitions configured on the website before those advanced calculator options can be used.
+  - Basic whitelisted metric operations (`single`, `product`, `perimeter_h`) are evaluated locally with declared layers/waste only. Elements containing openings, deductions or yield/coverage rules intentionally do not display a computed quantity yet, to avoid a misleading result.
+  - Catalog and service data are fetched on demand; no production records are written. Offline cache, full advanced-rule parity, quote integration, and live end-to-end production verification remain outstanding.
+  - Latest source must pass GitHub Actions before it can be treated as a verified APK.
+
 - **2026-10-19 — Board dimension selector and trade methodology (in progress):**
   - Added selectable board dimensions (1.20×2.50, 1.20×2.80, 1.20×3.00 and 0.90×2.00 m) and wired selected dimensions into existing board-area calculations.
   - Added trade-aware methodology guidance for ceilings, partitions, plumbing, electrical, waterproofing, insulation, parquet, facade finishing and demolition.
