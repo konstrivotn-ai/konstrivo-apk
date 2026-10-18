@@ -87,12 +87,15 @@ class CalculatorViewModel(
         _selectedTrade.value = trade
         val defaultType = CalculationType.entries.firstOrNull { it.trade == trade } ?: CalculationType.PLACO_PLAFOND_FIXE
         _selectedCalculationType.value = defaultType
+        _wasteMargin.value = ((defaultType.defaultWasteMargin - 1.0) * 100).toInt().toString()
+        _inputHeight.value = if (defaultType == CalculationType.DEMOLITION_DEPOSE) "15.0" else "2.8"
     }
 
     fun setCalculationType(type: CalculationType) {
         _selectedTrade.value = type.trade
         _selectedCalculationType.value = type
         _wasteMargin.value = ((type.defaultWasteMargin - 1.0) * 100).toInt().toString()
+        _inputHeight.value = if (type == CalculationType.DEMOLITION_DEPOSE) "15.0" else "2.8"
     }
 
     fun setInputArea(value: String) { _inputArea.value = value }
