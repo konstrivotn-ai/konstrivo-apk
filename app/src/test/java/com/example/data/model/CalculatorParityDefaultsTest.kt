@@ -34,6 +34,28 @@ class CalculatorParityDefaultsTest {
     }
 
     @Test
+    fun websiteOpeningDeductionRuleRequiresAtLeastOneSquareMetre() {
+        fun boardQuantity(openingArea: Double): Double {
+            val result = ConstructionCalculator.calculate(
+                params = ConstructionCalculator.CalculationParams(
+                    type = CalculationType.PLACO_CLOISON,
+                    area = 10.0,
+                    perimeter = 14.0,
+                    height = 2.5,
+                    netOpeningsArea = openingArea,
+                    wasteMarginPercent = 10.0
+                ),
+                priceMap = emptyMap(),
+                country = Country.TUNISIA
+            )
+            return result.items.first { it.id == "plaque_ba13_standard" }.quantity
+        }
+
+        assertEquals(8.0, boardQuantity(0.99), 0.000001)
+        assertEquals(6.0, boardQuantity(2.0), 0.000001)
+    }
+
+    @Test
     fun newlyAddedWebsiteTradeCalculatorsProduceMaterialLines() {
         val types = listOf(
             CalculationType.PLOMBERIE_INSTALLATION,
