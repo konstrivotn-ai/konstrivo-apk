@@ -62,7 +62,9 @@ object ConstructionCalculator {
         val equipmentCostHT: Double = 0.0,
         val otherCostHT: Double = 0.0,
         val tvaRate: Double? = null,
-        val fiscalProfileId: String = ""
+        val fiscalProfileId: String = "",
+        val fiscalStampAmount: Double = 0.0,
+        val retentionRate: Double = 0.0
     )
 
     fun calculate(
@@ -787,7 +789,12 @@ object ConstructionCalculator {
 
         val grandTotalHT = TaxMath.round2(materialCostHT + laborCostHT + transportCostHT + equipmentCostHT + otherCostHT)
         val totalTva = TaxMath.round2(materialTva + laborTva + transportTva + equipmentTva + otherTva)
-        val grandTotalTTC = TaxMath.round2(materialTotalTTC + laborTotalTTC + transportTotalTTC + equipmentTotalTTC + otherTotalTTC)
+        // Fiscal stamp is added after TVA and is not itself taxed as a service line.
+        val fiscalStampAmount = TaxMath.round2(params.fiscalStampAmount.coerceAtLeast(0.0))
+        val grandTotalTTC = TaxMath.round2(materialTotalTTC + laborTotalTTC + transportTotalTTC + equipmentTotalTTC + otherTotalTTC + fiscalStampAmount)
+        val retentionRate = params.retentionRate.coerceIn(0.0, 10.0)
+        val retentionAmount = TaxMath.round2(grandTotalTTC * retentionRate / 100.0)
+        val netPayableAfterRetention = TaxMath.round2(grandTotalTTC - retentionAmount)
 
         return CalculationSummary(
             calculationType = params.type,
@@ -819,7 +826,11 @@ object ConstructionCalculator {
             otherTotalTTC = otherTotalTTC,
             totalTva = totalTva,
             grandTotalHT = grandTotalHT,
-            grandTotalTTC = grandTotalTTC
+            grandTotalTTC = grandTotalTTC,
+            fiscalStampAmount = fiscalStampAmount,
+            retentionRate = retentionRate,
+            retentionAmount = retentionAmount,
+            netPayableAfterRetention = netPayableAfterRetention
         )
     }
 }
