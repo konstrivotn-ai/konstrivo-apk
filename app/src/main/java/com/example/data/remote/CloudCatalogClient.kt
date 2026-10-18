@@ -93,7 +93,11 @@ object CloudCatalogClient {
     private fun loadPriceMap(): Map<String, Pair<Double, String>> {
         val result = linkedMapOf<String, Pair<Double, String>>()
         for (page in 1..10) {
-            val root = request("prices?currency=TND&market=tn&page=$page&limit=200")
+            val root = try {
+                request("prices?currency=TND&market=tn&page=$page&limit=200")
+            } catch (_: Exception) {
+                break // Missing price data must not hide the trade/material catalog.
+            }
             val pageRows = rows(root)
             pageRows.forEach { row ->
                 val id = row.optString("materialId")
