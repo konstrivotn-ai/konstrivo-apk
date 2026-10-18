@@ -756,12 +756,14 @@ object ConstructionCalculator {
         }
 
         val totalMaterialCost = items.sumOf { it.totalPrice }
-        val laborMultiplier = if (params.type == CalculationType.MENUISERIE_PORTES || params.type == CalculationType.MENUISERIE_ALU) {
-            max(1.0, params.unitCount)
-        } else if (params.type == CalculationType.PLACO_CACHE_LUMIERE && params.linearMeters > 0) {
-            params.linearMeters
-        } else {
-            max(1.0, area)
+        val laborMultiplier = when {
+            params.type == CalculationType.MENUISERIE_PORTES || params.type == CalculationType.MENUISERIE_ALU ->
+                max(1.0, params.unitCount)
+            params.type == CalculationType.PLACO_CACHE_LUMIERE && params.linearMeters > 0 ->
+                params.linearMeters
+            params.type == CalculationType.PLOMBERIE_INSTALLATION || params.type == CalculationType.ELECTRICITE_INSTALLATION ->
+                max(1.0, params.unitCount)
+            else -> max(1.0, area)
         }
 
         val materialCostHT = TaxMath.round2(totalMaterialCost)
