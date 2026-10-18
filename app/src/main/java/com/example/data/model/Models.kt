@@ -464,5 +464,9 @@ data class CalculationSummary(
     // Grand totals
     val totalTva: Double = 0.0,
     val grandTotalHT: Double = 0.0,
-    val grandTotalTTC: Double = 0.0
+    val grandTotalTTC: Double = 0.0,
+    val fiscalStampAmount: Double = 0.0,
+    val retentionRate: Double = 0.0,
+    val retentionAmount: Double = 0.0,
+    val netPayableAfterRetention: Double = grandTotalTTC
 )

@@ -66,6 +66,16 @@ class CalculatorViewModel(
     private val _customLaborRate = MutableStateFlow("")
     val customLaborRate: StateFlow<String> = _customLaborRate.asStateFlow()
 
+    // Website parity: optional tax override (blank means use the country's fiscal profile).
+    private val _tvaRateOverride = MutableStateFlow("")
+    val tvaRateOverride: StateFlow<String> = _tvaRateOverride.asStateFlow()
+
+    private val _fiscalStampEnabled = MutableStateFlow(true)
+    val fiscalStampEnabled: StateFlow<Boolean> = _fiscalStampEnabled.asStateFlow()
+
+    private val _retentionRate = MutableStateFlow("0")
+    val retentionRate: StateFlow<String> = _retentionRate.asStateFlow()
+
     // Entraxe des montants (maillage vertical en mètres). Default = 0.40 m (40 cm)
     // so that legacy calculation behavior is preserved until the user makes a choice.
     private val _entraxeMontants = MutableStateFlow(0.40)
@@ -123,6 +133,11 @@ class CalculatorViewModel(
     fun setIncludeInsulation(include: Boolean) { _includeInsulation.value = include }
     fun setInsulationType(type: String) { _insulationType.value = type }
     fun setCustomLaborRate(rate: String) { _customLaborRate.value = rate }
+    fun setTvaRateOverride(rate: String) { _tvaRateOverride.value = rate }
+    fun setFiscalStampEnabled(enabled: Boolean) { _fiscalStampEnabled.value = enabled }
+    fun setRetentionRate(rate: String) {
+        _retentionRate.value = rate.toDoubleOrNull()?.coerceIn(0.0, 10.0)?.toInt()?.toString() ?: "0"
+    }
 
     fun setInputJointsMeters(value: String) { _inputJointsMeters.value = value }
     fun setInputCornersCount(value: String) { _inputCornersCount.value = value }
@@ -184,7 +199,10 @@ class CalculatorViewModel(
             _finishQuality,
             _trappeLines,
             pricesListFlow,
-            countryFlow
+            countryFlow,
+            _tvaRateOverride,
+            _fiscalStampEnabled,
+            _retentionRate
         ) { args ->
             val type = args[0] as CalculationType
             val areaStr = args[1] as String
@@ -210,6 +228,9 @@ class CalculatorViewModel(
             @Suppress("UNCHECKED_CAST")
             val prices = args[21] as List<MaterialPriceEntity>
             val country = args[22] as Country
+            val tvaRateOverride = (args[23] as String).toDoubleOrNull()?.takeIf { it in listOf(0.0, 7.0, 13.0, 19.0) }
+            val fiscalStampEnabled = args[24] as Boolean
+            val retentionRate = ((args[25] as String).toDoubleOrNull() ?: 0.0).coerceIn(0.0, 10.0)
 
             val length = lengthStr.toDoubleOrNull() ?: 0.0
             val width = widthStr.toDoubleOrNull() ?: 0.0
@@ -217,7 +238,7 @@ class CalculatorViewModel(
             val linearM = linearMStr.toDoubleOrNull() ?: 0.0
             val units = unitsStr.toDoubleOrNull() ?: 1.0
             val openingArea = (openingAreaStr.toDoubleOrNull() ?: 0.0).coerceAtLeast(0.0)
-            val waste = wasteStr.toDoubleOrNull() ?: 10.0
+            val waste = (wasteStr.toDoubleOrNull() ?: 10.0).coerceIn(0.0, 50.0)
             val customLaborVal = customLabor.toDoubleOrNull()
             val jointsMetersVal = jointsMetersStr.toDoubleOrNull() ?: 0.0
             val cornersCountVal = cornersCountStr.toDoubleOrNull() ?: 0.0
@@ -256,7 +277,10 @@ class CalculatorViewModel(
                 jointsMeters = jointsMetersVal,
                 cornersCount = cornersCountVal,
                 finishQuality = finishQualityVal,
-                trappes = trappes
+                trappes = trappes,
+                tvaRate = tvaRateOverride,
+                fiscalStampAmount = if (fiscalStampEnabled && country == Country.TUNISIA) 1.0 else 0.0,
+                retentionRate = retentionRate
             )
 
             calculateUseCase(params, priceMap, country)

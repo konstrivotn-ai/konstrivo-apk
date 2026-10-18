@@ -2,6 +2,13 @@
 
 > Append-only AI change log for the Android application. Newest first.
 
+- **2026-10-18 — Interactive fiscal and estimate settings (in progress):**
+  - Added selectable VAT overrides (19%, 13%, 7%, 0%) with a reset to the selected country's fiscal profile.
+  - Added Tunisia fiscal-stamp toggle (1.000 DT), guarantee-retention choices (0%, 5%, 10%), custom labor-rate input, and waste-margin input.
+  - Wired tax rate, stamp, and retention into the calculator's shared summary flow; result and share text show stamp, withholding and net payable separately.
+  - Existing calculator defaults remain backward-compatible when the new parameters are not supplied.
+  - Still requires CI/build validation and further per-trade option/material parity before this can be considered complete.
+
 - **2026-10-18 — Visible calculation results and share actions (in progress):**
   - Added a result panel to the calculator UI with each calculated material line and totals for materials, labor, HT, TVA and TTC.
   - Added copy-to-clipboard and WhatsApp share actions for the generated estimate text.
