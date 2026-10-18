@@ -484,6 +484,40 @@ fun CalculatorScreen(
                         )
                     }
 
+                    // Select a real catalog board for calculations that consume boardType.
+                    if (selectedTrade == TradeCategory.PLACO &&
+                        (selectedType == CalculationType.PLACO_PLAFOND_FIXE || selectedType == CalculationType.PLACO_CLOISON)
+                    ) {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                        KonstrivoSectionLabel(
+                            text = language.tr("Type de plaque", "Board type", "نوع اللوح", "نوع اللوح")
+                        )
+                        val boardOptions = MaterialCatalog.ALL_MATERIALS.filter {
+                            it.category == MaterialCategory.PLACO && it.id.startsWith("plaque_")
+                        }
+                        val boardItems = boardOptions.map { mat ->
+                            val label = when (language) {
+                                AppLanguage.DERJA -> mat.nameDerja
+                                AppLanguage.ARABIC -> mat.nameAr
+                                AppLanguage.FRENCH -> mat.nameFr
+                                AppLanguage.ENGLISH -> mat.nameEn
+                            }
+                            mat.id to label
+                        }
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth().testTag("placo_board_type_selector")
+                        ) {
+                            items(boardItems) { (key, label) ->
+                                FilterChip(
+                                    selected = boardType == key,
+                                    onClick = { viewModel.setSelectedBoardType(key) },
+                                    label = { Text(label, style = MaterialTheme.typography.labelSmall) }
+                                )
+                            }
+                        }
+                    }
+
                     // اختيار البلاط للأسقف القابلة للفك (Dalles)
                     if (selectedTrade == TradeCategory.PLACO && selectedType == CalculationType.PLACO_DEMONTABLE) {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
@@ -612,15 +646,23 @@ fun CalculatorScreen(
                         )
                     }
                     Text(language.tr("Taux TVA", "VAT rate", "نسبة الأداء على القيمة المضافة", "نسبة الأداء على القيمة المضافة"), fontWeight = FontWeight.SemiBold)
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
-                        listOf("19", "13", "7", "0").forEach { rate ->
-                            FilterChip(
-                                selected = (tvaRateOverride.toDoubleOrNull()?.toInt()?.toString() ?: summary?.tvaRate?.toInt()?.toString()) == rate,
-                                onClick = { viewModel.setTvaRateOverride(rate) },
-                                label = { Text("$rate%") },
-                                modifier = Modifier.weight(1f)
-                            )
+                    if (country == Country.TUNISIA) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                            listOf("19", "13", "7", "0").forEach { rate ->
+                                FilterChip(
+                                    selected = (tvaRateOverride.toDoubleOrNull()?.toInt()?.toString() ?: summary?.tvaRate?.toInt()?.toString()) == rate,
+                                    onClick = { viewModel.setTvaRateOverride(rate) },
+                                    label = { Text("$rate%") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
+                    } else {
+                        Text(
+                            text = language.tr("Le taux du pays sélectionné est appliqué.", "The selected country's tax profile is applied.", "يتم تطبيق النظام الجبائي للبلد المختار.", "يتم تطبيق النظام الجبائي للبلد المختار."),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                     TextButton(onClick = { viewModel.setTvaRateOverride("") }) {
                         Text(language.tr("Taux du pays (par défaut)", "Use country default", "استعمال نسبة البلد الأصلية", "استعمال نسبة البلد الأصلية"))
