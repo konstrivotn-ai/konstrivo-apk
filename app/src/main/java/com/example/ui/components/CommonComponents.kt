@@ -344,6 +344,13 @@ fun TradeSelectorBar(
                 TradeCategory.CREPISSAGE -> Icons.Default.Brush to CrepissageTradeColor
                 TradeCategory.CARRELAGE -> Icons.Default.GridOn to CarrelageTradeColor
                 TradeCategory.MENUISERIE -> Icons.Default.DoorSliding to MenuiserieTradeColor
+                TradeCategory.PLOMBERIE -> Icons.Default.WaterDrop to Color(0xFF0EA5E9)
+                TradeCategory.ELECTRICITE -> Icons.Default.Bolt to Color(0xFFF59E0B)
+                TradeCategory.ETANCHEITE -> Icons.Default.Umbrella to Color(0xFF2563EB)
+                TradeCategory.ISOLATION -> Icons.Default.Shield to Color(0xFF10B981)
+                TradeCategory.SOLS -> Icons.Default.Layers to Color(0xFF8B5E3C)
+                TradeCategory.FACADE -> Icons.Default.Home to Color(0xFF64748B)
+                TradeCategory.DEMOLITION -> Icons.Default.Hammer to Color(0xFFDC2626)
             }
 
             val title = when (language) {
