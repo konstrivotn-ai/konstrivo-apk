@@ -14,6 +14,7 @@ object CloudCatalogClient {
     private const val PRICE_CACHE_TTL_MS = 120_000L
     @Volatile private var cachedPrices: Map<String, Pair<Double, String>> = emptyMap()
     @Volatile private var cachedPricesAtMs: Long = 0L
+    @Volatile private var cachedPriceMarketKey: String = ""
 
     data class TradeItem(val id: String, val code: String, val labelFr: String, val labelAr: String, val labelDerja: String, val icon: String)
     data class ServiceItem(val id: String, val nameFr: String, val nameAr: String, val unit: String, val suggestedRate: Double?)
@@ -41,11 +42,11 @@ object CloudCatalogClient {
         }.sortedBy { it.labelFr.lowercase() }
     }
 
-    fun loadTradeBundle(trade: TradeItem): TradeBundle {
+    fun loadTradeBundle(trade: TradeItem, countryCode: String, currencyCode: String): TradeBundle {
         val servicesRoot = request("trades/${segment(trade.id)}/services")
         val metreRoot = request("trades/${segment(trade.id)}/metre-elements")
         val materialRoot = request("materials?trade=${query(trade.code)}&page=1&limit=200")
-        val prices = loadPriceMap()
+        val prices = loadPriceMap(currencyCode, countryCode.lowercase())
 
         val services = rows(servicesRoot).mapNotNull { row ->
             val id = row.optString("id")
@@ -86,7 +87,7 @@ object CloudCatalogClient {
                 MaterialItem(
                     id, row.optString("code"), name, row.optString("nameAr"), row.optString("category"),
                     row.optString("baseUnit").ifBlank { "unit" }, row.optString("technicalSpecs"),
-                    price?.first, price?.second ?: "TND"
+                    price?.first, price?.second ?: currencyCode
                 )
             }
         }
@@ -94,13 +95,14 @@ object CloudCatalogClient {
     }
 
     @Synchronized
-    private fun loadPriceMap(): Map<String, Pair<Double, String>> {
+    private fun loadPriceMap(currencyCode: String, marketCode: String): Map<String, Pair<Double, String>> {
         val now = System.currentTimeMillis()
-        if (cachedPrices.isNotEmpty() && now - cachedPricesAtMs < PRICE_CACHE_TTL_MS) return cachedPrices
+        val marketKey = "$currencyCode|$marketCode"
+        if (cachedPrices.isNotEmpty() && cachedPriceMarketKey == marketKey && now - cachedPricesAtMs < PRICE_CACHE_TTL_MS) return cachedPrices
         val result = linkedMapOf<String, Pair<Double, String>>()
         for (page in 1..10) {
             val root = try {
-                request("prices?currency=TND&market=tn&page=$page&limit=200")
+                request("prices?currency=\${query(currencyCode)}&market=\${query(marketCode)}&page=$page&limit=200")
             } catch (_: Exception) {
                 break // Missing price data must not hide the trade/material catalog.
             }
@@ -118,6 +120,7 @@ object CloudCatalogClient {
         if (result.isNotEmpty()) {
             cachedPrices = result.toMap()
             cachedPricesAtMs = now
+            cachedPriceMarketKey = marketKey
         }
         return result
     }
