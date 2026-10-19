@@ -52,6 +52,7 @@ fun SiteDynamicCalculatorCard(
     countryCode: String,
     currencyCode: String,
     onSaveServiceEstimate: (tradeCode: String, tradeName: String, serviceId: String, serviceName: String, quantity: Double, unit: String, unitPrice: Double) -> Unit,
+    onSaveMaterialEstimate: (tradeCode: String, tradeName: String, materialId: String, materialName: String, quantity: Double, unit: String, unitPrice: Double, currency: String, countryCode: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var refreshKey by remember { mutableStateOf(0) }
@@ -62,6 +63,7 @@ fun SiteDynamicCalculatorCard(
     var selectedMetreId by remember { mutableStateOf("") }
     var selectedMaterialId by remember { mutableStateOf("") }
     var serviceQuantity by remember { mutableStateOf("1") }
+    var materialQuantity by remember { mutableStateOf("1") }
     val dimensionValues = remember { mutableStateMapOf<String, String>() }
     var isLoadingTrades by remember { mutableStateOf(true) }
     var isLoadingBundle by remember { mutableStateOf(false) }
@@ -276,6 +278,56 @@ fun SiteDynamicCalculatorCard(
                     selectedMaterial?.let { material ->
                         Text("${material.code} • ${material.category} • ${material.unit}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         if (material.specs.isNotBlank()) Text(material.specs, style = MaterialTheme.typography.bodySmall)
+                        OutlinedTextField(
+                            value = materialQuantity,
+                            onValueChange = { materialQuantity = it },
+                            label = { Text(text("Quantité à ajouter", "الكمية اللي باش تزيدها")) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                        )
+                        val qty = materialQuantity.replace(',', '.').toDoubleOrNull()
+                        val unitPrice = material.price
+                        val sameCurrency = material.currency.equals(currencyCode, ignoreCase = true)
+                        if (qty != null && qty > 0.0 && qty.isFinite() && unitPrice != null && unitPrice >= 0.0 && unitPrice.isFinite()) {
+                            Text(
+                                text = "Total indicatif : ${String.format(Locale.FRANCE, "%.3f", qty * unitPrice)} ${material.currency}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            if (sameCurrency && selectedTrade != null) {
+                                TextButton(onClick = {
+                                    onSaveMaterialEstimate(
+                                        selectedTrade.code,
+                                        selectedTrade.labelFr,
+                                        material.id,
+                                        material.nameFr,
+                                        qty,
+                                        material.unit,
+                                        unitPrice,
+                                        material.currency,
+                                        countryCode
+                                    )
+                                }) {
+                                    Text(text("Ajouter ce matériau au Devis", "زيد المادة هاذي للـ Devis"))
+                                }
+                            } else if (!sameCurrency) {
+                                Text(
+                                    text("Devise du prix différente de la devise active : ajout bloqué pour éviter un total erroné.",
+                                        "عملة السعر مختلفة على عملة التطبيق؛ الإضافة توقفت باش ما يطلعش مجموع غالط."),
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        } else if (unitPrice == null) {
+                            Text(
+                                text("Aucun prix publié pour ce matériau : il ne sera pas ajouté avec un prix fictif.",
+                                    "ما فماش سعر منشور للمادة هاذي؛ ما باش نزيدوهاش بسعر تخميني."),
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                     }
                 }
                 if (data.services.isEmpty() && data.metreItems.isEmpty() && data.materials.isEmpty()) {
