@@ -399,6 +399,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         tradeCode, tradeName, serviceId, serviceName, quantity, unit, unitPrice, currency, countryCode, onSaved
     )
 
+    fun saveSiteMaterialEstimate(
+        tradeCode: String,
+        tradeName: String,
+        materialId: String,
+        materialName: String,
+        quantity: Double,
+        unit: String,
+        unitPrice: Double,
+        currency: String,
+        countryCode: String,
+        onSaved: () -> Unit
+    ) = devisViewModel.saveSiteMaterialEstimate(
+        tradeCode, tradeName, materialId, materialName, quantity, unit, unitPrice, currency, countryCode, onSaved
+    )
+
     fun deleteEstimate(id: Long) = devisViewModel.deleteEstimate(id)
 
     fun generateWhatsAppText(summary: CalculationSummary, clientName: String = "", location: String = ""): String {
