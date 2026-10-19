@@ -73,3 +73,11 @@ the website and in the app.
   `ui/reference-auth-language` contains a divergent UI pass based on an older
   main (its diff would REMOVE the current session-restore wiring) and must not
   be merged wholesale.
+
+
+## Current calculator parity follow-up (2026-10-19)
+- Added EstimatePdfExporter for generating a shareable PDF from a saved Devis. The PDF includes client/project metadata, material line items, material subtotal, labor and grand total, plus notes.
+- Registered AndroidX FileProvider with cache-only access to devis-pdf/ to share the generated document without exposing arbitrary files.
+- Added a PDF action on saved estimate cards.
+- Added a route from the live site catalog service selector into the existing Devis repository. Only TND-published suggested rates can be saved; other currencies are not silently converted.
+- Latest source validation must be checked against GitHub Actions before treating the current code as a verified APK. Full live API and website-vs-app calculation parity remain unverified.
