@@ -111,9 +111,9 @@ class DevisViewModel(
             })
             saveQuoteUseCase(
                 ProjectEstimateEntity(
-                    clientName = "",
+                    clientName = "Client à renseigner",
                     clientPhone = "",
-                    location = "",
+                    location = "Chantier à renseigner",
                     calculationTypeId = "site_service:$tradeCode:$serviceId",
                     tradeCategory = tradeCode,
                     inputArea = 0.0,
