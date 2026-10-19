@@ -47,7 +47,13 @@ import java.util.Locale
  * prices are loaded from /api/v1; the app does not need a release to discover them.
  */
 @Composable
-fun SiteDynamicCalculatorCard(language: AppLanguage, countryCode: String, currencyCode: String, modifier: Modifier = Modifier) {
+fun SiteDynamicCalculatorCard(
+    language: AppLanguage,
+    countryCode: String,
+    currencyCode: String,
+    onSaveServiceEstimate: (tradeCode: String, tradeName: String, serviceId: String, serviceName: String, quantity: Double, unit: String, unitPrice: Double) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var refreshKey by remember { mutableStateOf(0) }
     var trades by remember { mutableStateOf(emptyList<CloudCatalogClient.TradeItem>()) }
     var selectedTradeId by remember { mutableStateOf("") }
@@ -166,6 +172,7 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, countryCode: String, curren
             }
             errorMessage?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
 
+            val selectedTrade = trades.firstOrNull { it.id == selectedTradeId }
             bundle?.let { data ->
                 if (data.services.isNotEmpty()) {
                     HorizontalDivider()
@@ -197,6 +204,20 @@ fun SiteDynamicCalculatorCard(language: AppLanguage, countryCode: String, curren
                                 style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
+                            if (q > 0 && currencyCode.equals("TND", ignoreCase = true) && selectedTrade != null) {
+                                TextButton(onClick = {
+                                    onSaveServiceEstimate(selectedTrade.code, selectedTrade.labelFr, service.id, service.nameFr, q, service.unit, rate)
+                                }) {
+                                    Text(text("Ajouter ce service au Devis", "زيد الخدمة هاذي للـ Devis"))
+                                }
+                            } else if (!currencyCode.equals("TND", ignoreCase = true)) {
+                                Text(
+                                    text("Le tarif du service est publié en TND; conversion automatique indisponible pour ce pays.",
+                                        "سعر الخدمة منشور بالدينار التونسي؛ التحويل الآلي لعملة البلد هذا موش متاح."),
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
                         }
                     }
                 }
