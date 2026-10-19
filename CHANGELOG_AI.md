@@ -87,3 +87,10 @@
 - Added a handoff from the live website service catalog to the existing saved-Devis repository for TND service rates. The saved item records the service, unit, quantity, rate and total; it navigates to the Devis workspace after saving.
 - Foreign-currency service quote creation is intentionally not enabled while the site API only exposes suggested service rates in TND; no guessed currency conversion is applied.
 - Validation pending for the current branch head; successful earlier APK builds do not prove this latest PDF/Devis patch compiles.
+
+- **2026-10-19 — Website-priced material to Devis handoff (in progress):**
+  - Added a native Android action for a selected website catalog material with a published price in the active currency to be saved as a Devis line.
+  - Quantity is entered explicitly by the user; the app calculates line total from the displayed site price and blocks adding missing-price or currency-mismatch items rather than inventing a price.
+  - Material quote lines are stored in the existing estimate repository and exported by the current PDF flow.
+  - The site examples for PEINTURE and PLOMBERIE are reference cases; automatic all-material quantity derivation still requires verified website formula-to-material mapping and must not be inferred from labels alone.
+  - CI validation is required for this change before it is considered verified.
