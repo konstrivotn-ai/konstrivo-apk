@@ -78,3 +78,12 @@
   - No calculator formulas, waste rates, units, Room schema/migrations, or local pricing data
     were touched.
 
+
+
+## 2026-10-19 — Devis PDF and live-service quote handoff
+- Added a PDF exporter for saved estimates using Android PdfDocument, with client/project details, material lines, totals and notes.
+- Added secure FileProvider sharing for generated PDF files from the app cache.
+- Added a PDF action to each saved Devis card; the exported PDF can be shared through Android's share sheet.
+- Added a handoff from the live website service catalog to the existing saved-Devis repository for TND service rates. The saved item records the service, unit, quantity, rate and total; it navigates to the Devis workspace after saving.
+- Foreign-currency service quote creation is intentionally not enabled while the site API only exposes suggested service rates in TND; no guessed currency conversion is applied.
+- Validation pending for the current branch head; successful earlier APK builds do not prove this latest PDF/Devis patch compiles.
