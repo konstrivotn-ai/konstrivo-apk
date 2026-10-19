@@ -165,6 +165,12 @@ fun ReportsDevisScreen(
                                 Toast.LENGTH_SHORT
                             ).show()
                         },
+                        onExportPdf = {
+                            runCatching { EstimatePdfExporter.share(context, estimate) }
+                                .onFailure {
+                                    Toast.makeText(context, "Impossible de créer le PDF : ${it.localizedMessage ?: "erreur"}", Toast.LENGTH_LONG).show()
+                                }
+                        },
                         onDelete = {
                             viewModel.deleteEstimate(estimate.id)
                             Toast.makeText(
@@ -444,6 +450,7 @@ private fun EstimateDocumentCard(
     onToggleExpand: () -> Unit,
     onShareWhatsApp: () -> Unit,
     onCopy: () -> Unit,
+    onExportPdf: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -813,6 +820,14 @@ private fun EstimateDocumentCard(
                                 fontWeight = FontWeight.Bold,
                                 color = KonstrivoEmerald
                             )
+                        }
+                    }
+                    Surface(
+                        shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                    ) {
+                        TextButton(onClick = onExportPdf, modifier = Modifier.height(48.dp)) {
+                            Text("PDF", fontWeight = FontWeight.Bold, color = KonstrivoNavy)
                         }
                     }
                     Surface(
