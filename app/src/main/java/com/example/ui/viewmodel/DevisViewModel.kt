@@ -134,6 +134,57 @@ class DevisViewModel(
         }
     }
 
+    fun saveSiteMaterialEstimate(
+        tradeCode: String,
+        tradeName: String,
+        materialId: String,
+        materialName: String,
+        quantity: Double,
+        unit: String,
+        unitPrice: Double,
+        currency: String,
+        countryCode: String,
+        onSaved: () -> Unit
+    ) {
+        if (!quantity.isFinite() || quantity <= 0.0 || !unitPrice.isFinite() || unitPrice < 0.0 ||
+            materialId.isBlank() || materialName.isBlank() || currency.isBlank()) return
+        viewModelScope.launch(Dispatchers.IO) {
+            val total = quantity * unitPrice
+            val items = JSONArray().put(JSONObject().apply {
+                put("id", materialId)
+                put("nameFr", materialName)
+                put("nameAr", materialName)
+                put("nameDerja", materialName)
+                put("quantity", quantity)
+                put("unit", unit)
+                put("unitPrice", unitPrice)
+                put("totalPrice", total)
+            })
+            saveQuoteUseCase(
+                ProjectEstimateEntity(
+                    clientName = "Client à renseigner",
+                    clientPhone = "",
+                    location = "Chantier à renseigner",
+                    calculationTypeId = "site_material:$tradeCode:$materialId",
+                    tradeCategory = tradeCode,
+                    inputArea = 0.0,
+                    inputPerimeter = 0.0,
+                    inputHeight = 0.0,
+                    inputQuantity = quantity,
+                    wasteMargin = 0.0,
+                    materialsJson = items.toString(),
+                    totalMaterialCost = total,
+                    laborCost = 0.0,
+                    grandTotal = total,
+                    currency = currency,
+                    countryCode = countryCode,
+                    notes = "Matériau du catalogue KONSTRIVO : $tradeName / $materialName. Client et chantier à compléter."
+                )
+            )
+            launch(Dispatchers.Main) { onSaved() }
+        }
+    }
+
     fun deleteEstimate(id: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             deleteQuoteUseCase(id)
