@@ -193,7 +193,28 @@ fun CalculatorScreen(
 
         // Catalogue live partagé avec le site : nouveaux métiers, prestations et matériaux.
         item {
-            SiteDynamicCalculatorCard(language = language, countryCode = country.code, currencyCode = country.currencyCode)
+            SiteDynamicCalculatorCard(
+                language = language,
+                countryCode = country.code,
+                currencyCode = country.currencyCode,
+                onSaveServiceEstimate = { tradeCode, tradeName, serviceId, serviceName, quantity, unit, unitPrice ->
+                    viewModel.saveSiteServiceEstimate(
+                        tradeCode = tradeCode,
+                        tradeName = tradeName,
+                        serviceId = serviceId,
+                        serviceName = serviceName,
+                        quantity = quantity,
+                        unit = unit,
+                        unitPrice = unitPrice,
+                        currency = "TND",
+                        countryCode = "TN",
+                        onSaved = {
+                            Toast.makeText(context, "Service ajouté au Devis.", Toast.LENGTH_SHORT).show()
+                            viewModel.selectTab(com.example.ui.viewmodel.AppTab.ESTIMATES)
+                        }
+                    )
+                }
+            )
         }
 
         // شريط اختيار المهن والأنشطة الرئيسية
