@@ -134,11 +134,25 @@ fun ReportsDevisScreen(
                 items(savedEstimates, key = { it.id }) { estimate ->
                     val isExpanded = expandedEstimateId == estimate.id
                     val calcType = CalculationType.entries.firstOrNull { it.id == estimate.calculationTypeId }
-                    val typeTitle = when (language) {
-                        AppLanguage.DERJA -> calcType?.nameDerja ?: estimate.calculationTypeId
-                        AppLanguage.ARABIC -> calcType?.nameAr ?: estimate.calculationTypeId
-                        AppLanguage.FRENCH -> calcType?.nameFr ?: estimate.calculationTypeId
-                        AppLanguage.ENGLISH -> calcType?.nameFr ?: estimate.calculationTypeId
+                    val typeTitle = when {
+                        estimate.calculationTypeId.startsWith("site_material:") -> when (language) {
+                            AppLanguage.DERJA -> "مادة من كاتالوغ الموقع"
+                            AppLanguage.ARABIC -> "مادة من كتالوج الموقع"
+                            AppLanguage.FRENCH -> "Matériau du catalogue du site"
+                            AppLanguage.ENGLISH -> "Website catalog material"
+                        }
+                        estimate.calculationTypeId.startsWith("site_service:") -> when (language) {
+                            AppLanguage.DERJA -> "خدمة من كاتالوغ الموقع"
+                            AppLanguage.ARABIC -> "خدمة من كتالوج الموقع"
+                            AppLanguage.FRENCH -> "Prestation du catalogue du site"
+                            AppLanguage.ENGLISH -> "Website catalog service"
+                        }
+                        else -> when (language) {
+                            AppLanguage.DERJA -> calcType?.nameDerja ?: estimate.calculationTypeId
+                            AppLanguage.ARABIC -> calcType?.nameAr ?: estimate.calculationTypeId
+                            AppLanguage.FRENCH -> calcType?.nameFr ?: estimate.calculationTypeId
+                            AppLanguage.ENGLISH -> calcType?.nameFr ?: estimate.calculationTypeId
+                        }
                     }
 
                     EstimateDocumentCard(
