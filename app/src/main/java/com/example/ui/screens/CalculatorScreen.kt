@@ -213,6 +213,23 @@ fun CalculatorScreen(
                             viewModel.selectTab(com.example.ui.viewmodel.AppTab.ESTIMATES)
                         }
                     )
+                },
+                onSaveMaterialEstimate = { tradeCode, tradeName, materialId, materialName, quantity, unit, unitPrice, currency, countryCode ->
+                    viewModel.saveSiteMaterialEstimate(
+                        tradeCode = tradeCode,
+                        tradeName = tradeName,
+                        materialId = materialId,
+                        materialName = materialName,
+                        quantity = quantity,
+                        unit = unit,
+                        unitPrice = unitPrice,
+                        currency = currency,
+                        countryCode = countryCode,
+                        onSaved = {
+                            Toast.makeText(context, "Matériau ajouté au Devis.", Toast.LENGTH_SHORT).show()
+                            viewModel.selectTab(com.example.ui.viewmodel.AppTab.ESTIMATES)
+                        }
+                    )
                 }
             )
         }
