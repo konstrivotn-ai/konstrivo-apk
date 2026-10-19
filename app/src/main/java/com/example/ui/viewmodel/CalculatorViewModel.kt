@@ -36,11 +36,17 @@ class CalculatorViewModel(
     private val _inputUnitsCount = MutableStateFlow("1.0")
     val inputUnitsCount: StateFlow<String> = _inputUnitsCount.asStateFlow()
 
-    private val _wasteMargin = MutableStateFlow("5.0")
+    // Combined door/window opening area; website deducts only at >= 1 m².
+    private val _openingArea = MutableStateFlow("0.0")
+    val openingArea: StateFlow<String> = _openingArea.asStateFlow()
+
+    private val _wasteMargin = MutableStateFlow("10.0")
     val wasteMargin: StateFlow<String> = _wasteMargin.asStateFlow()
 
     private val _selectedBoardType = MutableStateFlow("plaque_ba13_standard")
     val selectedBoardType: StateFlow<String> = _selectedBoardType.asStateFlow()
+    private val _boardDimensions = MutableStateFlow("1.2x2.5")
+    val boardDimensions: StateFlow<String> = _boardDimensions.asStateFlow()
 
     private val _selectedMontantType = MutableStateFlow<String?>(null)
     val selectedMontantType: StateFlow<String?> = _selectedMontantType.asStateFlow()
@@ -61,6 +67,16 @@ class CalculatorViewModel(
 
     private val _customLaborRate = MutableStateFlow("")
     val customLaborRate: StateFlow<String> = _customLaborRate.asStateFlow()
+
+    // Website parity: optional tax override (blank means use the country's fiscal profile).
+    private val _tvaRateOverride = MutableStateFlow("")
+    val tvaRateOverride: StateFlow<String> = _tvaRateOverride.asStateFlow()
+
+    private val _fiscalStampEnabled = MutableStateFlow(true)
+    val fiscalStampEnabled: StateFlow<Boolean> = _fiscalStampEnabled.asStateFlow()
+
+    private val _retentionRate = MutableStateFlow("0")
+    val retentionRate: StateFlow<String> = _retentionRate.asStateFlow()
 
     // Entraxe des montants (maillage vertical en mètres). Default = 0.40 m (40 cm)
     // so that legacy calculation behavior is preserved until the user makes a choice.
@@ -87,12 +103,15 @@ class CalculatorViewModel(
         _selectedTrade.value = trade
         val defaultType = CalculationType.entries.firstOrNull { it.trade == trade } ?: CalculationType.PLACO_PLAFOND_FIXE
         _selectedCalculationType.value = defaultType
+        _wasteMargin.value = ((defaultType.defaultWasteMargin - 1.0) * 100).toInt().toString()
+        _inputHeight.value = if (defaultType == CalculationType.DEMOLITION_DEPOSE) "15.0" else "2.8"
     }
 
     fun setCalculationType(type: CalculationType) {
         _selectedTrade.value = type.trade
         _selectedCalculationType.value = type
         _wasteMargin.value = ((type.defaultWasteMargin - 1.0) * 100).toInt().toString()
+        _inputHeight.value = if (type == CalculationType.DEMOLITION_DEPOSE) "15.0" else "2.8"
     }
 
     fun setInputArea(value: String) { _inputArea.value = value }
@@ -107,14 +126,23 @@ class CalculatorViewModel(
     fun setInputHeight(value: String) { _inputHeight.value = value }
     fun setInputLinearMeters(value: String) { _inputLinearMeters.value = value }
     fun setInputUnitsCount(value: String) { _inputUnitsCount.value = value }
+    fun setOpeningArea(value: String) { _openingArea.value = value }
     fun setWasteMargin(value: String) { _wasteMargin.value = value }
     fun setSelectedBoardType(type: String) { _selectedBoardType.value = type }
+    fun setBoardDimensions(value: String) {
+        if (value in setOf("1.2x2.5", "1.2x2.8", "1.2x3.0", "0.9x2.0")) _boardDimensions.value = value
+    }
     fun setSelectedMontantType(value: String?) { _selectedMontantType.value = value }
     fun setSelectedRailType(value: String?) { _selectedRailType.value = value }
     fun setIsDoubleSkin(doubleSkin: Boolean) { _isDoubleSkin.value = doubleSkin }
     fun setIncludeInsulation(include: Boolean) { _includeInsulation.value = include }
     fun setInsulationType(type: String) { _insulationType.value = type }
     fun setCustomLaborRate(rate: String) { _customLaborRate.value = rate }
+    fun setTvaRateOverride(rate: String) { _tvaRateOverride.value = rate }
+    fun setFiscalStampEnabled(enabled: Boolean) { _fiscalStampEnabled.value = enabled }
+    fun setRetentionRate(rate: String) {
+        _retentionRate.value = rate.toDoubleOrNull()?.coerceIn(0.0, 10.0)?.toInt()?.toString() ?: "0"
+    }
 
     fun setInputJointsMeters(value: String) { _inputJointsMeters.value = value }
     fun setInputCornersCount(value: String) { _inputCornersCount.value = value }
@@ -161,6 +189,7 @@ class CalculatorViewModel(
             _inputHeight,
             _inputLinearMeters,
             _inputUnitsCount,
+            _openingArea,
             _wasteMargin,
             _selectedBoardType,
             _selectedMontantType,
@@ -175,7 +204,11 @@ class CalculatorViewModel(
             _finishQuality,
             _trappeLines,
             pricesListFlow,
-            countryFlow
+            countryFlow,
+            _tvaRateOverride,
+            _fiscalStampEnabled,
+            _retentionRate,
+            _boardDimensions
         ) { args ->
             val type = args[0] as CalculationType
             val areaStr = args[1] as String
@@ -184,29 +217,37 @@ class CalculatorViewModel(
             val heightStr = args[4] as String
             val linearMStr = args[5] as String
             val unitsStr = args[6] as String
-            val wasteStr = args[7] as String
-            val boardType = args[8] as String
-            val montantType = args[9] as String?
-            val railType = args[10] as String?
-            val isDouble = args[11] as Boolean
-            val includeIns = args[12] as Boolean
-            val insType = args[13] as String
-            val customLabor = args[14] as String
-            val entraxe = args[15] as Double
-            val jointsMetersStr = args[16] as String
-            val cornersCountStr = args[17] as String
-            val finishQualityVal = args[18] as Int
-            val trappes = @Suppress("UNCHECKED_CAST") (args[19] as List<ConstructionCalculator.TrappeLine>)
+            val openingAreaStr = args[7] as String
+            val wasteStr = args[8] as String
+            val boardType = args[9] as String
+            val montantType = args[10] as String?
+            val railType = args[11] as String?
+            val isDouble = args[12] as Boolean
+            val includeIns = args[13] as Boolean
+            val insType = args[14] as String
+            val customLabor = args[15] as String
+            val entraxe = args[16] as Double
+            val jointsMetersStr = args[17] as String
+            val cornersCountStr = args[18] as String
+            val finishQualityVal = args[19] as Int
+            val trappes = @Suppress("UNCHECKED_CAST") (args[20] as List<ConstructionCalculator.TrappeLine>)
             @Suppress("UNCHECKED_CAST")
-            val prices = args[20] as List<MaterialPriceEntity>
-            val country = args[21] as Country
+            val prices = args[21] as List<MaterialPriceEntity>
+            val country = args[22] as Country
+            val tvaRateOverride = (args[23] as String).toDoubleOrNull()?.takeIf { it in listOf(0.0, 7.0, 13.0, 19.0) }
+            val fiscalStampEnabled = args[24] as Boolean
+            val retentionRate = ((args[25] as String).toDoubleOrNull() ?: 0.0).coerceIn(0.0, 10.0)
+            val boardDimensions = args[26] as String
+            val boardWidthM = boardDimensions.substringBefore("x").toDoubleOrNull() ?: 1.2
+            val boardLengthM = boardDimensions.substringAfter("x").toDoubleOrNull() ?: 2.5
 
             val length = lengthStr.toDoubleOrNull() ?: 0.0
             val width = widthStr.toDoubleOrNull() ?: 0.0
             val height = heightStr.toDoubleOrNull() ?: 2.8
             val linearM = linearMStr.toDoubleOrNull() ?: 0.0
             val units = unitsStr.toDoubleOrNull() ?: 1.0
-            val waste = wasteStr.toDoubleOrNull() ?: 5.0
+            val openingArea = (openingAreaStr.toDoubleOrNull() ?: 0.0).coerceAtLeast(0.0)
+            val waste = (wasteStr.toDoubleOrNull() ?: 10.0).coerceIn(0.0, 50.0)
             val customLaborVal = customLabor.toDoubleOrNull()
             val jointsMetersVal = jointsMetersStr.toDoubleOrNull() ?: 0.0
             val cornersCountVal = cornersCountStr.toDoubleOrNull() ?: 0.0
@@ -232,8 +273,11 @@ class CalculatorViewModel(
                 height = height,
                 linearMeters = linearM,
                 unitCount = units,
+                netOpeningsArea = openingArea,
                 wasteMarginPercent = waste,
                 boardType = boardType,
+                boardWidthM = boardWidthM,
+                boardLengthM = boardLengthM,
                 isDoubleSkin = isDouble,
                 includeInsulation = includeIns,
                 insulationType = insType,
@@ -244,7 +288,10 @@ class CalculatorViewModel(
                 jointsMeters = jointsMetersVal,
                 cornersCount = cornersCountVal,
                 finishQuality = finishQualityVal,
-                trappes = trappes
+                trappes = trappes,
+                tvaRate = tvaRateOverride,
+                fiscalStampAmount = if (fiscalStampEnabled && country == Country.TUNISIA) 1.0 else 0.0,
+                retentionRate = retentionRate
             )
 
             calculateUseCase(params, priceMap, country)

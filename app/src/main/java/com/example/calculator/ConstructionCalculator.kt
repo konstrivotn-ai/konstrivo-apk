@@ -24,7 +24,7 @@ object ConstructionCalculator {
         val height: Double = 2.8,
         val linearMeters: Double = 0.0,
         val unitCount: Double = 1.0,
-        val wasteMarginPercent: Double = 5.0,
+        val wasteMarginPercent: Double = 10.0,
         val boardType: String = "plaque_ba13_standard", // standard, hydrofuge, phonique, coupe_feu, aquapanel
         val isDoubleSkin: Boolean = false,
         val includeInsulation: Boolean = true,
@@ -62,7 +62,9 @@ object ConstructionCalculator {
         val equipmentCostHT: Double = 0.0,
         val otherCostHT: Double = 0.0,
         val tvaRate: Double? = null,
-        val fiscalProfileId: String = ""
+        val fiscalProfileId: String = "",
+        val fiscalStampAmount: Double = 0.0,
+        val retentionRate: Double = 0.0
     )
 
     fun calculate(
@@ -95,10 +97,11 @@ object ConstructionCalculator {
             fallbackNameFr: String,
             fallbackNameAr: String,
             fallbackNameDerja: String,
-            desc: String = ""
+            desc: String = "",
+            fallbackUnitPrice: Double = 0.0
         ) {
             val entity = getEntity(baseKey)
-            val unitPrice = entity?.currentPrice ?: 0.0
+            val unitPrice = entity?.currentPrice?.takeIf { it > 0.0 } ?: fallbackUnitPrice
             val nameFr = entity?.nameFr ?: fallbackNameFr
             val nameAr = entity?.nameAr ?: fallbackNameAr
             val nameDerja = entity?.nameDerja ?: fallbackNameDerja
@@ -134,6 +137,8 @@ object ConstructionCalculator {
         }
 
         val area = max(0.0, params.area)
+        // Website rule: only deduct openings when their combined area reaches 1.00 m².
+        val deductibleOpeningArea = params.netOpeningsArea.takeIf { it >= 1.0 } ?: 0.0
         val perimeter = if (params.perimeter > 0) params.perimeter else if (area > 0) 4 * Math.sqrt(area) else 0.0
         var estimatedLaborRate = params.customLaborRatePerM2 ?: 12.0
 
@@ -180,7 +185,7 @@ object ConstructionCalculator {
                         addItem("laine_de_roche_50mm", boxes, "باكي 7.2m² (Paquet)", "Laine de Roche 50mm (7.2m²)", "صوف صخري كثافة عالية 50 ملم", "لين دو روش ضد الصوت والحرارة")
                     } else {
                         val rolls = ceil((area * wasteFactor) / 15.0)
-                        addItem("laine_de_verre_50mm", rolls, "لفة 15m² (Rouleau)", "Laine de Verre 50mm (15m²)", "صوف زجاجي عازل 50 ملم (لفة 15 م²)", "لين دو فار عازل للصوت")
+                        addItem("laine_de_verre_50mm", rolls, "لفة 15m² (Rouleau)", "Laine de Verre 50mm (15m²)", "صوف زجاجي عازل 50 ملم (لفة 15 م²)", "لين دو فار عازل للصوت", fallbackUnitPrice = 75.0)
                     }
                 }
                 // STEP 9C2 — Trappes de visite (optional user add-on lines).
@@ -206,6 +211,7 @@ object ConstructionCalculator {
             CalculationType.PLACO_CLOISON -> {
                 estimatedLaborRate = params.customLaborRatePerM2 ?: (16.0 * country.rateToTndMultiplier)
                 val boardKey = params.boardType.ifEmpty { "plaque_ba13_standard" }
+                val wallNetArea = max(0.0, area - deductibleOpeningArea)
                 val boardArea = max(0.5, params.boardWidthM * params.boardLengthM) // 1.2 x 2.5 = 3.0 m²
 
                 // Support explicit configuration for number of sides and layers per side while
@@ -215,7 +221,7 @@ object ConstructionCalculator {
                 val faces = effectiveNumberOfSides * effectiveLayersPerSide
 
                 // Plaques calculées depuis les dimensions réelles du panneau, le nombre de faces + la marge de chute.
-                val numBoards = ceil((area * faces * wasteFactor) / boardArea)
+                val numBoards = ceil((wallNetArea * faces * wasteFactor) / boardArea)
                 addItem(
                     boardKey,
                     numBoards,
@@ -223,12 +229,12 @@ object ConstructionCalculator {
                     if (faces == 4.0) "Plaques BA13 Double Peau (4 faces)" else "Plaques BA13 Double Face (2 faces)",
                     if (faces == 4.0) "ألواح جبس BA13 تغليف مزدوج (4 جهات)" else "ألواح جبس BA13 تغليف وجهين",
                     if (faces == 4.0) "ألواح بلاكو تغليف دوبل من الشيرتين" else "ألواح بلاكو تغليف وجهين للفاصل",
-                    "${faces} faces x ${area} m² + chute ${(params.wasteMarginPercent).toInt()}% / ${boardArea} m²"
+                    "${faces} faces x ${wallNetArea} m² net + chute ${(params.wasteMarginPercent).toInt()}% / ${boardArea} m²"
                 )
 
                 // Longueur de cloison (m) — fournie ou dérivée de la surface / hauteur.
                 val wallLength = if (params.wallLengthMeters > 0) params.wallLengthMeters
-                else if (params.height > 0) area / params.height
+                else if (params.height > 0) wallNetArea / params.height
                 else perimeter / 2.0
 
                 // Rails plancher + plafond : 2 fois la longueur du mur.
@@ -277,7 +283,7 @@ object ConstructionCalculator {
                 addItem("bande_a_joint_90m", bandeRolls, "لفة 90m (Rouleau)", "Bande à Joint Papier (90m)", "شريط فواصل ورقي (لفة 90 متر)", "رول بوند اجوان ورقة للفواصل", "~1 ml de bande / m² ($jointArea ml)")
 
                 val bandResilienteRolls = ceil((wallLength * 2.0) / 30.0)
-                addItem("bande_resiliente_48mm", bandResilienteRolls, "لفة 30m (Rouleau)", "Bande Résiliente Acoustique (30m)", "شريط عازل للصوت أسفل السكك (30م)", "بوند ريزيليانت كوتشوك تحت الريل", "Sous les 2 rails (${wallLength * 2.0} ml)")
+                addItem("bande_resiliente_48mm", bandResilienteRolls, "لفة 30m (Rouleau)", "Bande Résiliente Acoustique (30m)", "شريط عازل للصوت أسفل السكك (30م)", "بوند ريزيليانت كوتشوك تحت الريل", "Sous les 2 rails (${wallLength * 2.0} ml)", fallbackUnitPrice = 25.0)
 
                 if (params.includeInsulation) {
                     val insKey = params.insulationType
@@ -286,7 +292,7 @@ object ConstructionCalculator {
                         addItem("laine_de_roche_50mm", boxes, "باكي 7.2m² (Paquet)", "Laine de Roche 50mm (7.2m²)", "صوف صخري كثافة عالية 50 ملم", "لين دو روش عازل وسط الفاصل")
                     } else {
                         val rolls = ceil((area * wasteFactor) / 15.0)
-                        addItem("laine_de_verre_50mm", rolls, "لفة 15m² (Rouleau)", "Laine de Verre 50mm (15m²)", "صوف زجاجي عازل 50 ملم", "لين دو فار وسط الهيكل")
+                        addItem("laine_de_verre_50mm", rolls, "لفة 15m² (Rouleau)", "Laine de Verre 50mm (15m²)", "صوف زجاجي عازل 50 ملم", "لين دو فار وسط الهيكل", fallbackUnitPrice = 75.0)
                     }
                 }
             }
@@ -463,7 +469,7 @@ object ConstructionCalculator {
                         addItem("laine_de_roche_50mm", boxes, "باكي 7.2m² (Paquet)", "Laine de Roche 50mm (7.2m²)", "صوف صخري كثافة عالية 50 ملم", "لين دو روش عازل خلف التغليف")
                     } else {
                         val rolls = ceil((area * wasteFactor) / 15.0)
-                        addItem("laine_de_verre_50mm", rolls, "لفة 15m² (Rouleau)", "Laine de Verre 50mm (15m²)", "صوف زجاجي عازل 50 ملم", "لين دو فار خلف التغليف")
+                        addItem("laine_de_verre_50mm", rolls, "لفة 15m² (Rouleau)", "Laine de Verre 50mm (15m²)", "صوف زجاجي عازل 50 ملم", "لين دو فار خلف التغليف", fallbackUnitPrice = 75.0)
                     }
                 }
 
@@ -572,7 +578,7 @@ object ConstructionCalculator {
                 else if (params.height > 0.0 && area > 0.0) area / params.height
                 else perimeter / 2.0
 
-                val netArea = max(0.0, (wallLength * params.height) - params.netOpeningsArea)
+                val netArea = max(0.0, (wallLength * params.height) - deductibleOpeningArea)
 
                 // Brick type mapping: default to 12-hole (15 bricks/m²) unless explicit 8-hole selected
                 val bricksPerM2 = if (params.boardType == "brique_8_trous") 12.0 else 15.0
@@ -698,15 +704,72 @@ object ConstructionCalculator {
                 val silicone = windows * 1.0
                 addItem("silicone_transparent_cartouche", silicone, "خرطوشة (Cartouche)", "Cartouche Silicone Neutre", "خرطوشة سيليكون عازل شفاف", "كارتوش سيليكون شفاف لغلق الشبابك", "1 cartouche d'étanchéité par fenêtre")
             }
+
+            // Website trade parity slice: material IDs resolve only through the shared price catalog.
+            CalculationType.PLOMBERIE_INSTALLATION -> {
+                val network = max(0.0, if (params.linearMeters > 0.0) params.linearMeters else params.perimeter)
+                val points = max(1.0, params.unitCount)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (65.0 * country.rateToTndMultiplier)
+                addItem("ppr_tube_20_4m", max(1.0, ceil((network * 0.70 / 4.0) * wasteFactor)), "barres 4m", "Tube PPR 20mm (barre 4m)", "أنبوب PPR 20 ملم", "أنبوب PPR 20 ملم", "(" + network + "m × 0.7 × " + wasteFactor + ") / 4", fallbackUnitPrice = 9.5)
+                addItem("ppr_tube_25_4m", max(1.0, ceil((network * 0.30 / 4.0) * wasteFactor)), "barres 4m", "Tube PPR 25mm (barre 4m)", "أنبوب PPR 25 ملم", "أنبوب PPR 25 ملم", "(" + network + "m × 0.3 × " + wasteFactor + ") / 4", fallbackUnitPrice = 14.0)
+                addItem("pvc_tube_40_4m", max(1.0, ceil((network * 0.50 / 4.0) * wasteFactor)), "barres 4m", "Tube PVC évacuation 40mm (barre 4m)", "أنبوب PVC 40 ملم", "أنبوب PVC 40 ملم", "(" + network + "m × 0.5 × " + wasteFactor + ") / 4", fallbackUnitPrice = 9.0)
+                addItem("pvc_tube_110_4m", max(1.0, ceil((network * 0.30 / 4.0) * wasteFactor)), "barres 4m", "Tube PVC évacuation 110mm (barre 4m)", "أنبوب PVC 110 ملم", "أنبوب PVC 110 ملم", "(" + network + "m × 0.3 × " + wasteFactor + ") / 4", fallbackUnitPrice = 24.0)
+                addItem("raccord_ppr_coude_te", ceil(points * 4.0 + network * 1.2), "pièces", "Raccords PPR", "وصلات PPR", "وصلات PPR", "points × 4 + réseau × 1.2", fallbackUnitPrice = 1.8)
+                addItem("colle_pvc_pot", 1.0, "boîte", "Colle PVC", "غراء PVC", "غراء PVC", "1 pot par installation", fallbackUnitPrice = 11.0)
+            }
+            CalculationType.ELECTRICITE_INSTALLATION -> {
+                val points = max(1.0, params.unitCount)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (25.0 * country.rateToTndMultiplier)
+                addItem("cable_1_5mm_100m", max(1.0, ceil((points * 18.0 / 100.0) * wasteFactor)), "rouleaux 100m", "Câble cuivre 1.5 mm² (100m)", "سلك نحاسي 1.5 ملم²", "سلك نحاسي 1.5 ملم²", "(points × 18m) / 100 × waste", fallbackUnitPrice = 58.0)
+                addItem("gaine_icta_20_50m", max(1.0, ceil((points * 12.0 / 50.0) * wasteFactor)), "couronnes 50m", "Gaine ICTA 20mm (50m)", "أنبوب حماية ICTA 20 ملم", "أنبوب حماية ICTA 20 ملم", "(points × 12m) / 50 × waste", fallbackUnitPrice = 42.0)
+                addItem("spot_led_encastrable", points, "pièces", "Spots LED encastrables", "سبوت LED", "سبوت LED", "1 point d'éclairage par point déclaré", fallbackUnitPrice = 8.5)
+                addItem("tableau_et_disjoncteurs", 1.0, "forfait", "Tableau électrique et disjoncteurs", "لوحة كهربائية وقواطع", "لوحة كهربائية وقواطع", "1 tableau; price from catalog only", fallbackUnitPrice = 120.0 + (ceil(points / 6.0) * 11.0))
+            }
+            CalculationType.ETANCHEITE_TOITURE -> {
+                val roofArea = max(0.0, area + max(0.0, params.linearMeters) * 0.20)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (14.0 * country.rateToTndMultiplier)
+                addItem("membrane_etancheite_4mm_10m2", max(1.0, ceil((roofArea * 1.15 * wasteFactor) / 10.0)), "rouleaux 10m²", "Membrane bitumineuse 4mm (10m²)", "غشاء عزل بيتوميني 4 ملم", "غشاء عزل بيتوميني 4 ملم", "(surface + acrotère × 0.20) × 1.15 × waste / 10", fallbackUnitPrice = 95.0)
+                addItem("bitume_liquide_bidon_20l", max(1.0, ceil(area * 0.35 / 20.0)), "bidons 20L", "Bitume liquide (20L)", "بيتومين سائل 20 لتر", "بيتومين سائل 20 لتر", "0.35 L/m²; catalog price", fallbackUnitPrice = 78.0)
+                addItem("solin_alu", max(1.0, ceil(max(0.0, params.linearMeters) / 3.0)), "pièces 3m", "Solin aluminium (3m)", "حافة ألمنيوم للعزل", "حافة ألمنيوم للعزل", "linear meters / 3", fallbackUnitPrice = 14.0)
+            }
+            CalculationType.ISOLATION_THERMIQUE -> {
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (6.0 * country.rateToTndMultiplier)
+                addItem("laine_de_verre_50mm", max(1.0, ceil(area * wasteFactor / 15.0)), "rouleaux", "Laine de verre 50mm", "صوف زجاجي 50 ملم", "صوف زجاجي 50 ملم", "area × waste / 15", fallbackUnitPrice = 75.0)
+                addItem("bande_resiliente_48mm", max(1.0, ceil(perimeter / 30.0)), "rouleaux 30m", "Bande résiliente 48mm", "شريط عازل للصوت", "شريط عازل للصوت", "perimeter / 30", fallbackUnitPrice = 25.0)
+            }
+            CalculationType.SOLS_PARQUET -> {
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (12.0 * country.rateToTndMultiplier)
+                val parquetArea = area * wasteFactor
+                addItem("parquet_stratifie_8mm_m2", parquetArea, "m²", "Parquet stratifié 8mm", "باركيه 8 ملم", "باركيه 8 ملم", "area × waste", fallbackUnitPrice = 34.0)
+                addItem("sous_couche_acoustique_sol_m2", parquetArea, "m²", "Sous-couche acoustique", "طبقة عازلة تحت الأرضية", "طبقة عازلة تحت الأرضية", "same net parquet area", fallbackUnitPrice = 3.5)
+                addItem("plinthes_mdf_decor_2_4m", ceil(perimeter * 1.10 / 2.4), "pièces 2.4m", "Plinthes MDF (2.4m)", "حواشي MDF", "حواشي MDF", "perimeter × 1.10 / 2.4", fallbackUnitPrice = 11.0)
+                addItem("barre_seuil_porte_alu", max(1.0, ceil(kotlin.math.sqrt(area) / 4.0)), "pièces", "Barre de seuil aluminium", "حاجز عتبة ألمنيوم", "حاجز عتبة ألمنيوم", "ceil(sqrt(area) / 4)", fallbackUnitPrice = 15.0)
+            }
+            CalculationType.FACADE_FINITION -> {
+                val netArea = max(0.0, area - deductibleOpeningArea)
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (18.0 * country.rateToTndMultiplier)
+                addItem("enduit_monocouche_facade_25kg", ceil(netArea * 1.15 / 1.5), "sacs 25kg", "Enduit monocouche façade (25kg)", "ملاط تلبيس الواجهة 25 كغ", "ملاط تلبيس الواجهة 25 كغ", "net area × 1.15 / 1.5", fallbackUnitPrice = 26.0)
+                addItem("corniere_facade_entoilee_pvc", max(1.0, ceil(kotlin.math.sqrt(area) * 4.0 / 2.5)), "pièces 2.5m", "Cornière façade entoilée", "زاوية واجهة بشبكة", "زاوية واجهة بشبكة", "perimeter estimate / 2.5", fallbackUnitPrice = 5.5)
+            }
+            CalculationType.DEMOLITION_DEPOSE -> {
+                val thicknessCm = max(1.0, params.height)
+                val rawVolume = area * (thicknessCm / 100.0)
+                val expandedVolume = rawVolume * 1.40
+                estimatedLaborRate = params.customLaborRatePerM2 ?: (12.0 * country.rateToTndMultiplier)
+                addItem("camion_evacuation_gravats_6m3", max(1.0, ceil(expandedVolume / 6.0)), "camions 6m³", "Camion évacuation gravats (6m³)", "شاحنة إزالة الأنقاض 6م³", "شاحنة إزالة الأنقاض 6م³", "area × thickness × 1.40 / 6", fallbackUnitPrice = 160.0)
+                addItem("sacs_gravats_renforces_10pcs", max(1.0, ceil(expandedVolume * 2.0)), "lots de 10", "Sacs gravats renforcés (lot de 10)", "أكياس أنقاض مقواة", "أكياس أنقاض مقواة", "volume foisonné × 20 bags / 10", fallbackUnitPrice = 15.0)
+            }
         }
 
         val totalMaterialCost = items.sumOf { it.totalPrice }
-        val laborMultiplier = if (params.type == CalculationType.MENUISERIE_PORTES || params.type == CalculationType.MENUISERIE_ALU) {
-            max(1.0, params.unitCount)
-        } else if (params.type == CalculationType.PLACO_CACHE_LUMIERE && params.linearMeters > 0) {
-            params.linearMeters
-        } else {
-            max(1.0, area)
+        val laborMultiplier = when {
+            params.type == CalculationType.MENUISERIE_PORTES || params.type == CalculationType.MENUISERIE_ALU ->
+                max(1.0, params.unitCount)
+            params.type == CalculationType.PLACO_CACHE_LUMIERE && params.linearMeters > 0 ->
+                params.linearMeters
+            params.type == CalculationType.PLOMBERIE_INSTALLATION || params.type == CalculationType.ELECTRICITE_INSTALLATION ->
+                max(1.0, params.unitCount)
+            else -> max(1.0, area)
         }
 
         val materialCostHT = TaxMath.round2(totalMaterialCost)
@@ -726,7 +789,12 @@ object ConstructionCalculator {
 
         val grandTotalHT = TaxMath.round2(materialCostHT + laborCostHT + transportCostHT + equipmentCostHT + otherCostHT)
         val totalTva = TaxMath.round2(materialTva + laborTva + transportTva + equipmentTva + otherTva)
-        val grandTotalTTC = TaxMath.round2(materialTotalTTC + laborTotalTTC + transportTotalTTC + equipmentTotalTTC + otherTotalTTC)
+        // Fiscal stamp is added after TVA and is not itself taxed as a service line.
+        val fiscalStampAmount = TaxMath.round2(params.fiscalStampAmount.coerceAtLeast(0.0))
+        val grandTotalTTC = TaxMath.round2(materialTotalTTC + laborTotalTTC + transportTotalTTC + equipmentTotalTTC + otherTotalTTC + fiscalStampAmount)
+        val retentionRate = params.retentionRate.coerceIn(0.0, 10.0)
+        val retentionAmount = TaxMath.round2(grandTotalTTC * retentionRate / 100.0)
+        val netPayableAfterRetention = TaxMath.round2(grandTotalTTC - retentionAmount)
 
         return CalculationSummary(
             calculationType = params.type,
@@ -758,7 +826,11 @@ object ConstructionCalculator {
             otherTotalTTC = otherTotalTTC,
             totalTva = totalTva,
             grandTotalHT = grandTotalHT,
-            grandTotalTTC = grandTotalTTC
+            grandTotalTTC = grandTotalTTC,
+            fiscalStampAmount = fiscalStampAmount,
+            retentionRate = retentionRate,
+            retentionAmount = retentionAmount,
+            netPayableAfterRetention = netPayableAfterRetention
         )
     }
 }

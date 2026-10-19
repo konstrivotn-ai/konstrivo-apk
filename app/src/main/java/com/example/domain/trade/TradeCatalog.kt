@@ -358,7 +358,7 @@ object TradeCatalog {
     // Roadmap Trades
     val ELECTRICITE_TRADE = Trade(
         id = "electricite",
-        category = null,
+        category = TradeCategory.ELECTRICITE,
         nameFr = "Électricité & Câblage",
         nameAr = "الكهرباء والتمديدات",
         nameDerja = "الضو والتريسينتي",
@@ -368,7 +368,7 @@ object TradeCatalog {
         descriptionAr = "لوحات التوزيع، القواطع، القنوات العازلة، الأسلاك النحاسية ومفاتيح الإنارة",
         descriptionDerja = "طابلوات تريسينتي، ديجونكتارات، قنوات ICTA وسلوكة نحاس وبريزات",
         descriptionEn = "Distribution panels, breakers, conduits, copper wiring and switches/sockets",
-        status = TradeStatus.COMING_SOON,
+        status = TradeStatus.ACTIVE,
         workTypes = listOf(
             WorkType(
                 id = "elec_cablage",
@@ -382,7 +382,8 @@ object TradeCatalog {
                 descriptionEn = "Corrugated conduits and copper insulated conductors",
                 iconEmoji = "🔌",
                 unit = "ml",
-                status = WorkTypeStatus.COMING_SOON
+                status = WorkTypeStatus.ACTIVE,
+                calculationType = CalculationType.ELECTRICITE_INSTALLATION
             ),
             WorkType(
                 id = "elec_tableau",
@@ -403,7 +404,7 @@ object TradeCatalog {
 
     val PLOMBERIE_TRADE = Trade(
         id = "plomberie",
-        category = null,
+        category = TradeCategory.PLOMBERIE,
         nameFr = "Plomberie & Sanitaire",
         nameAr = "السباكة والتغذية الصحية",
         nameDerja = "البلومبي والصحي",
@@ -413,7 +414,7 @@ object TradeCatalog {
         descriptionAr = "شبكات التغذية بالأنابيب المتعددة الطبقات، شبكة الصرف، الموزعات والأطقم الصحية",
         descriptionDerja = "جعب مالتي كوش للماء، قنوات بي في سي للوسخ، وريديرات ودوش",
         descriptionEn = "PEX/Multilayer supply piping, PVC drainage, manifolds and sanitary fixtures",
-        status = TradeStatus.COMING_SOON,
+        status = TradeStatus.ACTIVE,
         workTypes = listOf(
             WorkType(
                 id = "plomb_per",
@@ -427,14 +428,15 @@ object TradeCatalog {
                 descriptionEn = "Insulated multilayer pipes and press fittings",
                 iconEmoji = "🚰",
                 unit = "ml",
-                status = WorkTypeStatus.COMING_SOON
+                status = WorkTypeStatus.ACTIVE,
+                calculationType = CalculationType.PLOMBERIE_INSTALLATION
             )
         )
     )
 
     val ISOLATION_TRADE = Trade(
         id = "isolation",
-        category = null,
+        category = TradeCategory.ISOLATION,
         nameFr = "Isolation Thermique & Phonique",
         nameAr = "العزل الحراري والصوتي",
         nameDerja = "العزل والحرارة والصوت",
@@ -444,7 +446,7 @@ object TradeCatalog {
         descriptionAr = "ألواح الصوف الصخري والزجاجي، عوازل البولي يوريثان والأغشية الصوتية",
         descriptionDerja = "الصوف الصخري والزجاجي، عوازل السخانة والندوة وحس الجيران",
         descriptionEn = "Rockwool & glasswool rolls, PIR polyurethane boards and acoustic membranes",
-        status = TradeStatus.COMING_SOON,
+        status = TradeStatus.ACTIVE,
         workTypes = listOf(
             WorkType(
                 id = "iso_thermique",
@@ -458,14 +460,15 @@ object TradeCatalog {
                 descriptionEn = "100mm mineral wool rolls and vapor barrier",
                 iconEmoji = "🌡️",
                 unit = "m²",
-                status = WorkTypeStatus.COMING_SOON
+                status = WorkTypeStatus.ACTIVE,
+                calculationType = CalculationType.ISOLATION_THERMIQUE
             )
         )
     )
 
     val ETANCHEITE_TRADE = Trade(
         id = "etancheite",
-        category = null,
+        category = TradeCategory.ETANCHEITE,
         nameFr = "Étanchéité & Toitures",
         nameAr = "العزل المائي والأسطح",
         nameDerja = "الكتامة والسطوح",
@@ -475,7 +478,7 @@ object TradeCatalog {
         descriptionAr = "أغشية البيتومين الحرارية، راتنجات العزل المائي وسوائل الأساس",
         descriptionDerja = "زفت كحل حراري للسطوح، ريزين ضد قطران المطر وبريمار",
         descriptionEn = "Torch-applied bituminous membranes, polyurethane liquid waterproofing and primers",
-        status = TradeStatus.COMING_SOON,
+        status = TradeStatus.ACTIVE,
         workTypes = listOf(
             WorkType(
                 id = "etanch_toiture",
@@ -489,9 +492,66 @@ object TradeCatalog {
                 descriptionEn = "4mm mineral surfaced bituminous membrane and perimeter upstands",
                 iconEmoji = "🏠",
                 unit = "m²",
-                status = WorkTypeStatus.COMING_SOON
+                status = WorkTypeStatus.ACTIVE,
+                calculationType = CalculationType.ETANCHEITE_TOITURE
             )
         )
+    )
+
+    val SOLS_TRADE = Trade(
+        id = "sols", category = TradeCategory.SOLS,
+        nameFr = "Sols & Parquet", nameAr = "الأرضيات والباركيه",
+        nameDerja = "الأرضيات والباركي", nameEn = "Flooring & Parquet",
+        iconEmoji = "🪵", descriptionFr = "Parquet stratifié et sous-couche acoustique",
+        descriptionAr = "باركيه وطبقة عزل صوتي", descriptionDerja = "باركي وطبقة عازلة للصوت",
+        descriptionEn = "Laminate flooring and acoustic underlay", status = TradeStatus.ACTIVE,
+        workTypes = listOf(WorkType(
+            id = "sols_parquet", nameFr = "Pose de parquet stratifié", nameAr = "تركيب باركيه",
+            nameDerja = "تركيب باركي", nameEn = "Laminate flooring",
+            descriptionFr = "Parquet, sous-couche, plinthes et seuils",
+            descriptionAr = "باركيه وطبقة تحتية وحواشي وعتبات",
+            descriptionDerja = "باركي وطبقة تحتية وحواشي",
+            descriptionEn = "Flooring, underlay, skirting and thresholds",
+            iconEmoji = "🪵", unit = "m²", status = WorkTypeStatus.ACTIVE,
+            calculationType = CalculationType.SOLS_PARQUET
+        ))
+    )
+
+    val FACADE_TRADE = Trade(
+        id = "facade", category = TradeCategory.FACADE,
+        nameFr = "Façade", nameAr = "الواجهات", nameDerja = "الواجهة", nameEn = "Facade",
+        iconEmoji = "🏢", descriptionFr = "Enduit monocouche et finition extérieure",
+        descriptionAr = "تلبيس وتشطيب الواجهة", descriptionDerja = "تلبيس وفينيسيو الواجهة",
+        descriptionEn = "Facade render and exterior finish", status = TradeStatus.ACTIVE,
+        workTypes = listOf(WorkType(
+            id = "facade_finition", nameFr = "Finition de façade", nameAr = "تشطيب الواجهة",
+            nameDerja = "فينيسيو الواجهة", nameEn = "Facade finishing",
+            descriptionFr = "Enduit monocouche et cornières de façade",
+            descriptionAr = "ملاط تلبيس وزوايا الواجهة",
+            descriptionDerja = "ملاط وزوايا الواجهة",
+            descriptionEn = "Render and facade corner beads",
+            iconEmoji = "🏢", unit = "m²", status = WorkTypeStatus.ACTIVE,
+            calculationType = CalculationType.FACADE_FINITION
+        ))
+    )
+
+    val DEMOLITION_TRADE = Trade(
+        id = "demolition", category = TradeCategory.DEMOLITION,
+        nameFr = "Démolition & Gravats", nameAr = "الهدم والأنقاض",
+        nameDerja = "الهدم والفضلات", nameEn = "Demolition & Debris",
+        iconEmoji = "🧱", descriptionFr = "Dépose et évacuation des gravats",
+        descriptionAr = "الهدم وإزالة الأنقاض", descriptionDerja = "الهدم وإخراج الفضلات",
+        descriptionEn = "Demolition and debris removal", status = TradeStatus.ACTIVE,
+        workTypes = listOf(WorkType(
+            id = "demolition_depose", nameFr = "Démolition et dépose", nameAr = "الهدم والإزالة",
+            nameDerja = "الهدم والقلع", nameEn = "Demolition and removal",
+            descriptionFr = "Volume estimé et évacuation des gravats",
+            descriptionAr = "تقدير الحجم وإزالة الأنقاض",
+            descriptionDerja = "حساب الحجم وإخراج الفضلات",
+            descriptionEn = "Estimated volume and debris removal",
+            iconEmoji = "🧱", unit = "m²", status = WorkTypeStatus.ACTIVE,
+            calculationType = CalculationType.DEMOLITION_DEPOSE
+        ))
     )
 
     private val ALL_TRADES: List<Trade> = listOf(
@@ -504,7 +564,10 @@ object TradeCatalog {
         ELECTRICITE_TRADE,
         PLOMBERIE_TRADE,
         ISOLATION_TRADE,
-        ETANCHEITE_TRADE
+        ETANCHEITE_TRADE,
+        SOLS_TRADE,
+        FACADE_TRADE,
+        DEMOLITION_TRADE
     )
 
     fun getAllTrades(): List<Trade> = ALL_TRADES

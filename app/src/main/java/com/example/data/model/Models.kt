@@ -146,10 +146,10 @@ val GLOBAL_METIERS_LIST = listOf(
         nameDerja = "الضو والتريسينتي",
         nameEn = "Electrical & Wiring",
         iconEmoji = "⚡",
-        isAvailable = false,
-        tradeCategory = null,
-        badgeLabelFr = "Bientôt (Roadmap)",
-        badgeLabelAr = "قريبًا (Roadmap)",
+        isAvailable = true,
+        tradeCategory = TradeCategory.ELECTRICITE,
+        badgeLabelFr = "Actif",
+        badgeLabelAr = "متاح",
         descriptionFr = "Tableaux électriques, gaines, câbles, spots LED",
         descriptionAr = "لوحات التوزيع، القنوات الكهربائية، الإضاءة والأسلاك"
     ),
@@ -160,10 +160,10 @@ val GLOBAL_METIERS_LIST = listOf(
         nameDerja = "البلومبي والصحي",
         nameEn = "Plumbing & Sanitary",
         iconEmoji = "🚿",
-        isAvailable = false,
-        tradeCategory = null,
-        badgeLabelFr = "Bientôt (Roadmap)",
-        badgeLabelAr = "قريبًا (Roadmap)",
+        isAvailable = true,
+        tradeCategory = TradeCategory.PLOMBERIE,
+        badgeLabelFr = "Actif",
+        badgeLabelAr = "متاح",
         descriptionFr = "Tuyauterie PER/Multicouche, évacuations PVC, sanitaires",
         descriptionAr = "تمديدات الأنابيب، شبكة الصرف، تجهيزات الحمام"
     ),
@@ -174,10 +174,10 @@ val GLOBAL_METIERS_LIST = listOf(
         nameDerja = "العزل والحرارة والصوت",
         nameEn = "Thermal & Acoustic Insulation",
         iconEmoji = "🛡️",
-        isAvailable = false,
-        tradeCategory = null,
-        badgeLabelFr = "Bientôt (Roadmap)",
-        badgeLabelAr = "قريبًا (Roadmap)",
+        isAvailable = true,
+        tradeCategory = TradeCategory.ISOLATION,
+        badgeLabelFr = "Actif",
+        badgeLabelAr = "متاح",
         descriptionFr = "Laine minérale, polyuréthane, membranes acoustiques",
         descriptionAr = "صوف صخري وزجاجي، عوازل الرطوبة والحرارة"
     ),
@@ -188,12 +188,36 @@ val GLOBAL_METIERS_LIST = listOf(
         nameDerja = "الكتامة والسطوح",
         nameEn = "Waterproofing & Roofing",
         iconEmoji = "☔",
-        isAvailable = false,
-        tradeCategory = null,
-        badgeLabelFr = "Bientôt (Roadmap)",
-        badgeLabelAr = "قريبًا (Roadmap)",
+        isAvailable = true,
+        tradeCategory = TradeCategory.ETANCHEITE,
+        badgeLabelFr = "Actif",
+        badgeLabelAr = "متاح",
         descriptionFr = "Membranes bitumineuses, résines liquides, pare-vapeur",
         descriptionAr = "عوازل البيتومين، الراتنج المائي، حماية الأسطح"
+    ),
+    MetierTrade(
+        id = "sols", nameFr = "Sols & Parquet", nameAr = "الأرضيات والباركيه",
+        nameDerja = "الأرضيات والباركي", nameEn = "Flooring & Parquet", iconEmoji = "🪵",
+        isAvailable = true, tradeCategory = TradeCategory.SOLS,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Parquet stratifié et béton ciré",
+        descriptionAr = "باركيه وخرسانة ديكورية"
+    ),
+    MetierTrade(
+        id = "facade", nameFr = "Façade", nameAr = "الواجهات",
+        nameDerja = "الواجهة", nameEn = "Facade", iconEmoji = "🏢",
+        isAvailable = true, tradeCategory = TradeCategory.FACADE,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Enduit monocouche et peinture extérieure",
+        descriptionAr = "تلبيس ودهان خارجي"
+    ),
+    MetierTrade(
+        id = "demolition", nameFr = "Démolition & Gravats", nameAr = "الهدم والأنقاض",
+        nameDerja = "الهدم والفضلات", nameEn = "Demolition & Debris", iconEmoji = "🧱",
+        isAvailable = true, tradeCategory = TradeCategory.DEMOLITION,
+        badgeLabelFr = "Actif", badgeLabelAr = "متاح",
+        descriptionFr = "Dépose, démolition et évacuation",
+        descriptionAr = "تفكيك وهدم وإزالة الأنقاض"
     )
 )
 
@@ -209,7 +233,14 @@ enum class TradeCategory(
     MACONNERIE("maconnerie", "Maçonnerie & Briques", "بناء الجدران والآجر", "بنيان الآجور والعرصة", "Foundation"),
     CREPISSAGE("crepissage", "Enduit Ciment & Crépissage", "اللياسة والتلبيس الإسمنتي", "الترطيبة واللياسة", "Brush"),
     CARRELAGE("carrelage", "Revêtement & Carrelage", "السيراميك والأرضيات", "الفايونس والقاعة", "GridOn"),
-    MENUISERIE("menuiserie", "Menuiserie Bois & Alu", "النجارة والألمنيوم", "النجارة والبيبان والشبابك", "DoorSliding")
+    MENUISERIE("menuiserie", "Menuiserie Bois & Alu", "النجارة والألمنيوم", "النجارة والبيبان والشبابك", "DoorSliding"),
+    PLOMBERIE("plomberie", "Plomberie & Sanitaire", "السباكة والصحي", "البلومبي والصحي", "Plumbing"),
+    ELECTRICITE("electricite", "Électricité & Câblage", "الكهرباء والتمديدات", "الضو والتريسينتي", "Bolt"),
+    ETANCHEITE("etancheite", "Étanchéité & Toitures", "العزل المائي والأسطح", "الكتامة والسطوح", "Umbrella"),
+    ISOLATION("isolation", "Isolation Thermique & Phonique", "العزل الحراري والصوتي", "العزل والحرارة والصوت", "Shield"),
+    SOLS("sols", "Sols & Parquet", "الأرضيات والباركيه", "الأرضيات والباركي", "Layers"),
+    FACADE("facade", "Façade", "الواجهات", "الواجهة", "House"),
+    DEMOLITION("demolition", "Démolition & Gravats", "الهدم والأنقاض", "الهدم والفضلات", "Hammer")
 }
 
 enum class CalculationType(
@@ -227,7 +258,7 @@ enum class CalculationType(
         "Faux Plafond Simple BA13",
         "سقف مستعار معلق بسيط BA13",
         "فوبلافون مستوي بالـ Fourrure",
-        1.05
+        1.10
     ),
     PLACO_CLOISON(
         "placo_cloison",
@@ -235,7 +266,7 @@ enum class CalculationType(
         "Cloison de Séparation (Rails & Montants)",
         "جدار فاصل مزدوج الهيكل",
         "فاصل كلووزون (Double Face)",
-        1.05
+        1.10
     ),
     PLACO_DEMONTABLE(
         "placo_demontable",
@@ -243,7 +274,7 @@ enum class CalculationType(
         "Plafond Démontable 60x60",
         "سقف تفكيكي شبكي 60×60 سم",
         "فوبلافون ديكور 60×60 سم",
-        1.05
+        1.10
     ),
     PLACO_AQUAPANEL(
         "placo_aquapanel",
@@ -251,7 +282,7 @@ enum class CalculationType(
         "Habillage Extérieur (Aquapanel / Ciment)",
         "تغليف خارجي ألواح إسمنتية",
         "أكوابانيل للواجهات والرطوبة",
-        1.05
+        1.10
     ),
     PLACO_CACHE_LUMIERE(
         "placo_cache_lumiere",
@@ -259,7 +290,7 @@ enum class CalculationType(
         "Décors & Cache-Lumière (Caisson)",
         "إنارة مخفية وديكور كرتوش (Caisson)",
         "الكرتوش والميزان (شريط الليد)",
-        1.05
+        1.10
     ),
     PLACO_PVC(
         "placo_pvc",
@@ -267,7 +298,7 @@ enum class CalculationType(
         "Plafond PVC (Anti-Humidité)",
         "سقف بلاستيك PVC للحمامات",
         "فوبلافون PVC ضد الماء للادوش",
-        1.05
+        1.10
     ),
     PLACO_DOUBLAGE_COLLE(
         "placo_doublage_colle",
@@ -275,7 +306,7 @@ enum class CalculationType(
         "Doublage Collé (Plaques collées au mur)",
         "تغليف الحوائط باللصق المباشر",
         "تغليف بإللصاق على الحيط",
-        1.05
+        1.10
     ),
     PLACO_DOUBLAGE_OSSATURE(
         "placo_doublage_ossature",
@@ -283,7 +314,7 @@ enum class CalculationType(
         "Doublage sur Ossature Métallique",
         "تغليف الحوائط بهيكل معدني",
         "تغليف بالريل والمونتون",
-        1.05
+        1.10
     ),
     PLACO_PLAFOND_AUTOPORTANT(
         "placo_plafond_autoportant",
@@ -291,7 +322,7 @@ enum class CalculationType(
         "Plafond Autoportant (Rails & Montants)",
         "سقف ذاتي الارتكاز بالريل والمونتون",
         "فوبلافون أوتوپورتان (Rails & Montants)",
-        1.05
+        1.10
     ),
     PLACO_JOINTS_FINITION(
         "placo_joints_finition",
@@ -299,7 +330,7 @@ enum class CalculationType(
         "Joints & Finition (Enduit / Bande / Ponçage)",
         "مرحلة الفواصل والمعالجة والتشطيب",
         "الجوان والفينيسيو (Enduit / Bande)",
-        1.05
+        1.10
     ),
 
     // Peinture types
@@ -309,7 +340,7 @@ enum class CalculationType(
         "Peinture Intérieure Complète (Enduit + Fixateur + Finition)",
         "دهان داخلي كامل (معجون + أساس + تشطيب)",
         "دهينة كاملة (أندوي + فيكساتور + سيتان)",
-        1.08
+        1.10
     ),
     PEINTURE_SABLE(
         "peinture_sable",
@@ -317,7 +348,7 @@ enum class CalculationType(
         "Décor Sablé / Stucco",
         "دهان ديكوري سابلي أو ستوكو",
         "ديكور سابلي أو ستيكو",
-        1.05
+        1.10
     ),
 
     // Maçonnerie
@@ -327,7 +358,7 @@ enum class CalculationType(
         "Mur en Briques (8 ou 12 trous)",
         "بناء جدار بالآجر (8 أو 12 ثقب)",
         "بنيان حائط بالآجور التونسي",
-        1.05
+        1.10
     ),
 
     // Crépissage
@@ -337,7 +368,7 @@ enum class CalculationType(
         "Enduit Ciment / Crépissage (1.5 cm)",
         "لياسة وتلبيس إسمنتي (1.5 سم)",
         "ترطيبة ولياسة بالحمصي والرمل",
-        1.05
+        1.10
     ),
 
     // Carrelage
@@ -357,7 +388,7 @@ enum class CalculationType(
         "Portes Bois & Blocs-Portes",
         "أبواب خشبية وتركيب الكوادر",
         "بيبان لوح وكوادر وفوم",
-        1.0
+        1.10
     ),
     MENUISERIE_ALU(
         "menuiserie_alu",
@@ -365,8 +396,15 @@ enum class CalculationType(
         "Fenêtres Aluminium & Baies Vitrées",
         "نوافذ وأبواب ألمنيوم",
         "شبابك ألمنيوم وسيليكون وجلد",
-        1.0
-    )
+        1.10
+    ),
+    PLOMBERIE_INSTALLATION("plomberie_installation", TradeCategory.PLOMBERIE, "Installation plomberie sanitaire", "تركيب السباكة والصحي", "تركيب البلومبي والصحي", 1.10),
+    ELECTRICITE_INSTALLATION("electricite_installation", TradeCategory.ELECTRICITE, "Installation électrique", "تركيب الكهرباء", "تركيب الضو والتريسينتي", 1.10),
+    ETANCHEITE_TOITURE("etancheite_toiture", TradeCategory.ETANCHEITE, "Étanchéité toiture", "عزل السطح مائيًا", "كتامة السطح", 1.10),
+    ISOLATION_THERMIQUE("isolation_thermique", TradeCategory.ISOLATION, "Isolation thermique et phonique", "عزل حراري وصوتي", "عزل الحرارة والصوت", 1.10),
+    SOLS_PARQUET("sols_parquet", TradeCategory.SOLS, "Pose de parquet stratifié", "تركيب باركيه", "تركيب باركي", 1.10),
+    FACADE_FINITION("facade_finition", TradeCategory.FACADE, "Finition de façade", "تشطيب الواجهة", "فينيسيو الواجهة", 1.10),
+    DEMOLITION_DEPOSE("demolition_depose", TradeCategory.DEMOLITION, "Démolition et dépose", "الهدم والإزالة", "الهدم والقلع", 1.10)
 }
 
 data class CalculatedItem(
@@ -426,5 +464,9 @@ data class CalculationSummary(
     // Grand totals
     val totalTva: Double = 0.0,
     val grandTotalHT: Double = 0.0,
-    val grandTotalTTC: Double = 0.0
+    val grandTotalTTC: Double = 0.0,
+    val fiscalStampAmount: Double = 0.0,
+    val retentionRate: Double = 0.0,
+    val retentionAmount: Double = 0.0,
+    val netPayableAfterRetention: Double = grandTotalTTC
 )

@@ -39,7 +39,7 @@ object CloudAuthClient {
                 logout(context)
                 return@runCatching null
             }
-            if (status !in 200..299) throw IllegalStateException(json.optString("message").ifBlank { "Unable to restore session ($status)." })
+            if (status !in 200..299) throw IllegalStateException(json.optString("message").ifBlank { json.optJSONObject("error")?.optString("message").orEmpty().ifBlank { "Unable to restore session ($status)." } })
             val access = json.optString("token")
             val newRefresh = json.optString("refreshToken").ifBlank { refresh }
             if (access.isBlank()) throw IllegalStateException("The server did not return a refreshed session.")
@@ -57,7 +57,7 @@ object CloudAuthClient {
             val response = readResponse(connection, status)
             if (status !in 200..299) {
                 val json = try { JSONObject(response) } catch (_: Exception) { JSONObject() }
-                throw IllegalStateException(json.optString("message").ifBlank { "Unable to request password reset. Please try again." })
+                throw IllegalStateException(json.optString("message").ifBlank { json.optJSONObject("error")?.optString("message").orEmpty().ifBlank { "Unable to request password reset. Please try again." } })
             }
         } finally { connection.disconnect() }
     }
@@ -134,7 +134,9 @@ object CloudAuthClient {
             val json = try { JSONObject(response) } catch (_: Exception) { JSONObject() }
             if (status !in 200..299) {
                 val message = json.optString("message").ifBlank {
-                    when (status) { 401 -> "Email or password is incorrect."; 409 -> "An account with this email already exists."; else -> "Server error ($status). Please try again." }
+                    json.optJSONObject("error")?.optString("message").orEmpty().ifBlank {
+                        when (status) { 401 -> "Email or password is incorrect."; 409 -> "An account with this email already exists."; else -> "Server error ($status). Please try again." }
+                    }
                 }
                 throw IllegalStateException(message)
             }

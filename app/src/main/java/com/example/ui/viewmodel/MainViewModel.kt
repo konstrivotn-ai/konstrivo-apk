@@ -125,14 +125,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val inputHeight: StateFlow<String> get() = calculatorViewModel.inputHeight
     val inputLinearMeters: StateFlow<String> get() = calculatorViewModel.inputLinearMeters
     val inputUnitsCount: StateFlow<String> get() = calculatorViewModel.inputUnitsCount
+    val openingArea: StateFlow<String> get() = calculatorViewModel.openingArea
     val wasteMargin: StateFlow<String> get() = calculatorViewModel.wasteMargin
     val selectedBoardType: StateFlow<String> get() = calculatorViewModel.selectedBoardType
+    val boardDimensions: StateFlow<String> get() = calculatorViewModel.boardDimensions
     val selectedMontantType: StateFlow<String?> get() = calculatorViewModel.selectedMontantType
     val selectedRailType: StateFlow<String?> get() = calculatorViewModel.selectedRailType
     val isDoubleSkin: StateFlow<Boolean> get() = calculatorViewModel.isDoubleSkin
     val includeInsulation: StateFlow<Boolean> get() = calculatorViewModel.includeInsulation
     val insulationType: StateFlow<String> get() = calculatorViewModel.insulationType
     val customLaborRate: StateFlow<String> get() = calculatorViewModel.customLaborRate
+    val tvaRateOverride: StateFlow<String> get() = calculatorViewModel.tvaRateOverride
+    val fiscalStampEnabled: StateFlow<Boolean> get() = calculatorViewModel.fiscalStampEnabled
+    val retentionRate: StateFlow<String> get() = calculatorViewModel.retentionRate
     val entraxeMontants: StateFlow<Double> get() = calculatorViewModel.entraxeMontants
     val inputJointsMeters: StateFlow<String> get() = calculatorViewModel.inputJointsMeters
     val inputCornersCount: StateFlow<String> get() = calculatorViewModel.inputCornersCount
@@ -346,14 +351,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setInputHeight(value: String) = calculatorViewModel.setInputHeight(value)
     fun setInputLinearMeters(value: String) = calculatorViewModel.setInputLinearMeters(value)
     fun setInputUnitsCount(value: String) = calculatorViewModel.setInputUnitsCount(value)
+    fun setOpeningArea(value: String) = calculatorViewModel.setOpeningArea(value)
     fun setWasteMargin(value: String) = calculatorViewModel.setWasteMargin(value)
     fun setSelectedBoardType(type: String) = calculatorViewModel.setSelectedBoardType(type)
+    fun setBoardDimensions(value: String) = calculatorViewModel.setBoardDimensions(value)
     fun setSelectedMontantType(type: String?) = calculatorViewModel.setSelectedMontantType(type)
     fun setSelectedRailType(type: String?) = calculatorViewModel.setSelectedRailType(type)
     fun setIsDoubleSkin(doubleSkin: Boolean) = calculatorViewModel.setIsDoubleSkin(doubleSkin)
     fun setIncludeInsulation(include: Boolean) = calculatorViewModel.setIncludeInsulation(include)
     fun setInsulationType(type: String) = calculatorViewModel.setInsulationType(type)
     fun setCustomLaborRate(rate: String) = calculatorViewModel.setCustomLaborRate(rate)
+    fun setTvaRateOverride(rate: String) = calculatorViewModel.setTvaRateOverride(rate)
+    fun setFiscalStampEnabled(enabled: Boolean) = calculatorViewModel.setFiscalStampEnabled(enabled)
+    fun setRetentionRate(rate: String) = calculatorViewModel.setRetentionRate(rate)
 
     fun setEntraxeMontantsMeters(value: Double) = calculatorViewModel.setEntraxeMontantsMeters(value)
     fun setInputJointsMeters(value: String) = calculatorViewModel.setInputJointsMeters(value)
@@ -373,6 +383,36 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val summary = calculationSummary.value ?: return
         devisViewModel.saveEstimate(summary, clientName, clientPhone, location, notes, onSaved)
     }
+
+    fun saveSiteServiceEstimate(
+        tradeCode: String,
+        tradeName: String,
+        serviceId: String,
+        serviceName: String,
+        quantity: Double,
+        unit: String,
+        unitPrice: Double,
+        currency: String,
+        countryCode: String,
+        onSaved: () -> Unit
+    ) = devisViewModel.saveSiteServiceEstimate(
+        tradeCode, tradeName, serviceId, serviceName, quantity, unit, unitPrice, currency, countryCode, onSaved
+    )
+
+    fun saveSiteMaterialEstimate(
+        tradeCode: String,
+        tradeName: String,
+        materialId: String,
+        materialName: String,
+        quantity: Double,
+        unit: String,
+        unitPrice: Double,
+        currency: String,
+        countryCode: String,
+        onSaved: () -> Unit
+    ) = devisViewModel.saveSiteMaterialEstimate(
+        tradeCode, tradeName, materialId, materialName, quantity, unit, unitPrice, currency, countryCode, onSaved
+    )
 
     fun deleteEstimate(id: Long) = devisViewModel.deleteEstimate(id)
 

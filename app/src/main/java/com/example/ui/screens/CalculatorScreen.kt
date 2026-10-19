@@ -1,6 +1,8 @@
 package com.example.ui.screens
 
 import android.widget.Toast
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,14 +59,19 @@ fun CalculatorScreen(
     val height by viewModel.inputHeight.collectAsState()
     val linearMeters by viewModel.inputLinearMeters.collectAsState()
     val unitsCount by viewModel.inputUnitsCount.collectAsState()
+    val openingArea by viewModel.openingArea.collectAsState()
     val wasteMargin by viewModel.wasteMargin.collectAsState()
     val boardType by viewModel.selectedBoardType.collectAsState()
+    val boardDimensions by viewModel.boardDimensions.collectAsState()
     val selectedMontantType by viewModel.selectedMontantType.collectAsState()
     val selectedRailType by viewModel.selectedRailType.collectAsState()
     val isDoubleSkin by viewModel.isDoubleSkin.collectAsState()
     val includeInsulation by viewModel.includeInsulation.collectAsState()
     val insulationType by viewModel.insulationType.collectAsState()
     val customLabor by viewModel.customLaborRate.collectAsState()
+    val tvaRateOverride by viewModel.tvaRateOverride.collectAsState()
+    val fiscalStampEnabled by viewModel.fiscalStampEnabled.collectAsState()
+    val retentionRate by viewModel.retentionRate.collectAsState()
     val inputJointsMeters by viewModel.inputJointsMeters.collectAsState()
     val inputCornersCount by viewModel.inputCornersCount.collectAsState()
     val finishQuality by viewModel.finishQuality.collectAsState()
@@ -181,6 +188,49 @@ fun CalculatorScreen(
             ReferenceCalculatorGrid(
                 language = language,
                 onSelect = { trade, type -> viewModel.navigateToCalculator(trade, type) },
+            )
+        }
+
+        // Catalogue live partagé avec le site : nouveaux métiers, prestations et matériaux.
+        item {
+            SiteDynamicCalculatorCard(
+                language = language,
+                countryCode = country.code,
+                currencyCode = country.currencyCode,
+                onSaveServiceEstimate = { tradeCode, tradeName, serviceId, serviceName, quantity, unit, unitPrice ->
+                    viewModel.saveSiteServiceEstimate(
+                        tradeCode = tradeCode,
+                        tradeName = tradeName,
+                        serviceId = serviceId,
+                        serviceName = serviceName,
+                        quantity = quantity,
+                        unit = unit,
+                        unitPrice = unitPrice,
+                        currency = "TND",
+                        countryCode = "TN",
+                        onSaved = {
+                            Toast.makeText(context, "Service ajouté au Devis.", Toast.LENGTH_SHORT).show()
+                            viewModel.selectTab(com.example.ui.viewmodel.AppTab.ESTIMATES)
+                        }
+                    )
+                },
+                onSaveMaterialEstimate = { tradeCode, tradeName, materialId, materialName, quantity, unit, unitPrice, currency, countryCode ->
+                    viewModel.saveSiteMaterialEstimate(
+                        tradeCode = tradeCode,
+                        tradeName = tradeName,
+                        materialId = materialId,
+                        materialName = materialName,
+                        quantity = quantity,
+                        unit = unit,
+                        unitPrice = unitPrice,
+                        currency = currency,
+                        countryCode = countryCode,
+                        onSaved = {
+                            Toast.makeText(context, "Matériau ajouté au Devis.", Toast.LENGTH_SHORT).show()
+                            viewModel.selectTab(com.example.ui.viewmodel.AppTab.ESTIMATES)
+                        }
+                    )
+                }
             )
         }
 
@@ -388,6 +438,8 @@ fun CalculatorScreen(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth().testTag("input_units_count")
                         )
+                    } else if (selectedType == CalculationType.PLOMBERIE_INSTALLATION) {
+                        // Plumbing is measured by network length and water points below, not by floor area.
                     } else if (selectedType == CalculationType.PLACO_CACHE_LUMIERE) {
                         OutlinedTextField(
                             value = linearMeters,
@@ -431,15 +483,93 @@ fun CalculatorScreen(
                             )
                         }
 
-                        if (selectedType == CalculationType.PLACO_CLOISON || selectedType == CalculationType.MACONNERIE_BRIQUE) {
+                        if (selectedType == CalculationType.PLACO_CLOISON || selectedType == CalculationType.MACONNERIE_BRIQUE || selectedType == CalculationType.DEMOLITION_DEPOSE) {
                             OutlinedTextField(
                                 value = height,
                                 onValueChange = { viewModel.setInputHeight(it) },
-                                label = { Text(language.tr("Hauteur sous plafond (m)","Hauteur sous plafond (m)","ارتفاع السقف (متر)","ارتفاع السقف (متر)")) },
+                                label = { Text(if (selectedType == CalculationType.DEMOLITION_DEPOSE) "Épaisseur à démolir (cm)" else language.tr("Hauteur sous plafond (m)","Hauteur sous plafond (m)","ارتفاع السقف (متر)","ارتفاع السقف (متر)")) },
                                 shape = RoundedCornerShape(KonstrivoRadius.IconBox),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                                 modifier = Modifier.fillMaxWidth().testTag("input_height")
                             )
+                        }
+                    }
+
+                    if (selectedType == CalculationType.PLACO_CLOISON || selectedType == CalculationType.MACONNERIE_BRIQUE || selectedType == CalculationType.FACADE_FINITION) {
+                        OutlinedTextField(
+                            value = openingArea,
+                            onValueChange = { viewModel.setOpeningArea(it) },
+                            label = { Text(language.tr("Surface des ouvertures à déduire (m²)", "Opening area to deduct (m²)", "مساحة البيبان والشبابك للطرح (م²)", "مساحة البيبان والشبابك للطرح (م²)")) },
+                            supportingText = { Text(language.tr("Déduction appliquée à partir de 1,00 m² au total.", "Deduction applies when total opening area is at least 1.00 m².", "الطرح يتطبق كي المساحة الجملية للفتحات توصل 1 م².", "الطرح يتطبق كي المساحة الجملية للفتحات توصل 1 م².")) },
+                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            modifier = Modifier.fillMaxWidth().testTag("input_opening_area")
+                        )
+                    }
+
+                    if (selectedType == CalculationType.PLOMBERIE_INSTALLATION || selectedType == CalculationType.ELECTRICITE_INSTALLATION) {
+                        OutlinedTextField(
+                            value = unitsCount,
+                            onValueChange = { viewModel.setInputUnitsCount(it) },
+                            label = { Text(if (selectedType == CalculationType.PLOMBERIE_INSTALLATION) "Nombre de points d'eau" else "Nombre de points électriques") },
+                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.fillMaxWidth().testTag("input_units_count")
+                        )
+                    }
+                    if (selectedType == CalculationType.PLOMBERIE_INSTALLATION || selectedType == CalculationType.ETANCHEITE_TOITURE) {
+                        OutlinedTextField(
+                            value = linearMeters,
+                            onValueChange = { viewModel.setInputLinearMeters(it) },
+                            label = { Text(if (selectedType == CalculationType.PLOMBERIE_INSTALLATION) "Longueur du réseau (m)" else "Périmètre des acrotères (m)") },
+                            shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            modifier = Modifier.fillMaxWidth().testTag("input_linear_meters")
+                        )
+                    }
+
+                    // Select a real catalog board for calculations that consume boardType.
+                    if (selectedTrade == TradeCategory.PLACO &&
+                        (selectedType == CalculationType.PLACO_PLAFOND_FIXE || selectedType == CalculationType.PLACO_CLOISON)
+                    ) {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                        KonstrivoSectionLabel(
+                            text = language.tr("Type de plaque", "Board type", "نوع اللوح", "نوع اللوح")
+                        )
+                        val boardOptions = MaterialCatalog.ALL_MATERIALS.filter {
+                            it.category == MaterialCategory.PLACO && it.id.startsWith("plaque_")
+                        }
+                        val boardItems = boardOptions.map { mat ->
+                            val label = when (language) {
+                                AppLanguage.DERJA -> mat.nameDerja
+                                AppLanguage.ARABIC -> mat.nameAr
+                                AppLanguage.FRENCH -> mat.nameFr
+                                AppLanguage.ENGLISH -> mat.nameEn
+                            }
+                            mat.id to label
+                        }
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth().testTag("placo_board_type_selector")
+                        ) {
+                            items(boardItems) { (key, label) ->
+                                FilterChip(selected = boardType == key, onClick = { viewModel.setSelectedBoardType(key) }, label = { Text(label, style = MaterialTheme.typography.labelSmall) })
+                            }
+                        }
+                        Text(language.tr("Dimensions de la plaque", "Board dimensions", "أبعاد اللوح", "قياس اللوح"), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                        val dimensionOptions = listOf(
+                            "1.2x2.5" to "1,20 × 2,50 m · 3,00 m²",
+                            "1.2x2.8" to "1,20 × 2,80 m · 3,36 m²",
+                            "1.2x3.0" to "1,20 × 3,00 m · 3,60 m²",
+                            "0.9x2.0" to "0,90 × 2,00 m · 1,80 m²"
+                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            dimensionOptions.forEach { (key, label) ->
+                                Row(modifier = Modifier.fillMaxWidth().clickable { viewModel.setBoardDimensions(key) }.padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    RadioButton(selected = boardDimensions == key, onClick = { viewModel.setBoardDimensions(key) })
+                                    Text(label, style = MaterialTheme.typography.bodyMedium)
+                                }
+                            }
                         }
                     }
 
@@ -555,6 +685,222 @@ fun CalculatorScreen(
                 }
             }
         }
+
+        // Website parity: fiscal settings, configurable labor and waste margin.
+        item {
+            KonstrivoCard(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Icon(Icons.Default.ReceiptLong, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Text(
+                            text = language.tr("Fiscalité & paramètres du devis", "Tax & estimate settings", "الضرائب وإعدادات عرض السعر", "الضرائب وإعدادات عرض السعر"),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Text(language.tr("Taux TVA", "VAT rate", "نسبة الأداء على القيمة المضافة", "نسبة الأداء على القيمة المضافة"), fontWeight = FontWeight.SemiBold)
+                    if (country == Country.TUNISIA) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                            listOf("19", "13", "7", "0").forEach { rate ->
+                                FilterChip(
+                                    selected = (tvaRateOverride.toDoubleOrNull()?.toInt()?.toString() ?: summary?.tvaRate?.toInt()?.toString()) == rate,
+                                    onClick = { viewModel.setTvaRateOverride(rate) },
+                                    label = { Text("$rate%") },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+                    } else {
+                        Text(
+                            text = language.tr("Le taux du pays sélectionné est appliqué.", "The selected country's tax profile is applied.", "يتم تطبيق النظام الجبائي للبلد المختار.", "يتم تطبيق النظام الجبائي للبلد المختار."),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    TextButton(onClick = { viewModel.setTvaRateOverride("") }) {
+                        Text(language.tr("Taux du pays (par défaut)", "Use country default", "استعمال نسبة البلد الأصلية", "استعمال نسبة البلد الأصلية"))
+                    }
+                    if (country == Country.TUNISIA) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(language.tr("Timbre fiscal", "Fiscal stamp", "الطابع الجبائي", "الطابع الجبائي"), fontWeight = FontWeight.SemiBold)
+                                Text("1.000 DT", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            Switch(checked = fiscalStampEnabled, onCheckedChange = viewModel::setFiscalStampEnabled)
+                        }
+                    }
+                    Text(language.tr("Retenue de garantie", "Guarantee retention", "خصم الضمان", "خصم الضمان"), fontWeight = FontWeight.SemiBold)
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                        listOf("0", "5", "10").forEach { rate ->
+                            FilterChip(
+                                selected = retentionRate == rate,
+                                onClick = { viewModel.setRetentionRate(rate) },
+                                label = { Text("$rate%") },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                    OutlinedTextField(
+                        value = customLabor,
+                        onValueChange = viewModel::setCustomLaborRate,
+                        label = { Text(language.tr("Main d'œuvre (DT/m², ml ou unité selon métier)", "Labor rate (DT/m², linear m or unit)", "سعر اليد العاملة (حسب وحدة الخدمة)", "سوم اليد العاملة (حسب وحدة الخدمة)")) },
+                        supportingText = { Text(language.tr("Laisser vide pour le tarif estimé du métier.", "Leave blank to use the trade estimate.", "خلّيه فارغ لاستعمال السعر التقديري للصنعة.", "خلّيه فارغ لاستعمال سوم الصنعة التقديري.")) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                        modifier = Modifier.fillMaxWidth().testTag("input_custom_labor_rate")
+                    )
+                    OutlinedTextField(
+                        value = wasteMargin,
+                        onValueChange = viewModel::setWasteMargin,
+                        label = { Text(language.tr("Marge de chute (%)", "Waste margin (%)", "نسبة الضياع (%)", "نسبة الضياع (%)")) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        shape = RoundedCornerShape(KonstrivoRadius.IconBox),
+                        modifier = Modifier.fillMaxWidth().testTag("input_waste_margin")
+                    )
+                    Text(
+                        text = language.tr("Les réglages fiscaux sont intégrés au même résultat de calcul.", "Tax settings are applied to the same calculation result.", "الإعدادات الجبائية داخلة في نفس نتيجة الحساب.", "الإعدادات الجبائية داخلة في نفس نتيجة الحساب."),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
+        // Visible estimate results: material details and HT/TVA/TTC totals.
+        item {
+            val result = summary
+            if (result != null) {
+                val reportText = buildString {
+                    appendLine("KONSTRIVO PRO — ${result.calculationType.nameFr}")
+                    appendLine("Surface: ${String.format(java.util.Locale.US, "%.2f", result.inputArea)} m²")
+                    appendLine("Matériaux HT: ${String.format(java.util.Locale.US, "%.2f", result.totalMaterialCost)} ${result.currency}")
+                    appendLine("Main d'œuvre HT: ${String.format(java.util.Locale.US, "%.2f", result.estimatedLaborCost)} ${result.currency}")
+                    appendLine("Total HT: ${String.format(java.util.Locale.US, "%.2f", result.grandTotalHT)} ${result.currency}")
+                    appendLine("TVA (${result.tvaRate}%): ${String.format(java.util.Locale.US, "%.2f", result.totalTva)} ${result.currency}")
+                    appendLine("Timbre fiscal: ${String.format(java.util.Locale.US, "%.2f", result.fiscalStampAmount)} ${result.currency}")
+                    appendLine("Total TTC: ${String.format(java.util.Locale.US, "%.2f", result.grandTotalTTC)} ${result.currency}")
+                    appendLine("Retenue de garantie (${result.retentionRate}%): -${String.format(java.util.Locale.US, "%.2f", result.retentionAmount)} ${result.currency}")
+                    appendLine("Net à payer: ${String.format(java.util.Locale.US, "%.2f", result.netPayableAfterRetention)} ${result.currency}")
+                    appendLine()
+                    result.items.forEach { line ->
+                        appendLine("${line.nameFr}: ${String.format(java.util.Locale.US, "%.2f", line.quantity)} ${line.unit} × ${String.format(java.util.Locale.US, "%.2f", line.unitPrice)} = ${String.format(java.util.Locale.US, "%.2f", line.totalPrice)} ${result.currency}")
+                    }
+                }
+                KonstrivoCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(
+                            text = language.tr("Résultat du métré", "Estimate result", "نتيجة حساب الكميات", "نتيجة حساب المترية"),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            text = "${String.format(java.util.Locale.US, "%.2f", result.inputArea)} m²",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = KonstrivoGold,
+                            fontWeight = FontWeight.Bold
+                        )
+                        result.items.forEach { line ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(line.nameFr, fontWeight = FontWeight.SemiBold)
+                                    Text(
+                                        text = "${String.format(java.util.Locale.US, "%.2f", line.quantity)} ${line.unit} × ${String.format(java.util.Locale.US, "%.2f", line.unitPrice)}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Text(
+                                    text = "${String.format(java.util.Locale.US, "%.2f", line.totalPrice)} ${result.currency}",
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                        }
+                        ResultTotalRow("Matériaux HT", result.totalMaterialCost, result.currency)
+                        ResultTotalRow("Main d'œuvre HT", result.estimatedLaborCost, result.currency)
+                        ResultTotalRow("Total HT", result.grandTotalHT, result.currency, bold = true)
+                        ResultTotalRow("TVA (${result.tvaRate}%)", result.totalTva, result.currency)
+                        if (result.fiscalStampAmount > 0.0) ResultTotalRow("Timbre fiscal", result.fiscalStampAmount, result.currency)
+                        ResultTotalRow("Total TTC", result.grandTotalTTC, result.currency, bold = true)
+                        if (result.retentionRate > 0.0) ResultTotalRow("Retenue de garantie (${result.retentionRate}%)", -result.retentionAmount, result.currency)
+                        ResultTotalRow("Net à payer", result.netPayableAfterRetention, result.currency, bold = true)
+                        HorizontalDivider()
+                        Text(language.tr("Méthodologie d’exécution", "Work methodology", "منهجية التنفيذ", "طريقة الخدمة"), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        val methodology = when (selectedType) {
+                            CalculationType.PLACO_PLAFOND_FIXE -> listOf("Tracer le niveau périphérique et contrôler les diagonales.", "Fixer les cornières de rive et poser les suspentes selon le support.", "Installer les fourrures au pas prévu par le système.", "Poser les plaques avec joints décalés et vis adaptées.", "Traiter les joints en plusieurs passes, laisser sécher puis poncer.")
+                            CalculationType.PLACO_CLOISON -> listOf("Tracer l’axe de la cloison et repérer les ouvertures.", "Fixer les rails au sol et au plafond avec bandes adaptées.", "Installer les montants à l’entraxe choisi et renforcer les baies.", "Poser isolant et plaques selon le nombre de faces configuré.", "Réaliser bandes, enduits et contrôle final de planéité.")
+                            CalculationType.PLACO_DEMONTABLE -> listOf("Déterminer le niveau fini et le calepinage des dalles.", "Fixer les cornières périphériques au niveau.", "Suspendre et mettre à niveau l’ossature T24.", "Installer les dalles 60 × 60 et contrôler les coupes.")
+                            CalculationType.PLOMBERIE_INSTALLATION -> listOf("Repérer les points d’eau et le cheminement des réseaux.", "Dimensionner alimentation et évacuation selon le chantier.", "Fixer les tubes, réaliser les raccords et prévoir l’accès maintenance.", "Effectuer un essai d’étanchéité avant fermeture.")
+                            CalculationType.ELECTRICITE_INSTALLATION -> listOf("Tracer les circuits et séparer éclairage et prises.", "Poser gaines et câbles selon les sections validées par l’électricien.", "Installer protections et tableau selon le schéma du chantier.", "Tester continuité, terre et protections avant mise en service.")
+                            CalculationType.ETANCHEITE_TOITURE -> listOf("Préparer le support, réparer fissures et vérifier les pentes.", "Appliquer le primaire compatible avec le système choisi.", "Poser la membrane avec recouvrements et relevés traités.", "Contrôler évacuations et réaliser un essai d’étanchéité.")
+                            CalculationType.ISOLATION_THERMIQUE -> listOf("Vérifier la continuité de l’enveloppe et l’absence d’humidité.", "Découper l’isolant sans le comprimer et limiter les ponts thermiques.", "Traiter joints, raccords et points singuliers.", "Respecter les prescriptions du fabricant pour le pare-vapeur.")
+                            CalculationType.SOLS_PARQUET -> listOf("Contrôler planéité, humidité et acclimatation du parquet.", "Poser la sous-couche compatible et prévoir le jeu périphérique.", "Assembler les lames en décalant les joints.", "Poser les plinthes sans bloquer la dilatation.")
+                            CalculationType.FACADE_FINITION -> listOf("Contrôler la stabilité du support et traiter les fissures.", "Appliquer le primaire et le système de façade compatibles.", "Respecter épaisseurs, renforts et temps de séchage fabricant.", "Vérifier les points singuliers et la protection contre l’eau.")
+                            CalculationType.DEMOLITION_DEPOSE -> listOf("Vérifier les réseaux cachés et sécuriser la zone.", "Protéger les accès et définir l’ordre de dépose.", "Démonter progressivement et trier les gravats.", "Évacuer les déchets selon les règles locales.")
+                            else -> listOf("Vérifier les mesures et l’état du support avant intervention.", "Préparer les matériaux et respecter les instructions du fabricant.", "Contrôler dimensions, fixations et finitions avant réception.")
+                        }
+                        methodology.forEach { step ->
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top) {
+                                Text("•", color = KonstrivoGold, fontWeight = FontWeight.Bold)
+                                Text(step, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                        Text(language.tr("Référence indicative : confirmez les normes locales et les instructions du fabricant selon le système installé.", "Guidance only: verify local standards and manufacturer instructions for the installed system.", "معلومات إرشادية: تثبّت من المعايير المحلية وتعليمات المصنّع حسب النظام المركّب.", "معلومات إرشادية: تثبّت من المعايير المحلية وتعليمات المصنّع حسب النظام المركّب."), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedButton(
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(reportText))
+                                    Toast.makeText(context, "Résultat copié", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.ContentCopy, contentDescription = null)
+                                Spacer(Modifier.width(6.dp))
+                                Text(language.tr("Copier", "Copy", "نسخ", "نسخ"))
+                            }
+                            Button(
+                                onClick = {
+                                    val url = "https://wa.me/?text=" + Uri.encode(reportText)
+                                    try {
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                                    } catch (_: Exception) {
+                                        Toast.makeText(context, "WhatsApp indisponible", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.Share, contentDescription = null)
+                                Spacer(Modifier.width(6.dp))
+                                Text("WhatsApp")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ResultTotalRow(label: String, amount: Double, currency: String, bold: Boolean = false) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(label, fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal)
+        Text(
+            text = "${String.format(java.util.Locale.US, "%.2f", amount)} ${currency}",
+            fontWeight = if (bold) FontWeight.ExtraBold else FontWeight.Medium,
+            color = if (bold) KonstrivoGold else MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 
